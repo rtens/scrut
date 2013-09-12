@@ -1,6 +1,6 @@
 {
     "name": "watoki/scrut",
-    "description": "Testing framework based on curir.",
+    "description": "Live documentation web application for PHP.",
     "keywords": ["test", "SbE", "living documentation", "watoki"],
     "homepage": "http://github.com/watoki/scrut",
     "type": "library",
