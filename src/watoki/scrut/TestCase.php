@@ -16,7 +16,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
     protected function setUp() {
         $this->factory = new Factory();
         $this->loadDependencies();
+    }
+
+    protected function runTest() {
         $this->background();
+        return parent::runTest();
     }
 
     protected function tearDown() {
@@ -29,7 +33,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
      * @param string $class
      * @return Fixture
      */
-    protected function userFixture($class) {
+    public function useFixture($class) {
         return $this->factory->getInstance($class, array('test' => $this));
     }
 
@@ -51,7 +55,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
                 throw new \Exception("Error while loading dependency [$property] of [$me]: Could not find class [$className].");
             }
 
-            $this->$property = $this->userFixture($class);
+            $this->$property = $this->useFixture($class);
 
         }
     }
