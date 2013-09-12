@@ -1,0 +1,153 @@
+<?php
+namespace spec\watoki\scrut\testCase;
+
+use watoki\factory\Factory;
+use watoki\scrut\TestCase;
+
+/**
+ * @property TestCaseFixture testCase
+ */
+class LoadDependenciesTest extends TestCase {
+
+    public function testFullyQualifiedClassNames() {
+        $this->testCase->givenTheClass_InNamespace('SomeFixture', 'spec\watoki\scrut\tmp');
+        $this->testCase->givenTheClassDefinition('
+            /**
+             * @property spec\watoki\scrut\tmp\SomeFixture foo
+             */
+            class SomeTest extends \watoki\scrut\TestCase {
+                function runAllTests() {
+                    $this->setUp();
+                }
+            }
+        ');
+
+        $this->testCase->whenIRunTheTest('SomeTest');
+
+        $this->testCase->thenItShouldHaveAProperty_WithAnInstanceOf('foo', 'spec\watoki\scrut\tmp\SomeFixture');
+    }
+
+    public function testRelativeNamespace() {
+        $this->testCase->givenTheClass_InNamespace('AnotherFixture', 'spec\watoki\scrut\tmp\inside');
+        $this->testCase->givenTheClassDefinition('
+            namespace spec\watoki\scrut\tmp;
+
+            /**
+             * @property inside\AnotherFixture foo
+             */
+            class RelativeTest extends \watoki\scrut\TestCase {
+                function runAllTests() {
+                    $this->setUp();
+                }
+            }
+        ');
+
+        $this->testCase->whenIRunTheTest('spec\watoki\scrut\tmp\RelativeTest');
+
+        $this->testCase->thenItShouldHaveAProperty_WithAnInstanceOf('foo', 'spec\watoki\scrut\tmp\inside\AnotherFixture');
+    }
+
+    public function testClassAliases() {
+        $this->testCase->givenTheClass_InNamespace('AliasedFixture', 'spec\watoki\scrut\tmp');
+        $this->testCase->givenTheClassDefinition('
+            use spec\watoki\scrut\tmp\AliasedFixture;
+
+            /**
+             * @property AliasedFixture foo
+             */
+            class AliasTest extends \watoki\scrut\TestCase {
+                function runAllTests() {
+                    $this->setUp();
+                }
+            }
+        ');
+
+        $this->testCase->whenIRunTheTest('AliasTest');
+
+        $this->testCase->thenItShouldHaveAProperty_WithAnInstanceOf('foo', 'spec\watoki\scrut\tmp\AliasedFixture');
+    }
+
+    public function testOrder() {
+        $this->testCase->givenTheClassDefinition_InFile('
+            class FirstFixture extends \watoki\scrut\Fixture {
+                public function __construct(\watoki\scrut\TestCase $test, \watoki\factory\Factory $factory) {
+                    spec\watoki\scrut\testCase\LoadDependenciesTest::$loaded[] = get_class($this);
+                }
+            }
+        ', 'FirstFixture.php');
+        $this->testCase->givenTheClassDefinition_InFile('
+            class SecondFixture extends \watoki\scrut\Fixture {
+                public function __construct(\watoki\scrut\TestCase $test, \watoki\factory\Factory $factory) {
+                    spec\watoki\scrut\testCase\LoadDependenciesTest::$loaded[] = get_class($this);
+                }
+            }
+        ', 'SecondFixture.php');
+
+        $this->testCase->givenTheClassDefinition('
+            /**
+             * @property FirstFixture foo1
+             * @property SecondFixture foo2
+             */
+            class OrderTest extends \watoki\scrut\TestCase {
+                function runAllTests() {
+                    $this->setUp();
+                }
+            }
+        ');
+
+        $this->testCase->whenIRunTheTest('OrderTest');
+
+        $this->then_FixturesShouldBeLoaded(2);
+        $this->thenLoadedFixture_ShouldBe(1, 'FirstFixture');
+        $this->thenLoadedFixture_ShouldBe(2, 'SecondFixture');
+    }
+
+    public function testReferenceToTest() {
+        $this->testCase->givenTheClassDefinition_InFile('
+            class FixtureWithReference extends \watoki\scrut\Fixture {
+                public function __construct(\watoki\scrut\TestCase $test, \watoki\factory\Factory $factory) {
+                    spec\watoki\scrut\testCase\LoadDependenciesTest::$testReference = get_class($test);
+                }
+            }
+        ', 'FixtureWithReference.php');
+
+        $this->testCase->givenTheClassDefinition('
+            /**
+             * @property FixtureWithReference foo
+             */
+            class TestReferenceTest extends \watoki\scrut\TestCase {
+                function runAllTests() {
+                    $this->setUp();
+                }
+            }
+        ');
+
+        $this->testCase->whenIRunTheTest('TestReferenceTest');
+
+        $this->then_ShouldBePassedToTheFixture('TestReferenceTest');
+    }
+
+    public static $testReference;
+
+    public static $loaded = array();
+
+    protected function setUp() {
+        parent::setUp();
+
+        self::$loaded = array();
+        self::$testReference = null;
+    }
+
+    private function then_FixturesShouldBeLoaded($int) {
+        $this->assertCount($int, self::$loaded);
+    }
+
+    private function thenLoadedFixture_ShouldBe($int, $class) {
+        $this->assertEquals($class, self::$loaded[$int - 1]);
+    }
+
+    private function then_ShouldBePassedToTheFixture($string) {
+        $this->assertEquals($string, self::$testReference);
+    }
+
+}
