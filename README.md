@@ -9,8 +9,8 @@ Instead of writing the specification in a plain text file which is parsed to be 
 ```PHP
 /**
  * @tag currentIteration
- * @property GuestFixture $guests
- * @property PartyFixture $party
+ * @property GuestFixture guests
+ * @property PartyFixture party
  */
 class SomeCoolStuffBehavior extends TestCase {
 
