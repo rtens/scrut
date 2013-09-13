@@ -108,6 +108,29 @@ class LoadDependenciesTest extends TestCase {
         $this->testCase->thenItShouldHaveAProperty_WithAnInstanceOf('foo', 'JustAnotherFixture');
     }
 
+    public function testInjectProtectedProperty() {
+        $this->testCase->givenTheClassDefinition_InFile('
+            class ProtectedFixture extends \watoki\scrut\Fixture {}
+        ', 'ProtectedFixture.php');
+        $this->testCase->givenTheClassDefinition('
+            /**
+             * @property ProtectedFixture foo<-
+             */
+            class ProtectedPropertyTest extends \watoki\scrut\TestCase {
+                protected $foo;
+                function runAllTests() {
+                    $this->setUp();
+                    spec\watoki\scrut\testCase\LoadDependenciesTest::$loaded[] = get_class($this->foo);
+                }
+            }
+        ');
+
+        $this->testCase->whenIRunTheTest('ProtectedPropertyTest');
+
+        $this->then_FixturesShouldBeLoaded(1);
+        $this->thenLoadedFixture_ShouldBe(1, 'ProtectedFixture');
+    }
+
     public function testOrder() {
         $this->testCase->givenTheClassDefinition_InFile('
             class FirstFixture extends \watoki\scrut\Fixture {

@@ -4,7 +4,7 @@ namespace spec\watoki\scrut\testCase;
 use watoki\scrut\TestCase;
 
 /**
- * @property TestCaseFixture testCase
+ * @property TestCaseFixture testCase<-
  */
 class TestCaseTest extends TestCase {
 

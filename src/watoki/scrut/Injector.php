@@ -29,21 +29,19 @@ class Injector {
             $className = $matches[1][$i];
             $property = $matches[2][$i];
 
-            if ($classReflection->hasProperty($property)) {
-                $propertyReflection = $classReflection->getProperty($property);
-                $propertyReflection->setAccessible(true);
-                if ($propertyReflection->getValue($this->target) !== null) {
-                    continue;
-                }
-            }
-
             $class = $resolver->resolve($className);
 
             if (!$class) {
                 throw new \Exception("Error while loading dependency [$property] of [{$classReflection->getShortName()}]: Could not find class [$className].");
             }
 
-            $this->target->$property = $factory($class);
+            if ($classReflection->hasProperty($property)) {
+                $reflectionProperty = $classReflection->getProperty($property);
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($this->target, $factory($class));
+            } else {
+                $this->target->$property = $factory($class);
+            }
         }
     }
 }
