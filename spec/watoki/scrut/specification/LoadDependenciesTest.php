@@ -12,7 +12,7 @@ class LoadDependenciesTest extends Specification {
         $this->specification->givenTheClass_InNamespace('SomeFixture', 'spec\watoki\scrut\tmp');
         $this->specification->givenTheClassDefinition('
             /**
-             * @property spec\watoki\scrut\tmp\SomeFixture foo <-
+             * @property spec\watoki\scrut\tmp\SomeFixture foo<-
              */
             class SomeTest extends \watoki\scrut\Specification {
                 function runAllScenarios() {
@@ -32,7 +32,7 @@ class LoadDependenciesTest extends Specification {
             namespace spec\watoki\scrut\tmp;
 
             /**
-             * @property inside\AnotherFixture foo <-
+             * @property    inside\AnotherFixture   foo   <-
              */
             class RelativeTest extends \watoki\scrut\Specification {
                 function runAllScenarios() {
@@ -52,7 +52,7 @@ class LoadDependenciesTest extends Specification {
             use spec\watoki\scrut\tmp\AliasedFixture;
 
             /**
-             * @property AliasedFixture foo <-
+             * @property AliasedFixture foo     <-
              */
             class AliasTest extends \watoki\scrut\Specification {
                 function runAllScenarios() {

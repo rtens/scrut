@@ -5,7 +5,7 @@ use rtens\mockster\ClassResolver;
 
 class Injector {
 
-    const MARKER = ' <-';
+    const MARKER = '<-';
 
     private $target;
 
@@ -23,7 +23,7 @@ class Injector {
         $resolver = new ClassResolver($classReflection);
 
         $matches = array();
-        preg_match_all('/@property (\S+) \$?(\S+)' . $marker .'/', $classReflection->getDocComment(), $matches);
+        preg_match_all('/@property\s+(\S+)\s+\$?(\S+)\s*' . $marker .'/', $classReflection->getDocComment(), $matches);
 
         foreach ($matches[0] as $i => $match) {
             $className = $matches[1][$i];
