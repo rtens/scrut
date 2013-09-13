@@ -29,35 +29,16 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
         }
     }
 
-    /**
-     * @param string $class
-     * @return Fixture
-     */
     public function useFixture($class) {
         return $this->factory->getInstance($class, array('test' => $this));
     }
 
     protected function loadDependencies() {
-        $refl = new \ReflectionClass($this);
-        $resolver = new ClassResolver($refl);
-
-        $matches = array();
-        preg_match_all('/@property (\S+) (\S+)/', $refl->getDocComment(), $matches);
-
-        foreach ($matches[0] as $i => $match) {
-            $className = $matches[1][$i];
-            $property = $matches[2][$i];
-
-            $class = $resolver->resolve($className);
-
-            if (!$class) {
-                $me = get_class($this);
-                throw new \Exception("Error while loading dependency [$property] of [$me]: Could not find class [$className].");
-            }
-
-            $this->$property = $this->useFixture($class);
-
-        }
+        $that = $this;
+        $injector = new Injector($this);
+        $injector->injectProperties(function ($class) use ($that) {
+            return $that->useFixture($class);
+        });
     }
 
     public function runAllTests() {
@@ -68,7 +49,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
             if (substr($method, 0, 4) == 'test') {
                 /** @var TestCase $test */
                 $test = new $me($method);
-
                 $test->run($result);
             }
         }

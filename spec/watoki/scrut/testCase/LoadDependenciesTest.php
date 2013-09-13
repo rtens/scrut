@@ -127,6 +127,41 @@ class LoadDependenciesTest extends TestCase {
         $this->then_ShouldBePassedToTheFixture('TestReferenceTest');
     }
 
+    public function testLoadDependenciesOfFixture() {
+        $this->testCase->givenTheClassDefinition_InFile('
+            class Dependency extends \watoki\scrut\Fixture {}
+        ', 'Dependency.php');
+        $this->testCase->givenTheClassDefinition_InFile('
+            /**
+             * @property Dependency foo
+             */
+            class FixtureWithDependencies extends \watoki\scrut\Fixture {
+                public function __construct(\watoki\scrut\TestCase $test, \watoki\factory\Factory $factory) {
+                    parent::__construct($test, $factory);
+                    spec\watoki\scrut\testCase\LoadDependenciesTest::$loaded[] = get_class($this->foo);
+                    spec\watoki\scrut\testCase\LoadDependenciesTest::$loaded[] = get_class($this);
+                }
+            }
+        ', 'FixtureWithDependencies.php');
+
+        $this->testCase->givenTheClassDefinition('
+            /**
+             * @property FixtureWithDependencies foo
+             */
+            class FixtureWithDependenciesTest extends \watoki\scrut\TestCase {
+                function runAllTests() {
+                    $this->setUp();
+                }
+            }
+        ');
+
+        $this->testCase->whenIRunTheTest('FixtureWithDependenciesTest');
+
+        $this->then_FixturesShouldBeLoaded(2);
+        $this->thenLoadedFixture_ShouldBe(1, 'Dependency');
+        $this->thenLoadedFixture_ShouldBe(2, 'FixtureWithDependencies');
+    }
+
     public static $testReference;
 
     public static $loaded = array();
