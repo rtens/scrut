@@ -5,10 +5,10 @@ use watoki\factory\Factory;
 
 abstract class Fixture {
 
-    protected $test;
+    protected $spec;
 
-    public function __construct(TestCase $test, Factory $factory) {
-        $this->test = $test;
+    public function __construct(Specification $spec, Factory $factory) {
+        $this->spec = $spec;
         $this->makeSingleton($factory);
         $this->loadDependencies();
     }
@@ -18,10 +18,10 @@ abstract class Fixture {
     }
 
     protected function loadDependencies() {
-        $test = $this->test;
+        $spec = $this->spec;
         $injector = new Injector($this);
-        $injector->injectAnnotatedProperties(function ($class) use ($test) {
-            return $test->useFixture($class);
+        $injector->injectAnnotatedProperties(function ($class) use ($spec) {
+            return $spec->useFixture($class);
         });
     }
 

@@ -4,7 +4,7 @@ namespace watoki\scrut;
 use rtens\mockster\ClassResolver;
 use watoki\factory\Factory;
 
-abstract class TestCase extends \PHPUnit_Framework_TestCase {
+abstract class Specification extends \PHPUnit_Framework_TestCase {
 
     /** @var Factory */
     protected $factory;
@@ -30,7 +30,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
     }
 
     public function useFixture($class) {
-        return $this->factory->getInstance($class, array('test' => $this));
+        return $this->factory->getInstance($class, array('spec' => $this));
     }
 
     protected function loadDependencies() {
@@ -41,15 +41,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
         });
     }
 
-    public function runAllTests() {
+    public function runAllScenarios($prefix = 'test') {
         $me = get_class($this);
         $result = new \PHPUnit_Framework_TestResult();
 
         foreach (get_class_methods($this) as $method) {
-            if (substr($method, 0, 4) == 'test') {
-                /** @var TestCase $test */
-                $test = new $me($method);
-                $test->run($result);
+            if (substr($method, 0, strlen($prefix)) == $prefix) {
+                /** @var Specification $spec */
+                $spec = new $me($method);
+                $spec->run($result);
             }
         }
 

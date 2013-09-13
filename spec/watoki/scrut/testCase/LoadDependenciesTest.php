@@ -1,12 +1,12 @@
 <?php
 namespace spec\watoki\scrut\testCase;
 
-use watoki\scrut\TestCase;
+use watoki\scrut\Specification;
 
 /**
- * @property TestCaseFixture testCase<-
+ * @property SpecificationFixture testCase<-
  */
-class LoadDependenciesTest extends TestCase {
+class LoadDependenciesTest extends Specification {
 
     public function testFullyQualifiedClassNames() {
         $this->testCase->givenTheClass_InNamespace('SomeFixture', 'spec\watoki\scrut\tmp');
@@ -14,8 +14,8 @@ class LoadDependenciesTest extends TestCase {
             /**
              * @property spec\watoki\scrut\tmp\SomeFixture foo<-
              */
-            class SomeTest extends \watoki\scrut\TestCase {
-                function runAllTests() {
+            class SomeTest extends \watoki\scrut\Specification {
+                function runAllScenarios() {
                     $this->setUp();
                 }
             }
@@ -34,8 +34,8 @@ class LoadDependenciesTest extends TestCase {
             /**
              * @property inside\AnotherFixture foo<-
              */
-            class RelativeTest extends \watoki\scrut\TestCase {
-                function runAllTests() {
+            class RelativeTest extends \watoki\scrut\Specification {
+                function runAllScenarios() {
                     $this->setUp();
                 }
             }
@@ -54,8 +54,8 @@ class LoadDependenciesTest extends TestCase {
             /**
              * @property AliasedFixture foo<-
              */
-            class AliasTest extends \watoki\scrut\TestCase {
-                function runAllTests() {
+            class AliasTest extends \watoki\scrut\Specification {
+                function runAllScenarios() {
                     $this->setUp();
                 }
             }
@@ -75,8 +75,8 @@ class LoadDependenciesTest extends TestCase {
              * @property JustSomeFixture foo
              * @property JustSomeFixture bar<-
              */
-            class NotAllTest extends \watoki\scrut\TestCase {
-                function runAllTests() {
+            class NotAllTest extends \watoki\scrut\Specification {
+                function runAllScenarios() {
                     $this->setUp();
                 }
             }
@@ -96,8 +96,8 @@ class LoadDependenciesTest extends TestCase {
             /**
              * @property JustAnotherFixture $foo<-
              */
-            class DollarSignTest extends \watoki\scrut\TestCase {
-                function runAllTests() {
+            class DollarSignTest extends \watoki\scrut\Specification {
+                function runAllScenarios() {
                     $this->setUp();
                 }
             }
@@ -116,9 +116,9 @@ class LoadDependenciesTest extends TestCase {
             /**
              * @property ProtectedFixture foo<-
              */
-            class ProtectedPropertyTest extends \watoki\scrut\TestCase {
+            class ProtectedPropertyTest extends \watoki\scrut\Specification {
                 protected $foo;
-                function runAllTests() {
+                function runAllScenarios() {
                     $this->setUp();
                     spec\watoki\scrut\testCase\LoadDependenciesTest::$loaded[] = get_class($this->foo);
                 }
@@ -134,14 +134,14 @@ class LoadDependenciesTest extends TestCase {
     public function testOrder() {
         $this->testCase->givenTheClassDefinition_InFile('
             class FirstFixture extends \watoki\scrut\Fixture {
-                public function __construct(\watoki\scrut\TestCase $test, \watoki\factory\Factory $factory) {
+                public function __construct(\watoki\scrut\Specification $spec, \watoki\factory\Factory $factory) {
                     spec\watoki\scrut\testCase\LoadDependenciesTest::$loaded[] = get_class($this);
                 }
             }
         ', 'FirstFixture.php');
         $this->testCase->givenTheClassDefinition_InFile('
             class SecondFixture extends \watoki\scrut\Fixture {
-                public function __construct(\watoki\scrut\TestCase $test, \watoki\factory\Factory $factory) {
+                public function __construct(\watoki\scrut\Specification $spec, \watoki\factory\Factory $factory) {
                     spec\watoki\scrut\testCase\LoadDependenciesTest::$loaded[] = get_class($this);
                 }
             }
@@ -152,8 +152,8 @@ class LoadDependenciesTest extends TestCase {
              * @property FirstFixture foo1<-
              * @property SecondFixture foo2<-
              */
-            class OrderTest extends \watoki\scrut\TestCase {
-                function runAllTests() {
+            class OrderTest extends \watoki\scrut\Specification {
+                function runAllScenarios() {
                     $this->setUp();
                 }
             }
@@ -169,8 +169,8 @@ class LoadDependenciesTest extends TestCase {
     public function testReferenceToTest() {
         $this->testCase->givenTheClassDefinition_InFile('
             class FixtureWithReference extends \watoki\scrut\Fixture {
-                public function __construct(\watoki\scrut\TestCase $test, \watoki\factory\Factory $factory) {
-                    spec\watoki\scrut\testCase\LoadDependenciesTest::$testReference = get_class($test);
+                public function __construct(\watoki\scrut\Specification $spec, \watoki\factory\Factory $factory) {
+                    spec\watoki\scrut\testCase\LoadDependenciesTest::$testReference = get_class($spec);
                 }
             }
         ', 'FixtureWithReference.php');
@@ -179,8 +179,8 @@ class LoadDependenciesTest extends TestCase {
             /**
              * @property FixtureWithReference foo<-
              */
-            class TestReferenceTest extends \watoki\scrut\TestCase {
-                function runAllTests() {
+            class TestReferenceTest extends \watoki\scrut\Specification {
+                function runAllScenarios() {
                     $this->setUp();
                 }
             }
@@ -200,8 +200,8 @@ class LoadDependenciesTest extends TestCase {
              * @property Dependency foo<-
              */
             class FixtureWithDependencies extends \watoki\scrut\Fixture {
-                public function __construct(\watoki\scrut\TestCase $test, \watoki\factory\Factory $factory) {
-                    parent::__construct($test, $factory);
+                public function __construct(\watoki\scrut\Specification $spec, \watoki\factory\Factory $factory) {
+                    parent::__construct($spec, $factory);
                     spec\watoki\scrut\testCase\LoadDependenciesTest::$loaded[] = get_class($this->foo);
                     spec\watoki\scrut\testCase\LoadDependenciesTest::$loaded[] = get_class($this);
                 }
@@ -212,8 +212,8 @@ class LoadDependenciesTest extends TestCase {
             /**
              * @property FixtureWithDependencies foo<-
              */
-            class FixtureWithDependenciesTest extends \watoki\scrut\TestCase {
-                function runAllTests() {
+            class FixtureWithDependenciesTest extends \watoki\scrut\Specification {
+                function runAllScenarios() {
                     $this->setUp();
                 }
             }

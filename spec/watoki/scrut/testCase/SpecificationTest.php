@@ -1,21 +1,21 @@
 <?php
 namespace spec\watoki\scrut\testCase;
  
-use watoki\scrut\TestCase;
+use watoki\scrut\Specification;
 
 /**
- * @property TestCaseFixture testCase<-
+ * @property SpecificationFixture testCase<-
  */
-class TestCaseTest extends TestCase {
+class SpecificationTest extends Specification {
 
     public function testRunAllTests() {
         $this->testCase->givenTheClassDefinition('
-            class RunAllTest extends \watoki\scrut\TestCase {
+            class RunAllTest extends \watoki\scrut\Specification {
                 function testFoo() {
-                    spec\watoki\scrut\testCase\TestCaseTest::$run++;
+                    spec\watoki\scrut\testCase\SpecificationTest::$run++;
                 }
                 function testBar() {
-                    spec\watoki\scrut\testCase\TestCaseTest::$run++;
+                    spec\watoki\scrut\testCase\SpecificationTest::$run++;
                 }
             }
         ');
@@ -27,13 +27,13 @@ class TestCaseTest extends TestCase {
 
     public function testRunFailingTests() {
         $this->testCase->givenTheClassDefinition('
-            class RunFailingTest extends \watoki\scrut\TestCase {
+            class RunFailingTest extends \watoki\scrut\Specification {
                 function testFoo() {
                     $this->fail();
-                    spec\watoki\scrut\testCase\TestCaseTest::$run++;
+                    spec\watoki\scrut\testCase\SpecificationTest::$run++;
                 }
                 function testBar() {
-                    spec\watoki\scrut\testCase\TestCaseTest::$run++;
+                    spec\watoki\scrut\testCase\SpecificationTest::$run++;
                 }
             }
         ');
@@ -46,10 +46,10 @@ class TestCaseTest extends TestCase {
 
     public function testUndos() {
         $this->testCase->givenTheClassDefinition('
-            class UndoTest extends \watoki\scrut\TestCase {
+            class UndoTest extends \watoki\scrut\Specification {
                 function testFooBar() {
                     $this->undos[] = function () {
-                        spec\watoki\scrut\testCase\TestCaseTest::$run--;
+                        spec\watoki\scrut\testCase\SpecificationTest::$run--;
                     };
                 }
             }

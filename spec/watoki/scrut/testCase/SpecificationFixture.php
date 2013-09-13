@@ -1,15 +1,15 @@
 <?php
 namespace spec\watoki\scrut\testCase;
  
-use watoki\scrut\TestCase;
+use watoki\scrut\Specification;
 use watoki\scrut\Fixture;
 
-class TestCaseFixture extends Fixture {
+class SpecificationFixture extends Fixture {
 
     /** @var \PHPUnit_TestResult */
     private $result;
 
-    /** @var TestCase */
+    /** @var Specification */
     private $instance;
 
     public function givenTheClass_InNamespace($class, $namespace) {
@@ -27,10 +27,10 @@ class TestCaseFixture extends Fixture {
         @mkdir($dir);
         file_put_contents($file, "<?php $code");
 
-        $this->test->undos[] = function () use ($file) {
+        $this->spec->undos[] = function () use ($file) {
             @unlink($file);
         };
-        $this->test->undos[] = function () use ($dir) {
+        $this->spec->undos[] = function () use ($dir) {
             @rmdir($dir);
         };
 
@@ -43,7 +43,7 @@ class TestCaseFixture extends Fixture {
 
     public function whenIRunTheTest($className) {
         $this->instance = new $className;
-        $this->result = $this->instance->runAllTests();
+        $this->result = $this->instance->runAllScenarios();
     }
 
     public function thenItShouldHaveAProperty_WithAnInstanceOf($propertyName, $className) {
@@ -52,19 +52,19 @@ class TestCaseFixture extends Fixture {
     }
 
     private function thenItShouldHaveAProperty($propertyName) {
-        $this->instance->assertTrue(property_exists($this->instance, $propertyName), "[$propertyName] not found.");
+        $this->spec->assertTrue(property_exists($this->instance, $propertyName), "[$propertyName] not found.");
     }
 
     private function thenItsProperty_ShouldBeAnInstanceOf($propertyName, $className) {
-        $this->instance->assertInstanceOf($className, $this->instance->$propertyName);
+        $this->spec->assertInstanceOf($className, $this->instance->$propertyName);
     }
 
     public function thenTheResultShouldContain_FailedTest($int) {
-        $this->test->assertEquals($int, $this->result->failureCount());
+        $this->spec->assertEquals($int, $this->result->failureCount());
     }
 
     public function thenItShouldNoHaveAProperty($property) {
-        $this->instance->assertFalse(isset($this->instance->$property));
+        $this->spec->assertFalse(isset($this->instance->$property));
     }
 
 }
