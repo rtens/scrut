@@ -36,7 +36,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
     protected function loadDependencies() {
         $that = $this;
         $injector = new Injector($this);
-        $injector->injectProperties(function ($class) use ($that) {
+        $injector->injectAnnotatedProperties(function ($class) use ($that) {
             return $that->useFixture($class);
         });
     }

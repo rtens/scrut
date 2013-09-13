@@ -1,11 +1,10 @@
 <?php
 namespace spec\watoki\scrut\testCase;
 
-use watoki\factory\Factory;
 use watoki\scrut\TestCase;
 
 /**
- * @property TestCaseFixture testCase
+ * @property TestCaseFixture testCase<-
  */
 class LoadDependenciesTest extends TestCase {
 
@@ -13,7 +12,7 @@ class LoadDependenciesTest extends TestCase {
         $this->testCase->givenTheClass_InNamespace('SomeFixture', 'spec\watoki\scrut\tmp');
         $this->testCase->givenTheClassDefinition('
             /**
-             * @property spec\watoki\scrut\tmp\SomeFixture foo
+             * @property spec\watoki\scrut\tmp\SomeFixture foo<-
              */
             class SomeTest extends \watoki\scrut\TestCase {
                 function runAllTests() {
@@ -33,7 +32,7 @@ class LoadDependenciesTest extends TestCase {
             namespace spec\watoki\scrut\tmp;
 
             /**
-             * @property inside\AnotherFixture foo
+             * @property inside\AnotherFixture foo<-
              */
             class RelativeTest extends \watoki\scrut\TestCase {
                 function runAllTests() {
@@ -53,7 +52,7 @@ class LoadDependenciesTest extends TestCase {
             use spec\watoki\scrut\tmp\AliasedFixture;
 
             /**
-             * @property AliasedFixture foo
+             * @property AliasedFixture foo<-
              */
             class AliasTest extends \watoki\scrut\TestCase {
                 function runAllTests() {
@@ -65,6 +64,48 @@ class LoadDependenciesTest extends TestCase {
         $this->testCase->whenIRunTheTest('AliasTest');
 
         $this->testCase->thenItShouldHaveAProperty_WithAnInstanceOf('foo', 'spec\watoki\scrut\tmp\AliasedFixture');
+    }
+
+    public function testDontInjectNotMarkedProperties() {
+        $this->testCase->givenTheClassDefinition_InFile('
+            class JustSomeFixture extends \watoki\scrut\Fixture {}
+        ', 'JustSomeFixture.php');
+        $this->testCase->givenTheClassDefinition('
+            /**
+             * @property JustSomeFixture foo
+             * @property JustSomeFixture bar<-
+             */
+            class NotAllTest extends \watoki\scrut\TestCase {
+                function runAllTests() {
+                    $this->setUp();
+                }
+            }
+        ');
+
+        $this->testCase->whenIRunTheTest('NotAllTest');
+
+        $this->testCase->thenItShouldHaveAProperty_WithAnInstanceOf('bar', 'JustSomeFixture');
+        $this->testCase->thenItShouldNoHaveAProperty('foo');
+    }
+
+    public function testInjectPropertyWithDollarSign() {
+        $this->testCase->givenTheClassDefinition_InFile('
+            class JustAnotherFixture extends \watoki\scrut\Fixture {}
+        ', 'JustAnotherFixture.php');
+        $this->testCase->givenTheClassDefinition('
+            /**
+             * @property JustAnotherFixture $foo<-
+             */
+            class DollarSignTest extends \watoki\scrut\TestCase {
+                function runAllTests() {
+                    $this->setUp();
+                }
+            }
+        ');
+
+        $this->testCase->whenIRunTheTest('DollarSignTest');
+
+        $this->testCase->thenItShouldHaveAProperty_WithAnInstanceOf('foo', 'JustAnotherFixture');
     }
 
     public function testOrder() {
@@ -85,8 +126,8 @@ class LoadDependenciesTest extends TestCase {
 
         $this->testCase->givenTheClassDefinition('
             /**
-             * @property FirstFixture foo1
-             * @property SecondFixture foo2
+             * @property FirstFixture foo1<-
+             * @property SecondFixture foo2<-
              */
             class OrderTest extends \watoki\scrut\TestCase {
                 function runAllTests() {
@@ -113,7 +154,7 @@ class LoadDependenciesTest extends TestCase {
 
         $this->testCase->givenTheClassDefinition('
             /**
-             * @property FixtureWithReference foo
+             * @property FixtureWithReference foo<-
              */
             class TestReferenceTest extends \watoki\scrut\TestCase {
                 function runAllTests() {
@@ -133,7 +174,7 @@ class LoadDependenciesTest extends TestCase {
         ', 'Dependency.php');
         $this->testCase->givenTheClassDefinition_InFile('
             /**
-             * @property Dependency foo
+             * @property Dependency foo<-
              */
             class FixtureWithDependencies extends \watoki\scrut\Fixture {
                 public function __construct(\watoki\scrut\TestCase $test, \watoki\factory\Factory $factory) {
@@ -146,7 +187,7 @@ class LoadDependenciesTest extends TestCase {
 
         $this->testCase->givenTheClassDefinition('
             /**
-             * @property FixtureWithDependencies foo
+             * @property FixtureWithDependencies foo<-
              */
             class FixtureWithDependenciesTest extends \watoki\scrut\TestCase {
                 function runAllTests() {

@@ -20,7 +20,7 @@ abstract class Fixture {
     protected function loadDependencies() {
         $test = $this->test;
         $injector = new Injector($this);
-        $injector->injectProperties(function ($class) use ($test) {
+        $injector->injectAnnotatedProperties(function ($class) use ($test) {
             return $test->useFixture($class);
         });
     }

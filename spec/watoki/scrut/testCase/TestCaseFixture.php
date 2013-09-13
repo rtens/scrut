@@ -63,4 +63,8 @@ class TestCaseFixture extends Fixture {
         $this->test->assertEquals($int, $this->result->failureCount());
     }
 
+    public function thenItShouldNoHaveAProperty($property) {
+        $this->instance->assertFalse(isset($this->instance->$property));
+    }
+
 }
