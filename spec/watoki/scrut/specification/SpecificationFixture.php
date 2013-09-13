@@ -1,5 +1,5 @@
 <?php
-namespace spec\watoki\scrut\testCase;
+namespace spec\watoki\scrut\specification;
  
 use watoki\scrut\Specification;
 use watoki\scrut\Fixture;

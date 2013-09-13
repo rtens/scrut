@@ -1,61 +1,61 @@
 <?php
-namespace spec\watoki\scrut\testCase;
+namespace spec\watoki\scrut\specification;
  
 use watoki\scrut\Specification;
 
 /**
- * @property SpecificationFixture testCase<-
+ * @property SpecificationFixture $specification <-
  */
 class SpecificationTest extends Specification {
 
     public function testRunAllTests() {
-        $this->testCase->givenTheClassDefinition('
+        $this->specification->givenTheClassDefinition('
             class RunAllTest extends \watoki\scrut\Specification {
                 function testFoo() {
-                    spec\watoki\scrut\testCase\SpecificationTest::$run++;
+                    spec\watoki\scrut\specification\SpecificationTest::$run++;
                 }
                 function testBar() {
-                    spec\watoki\scrut\testCase\SpecificationTest::$run++;
+                    spec\watoki\scrut\specification\SpecificationTest::$run++;
                 }
             }
         ');
 
-        $this->testCase->whenIRunTheTest('RunAllTest');
+        $this->specification->whenIRunTheTest('RunAllTest');
 
         $this->then_TestsShouldHaveRun(2);
     }
 
     public function testRunFailingTests() {
-        $this->testCase->givenTheClassDefinition('
+        $this->specification->givenTheClassDefinition('
             class RunFailingTest extends \watoki\scrut\Specification {
                 function testFoo() {
                     $this->fail();
-                    spec\watoki\scrut\testCase\SpecificationTest::$run++;
+                    spec\watoki\scrut\specification\SpecificationTest::$run++;
                 }
                 function testBar() {
-                    spec\watoki\scrut\testCase\SpecificationTest::$run++;
+                    spec\watoki\scrut\specification\SpecificationTest::$run++;
                 }
             }
         ');
 
-        $this->testCase->whenIRunTheTest('RunFailingTest');
+        $this->specification->whenIRunTheTest('RunFailingTest');
 
         $this->then_TestsShouldHaveRun(1);
-        $this->testCase->thenTheResultShouldContain_FailedTest(1);
+        $this->specification->thenTheResultShouldContain_FailedTest(1);
     }
 
     public function testUndos() {
-        $this->testCase->givenTheClassDefinition('
+        $this->specification->givenTheClassDefinition('
             class UndoTest extends \watoki\scrut\Specification {
                 function testFooBar() {
                     $this->undos[] = function () {
-                        spec\watoki\scrut\testCase\SpecificationTest::$run--;
+                        spec\watoki\scrut\specification\SpecificationTest::$run--;
                     };
                 }
             }
         ');
 
-        $this->testCase->whenIRunTheTest('UndoTest');
+        $this->specification->whenIRunTheTest('UndoTest');
 
         $this->then_TestsShouldHaveRun(-1);
     }

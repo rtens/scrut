@@ -5,7 +5,7 @@ use rtens\mockster\ClassResolver;
 
 class Injector {
 
-    const MARKER = '<-';
+    const MARKER = ' <-';
 
     private $target;
 
