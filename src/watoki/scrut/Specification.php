@@ -7,7 +7,7 @@ use watoki\factory\Factory;
 abstract class Specification extends \PHPUnit_Framework_TestCase {
 
     /** @var Factory */
-    protected $factory;
+    public $factory;
 
     public $undos = array();
 
