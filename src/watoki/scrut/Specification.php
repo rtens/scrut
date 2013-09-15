@@ -3,6 +3,7 @@ namespace watoki\scrut;
 
 use rtens\mockster\ClassResolver;
 use watoki\factory\Factory;
+use watoki\factory\Injector;
 
 abstract class Specification extends \PHPUnit_Framework_TestCase {
 
@@ -29,16 +30,10 @@ abstract class Specification extends \PHPUnit_Framework_TestCase {
         }
     }
 
-    public function useFixture($class) {
-        return $this->factory->getInstance($class, array('spec' => $this));
-    }
-
     protected function loadDependencies() {
-        $that = $this;
-        $injector = new Injector($this);
-        $injector->injectAnnotatedProperties(function ($class) use ($that) {
-            return $that->useFixture($class);
-        });
+        $this->factory->setProvider(Fixture::$CLASS, new FixtureProvider($this));
+        $injector = new Injector($this->factory);
+        $injector->injectPropertyAnnotations($this);
     }
 
     public function runAllScenarios($prefix = 'test') {
