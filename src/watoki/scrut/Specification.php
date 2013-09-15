@@ -31,9 +31,10 @@ abstract class Specification extends \PHPUnit_Framework_TestCase {
     }
 
     protected function loadDependencies() {
-        $this->factory->setProvider(Fixture::$CLASS, new FixtureProvider($this));
+        $provider = new FixtureProvider($this);
+        $this->factory->setProvider(Fixture::$CLASS, $provider);
         $injector = new Injector($this->factory);
-        $injector->injectPropertyAnnotations($this);
+        $injector->injectPropertyAnnotations($this, $provider->getAnnotationFilter());
     }
 
     public function runAllScenarios($prefix = 'test') {
