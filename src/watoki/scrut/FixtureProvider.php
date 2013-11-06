@@ -1,11 +1,9 @@
 <?php
 namespace watoki\scrut;
 
-use watoki\factory\Injector;
 use watoki\factory\providers\DefaultProvider;
-use watoki\factory\providers\PropertyInjectionProvider;
 
-class FixtureProvider extends PropertyInjectionProvider {
+class FixtureProvider extends DefaultProvider {
 
     private $spec;
 
