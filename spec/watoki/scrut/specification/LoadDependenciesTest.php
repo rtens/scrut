@@ -12,7 +12,7 @@ class LoadDependenciesTest extends Specification {
         $this->specification->givenTheClass_InNamespace('SomeFixture', 'spec\watoki\scrut\tmp');
         $this->specification->givenTheClassDefinition('
             /**
-             * @property spec\watoki\scrut\tmp\SomeFixture foo<-
+             * @property spec\watoki\scrut\tmp\SomeFixture foo <-
              */
             class SomeTest extends \watoki\scrut\Specification {
                 function runAllScenarios($prefix = "test") {
