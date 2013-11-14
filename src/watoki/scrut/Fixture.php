@@ -2,7 +2,6 @@
 namespace watoki\scrut;
 
 use watoki\factory\Factory;
-use watoki\factory\Injector;
 
 abstract class Fixture {
 
@@ -12,6 +11,10 @@ abstract class Fixture {
 
     public function __construct(Specification $spec, Factory $factory) {
         $this->spec = $spec;
+
+        $this->setUp();
     }
+
+    protected function setUp() {}
 
 }
