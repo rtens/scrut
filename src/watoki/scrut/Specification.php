@@ -13,6 +13,9 @@ abstract class Specification extends \PHPUnit_Framework_TestCase {
     /** @var Factory */
     public $factory;
 
+    /**
+     * @var array|callable[] invoked by tearDown
+     */
     public $undos = array();
 
     protected function background() {}

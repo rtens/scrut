@@ -9,6 +9,11 @@ abstract class Fixture {
 
     protected $spec;
 
+    /**
+     * @var array|callable[] invoked by tearDown
+     */
+    public $undos = array();
+
     public function __construct(Specification $spec, Factory $factory) {
         $this->spec = $spec;
     }
@@ -21,6 +26,10 @@ abstract class Fixture {
     /**
      * Is called by Specification::tearDown
      */
-    public function tearDown() {}
+    public function tearDown() {
+        foreach ($this->undos as $undo) {
+            $undo();
+        }
+    }
 
 }
