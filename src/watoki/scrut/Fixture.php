@@ -11,10 +11,16 @@ abstract class Fixture {
 
     public function __construct(Specification $spec, Factory $factory) {
         $this->spec = $spec;
-
-        $this->setUp();
     }
 
-    protected function setUp() {}
+    /**
+     * Is called by Specification::setUp
+     */
+    public function setUp() {}
+
+    /**
+     * Is called by Specification::tearDown
+     */
+    public function tearDown() {}
 
 }

@@ -7,6 +7,9 @@ use watoki\factory\Injector;
 
 abstract class Specification extends \PHPUnit_Framework_TestCase {
 
+    /** @var \watoki\scrut\FixtureProvider */
+    private $provider;
+
     /** @var Factory */
     public $factory;
 
@@ -14,9 +17,28 @@ abstract class Specification extends \PHPUnit_Framework_TestCase {
 
     protected function background() {}
 
+    public function __construct($name = NULL, array $data = array(), $dataName = '') {
+        parent::__construct($name, $data, $dataName);
+
+        $factory = new Factory();
+
+        $this->provider = new FixtureProvider($this, $factory);
+        $factory->setProvider(Fixture::$CLASS, $this->provider);
+
+        $injector = new Injector($factory);
+        $injector->injectPropertyAnnotations($this, array($this, 'annotationPropertyFilter'));
+    }
+
+    public function annotationPropertyFilter($annotation) {
+        return strpos($annotation, '<-') !== false;
+    }
+
     protected function setUp() {
         $this->factory = new Factory();
-        $this->loadDependencies();
+
+        $this->onFixtures(function (Fixture $fixture) {
+            $fixture->setUp();
+        });
     }
 
     protected function runTest() {
@@ -25,16 +47,13 @@ abstract class Specification extends \PHPUnit_Framework_TestCase {
     }
 
     protected function tearDown() {
+        $this->onFixtures(function (Fixture $fixture) {
+            $fixture->tearDown();
+        });
+
         foreach ($this->undos as $undo) {
             $undo();
         }
-    }
-
-    protected function loadDependencies() {
-        $provider = new FixtureProvider($this);
-        $this->factory->setProvider(Fixture::$CLASS, $provider);
-        $injector = new Injector($this->factory);
-        $injector->injectPropertyAnnotations($this, $provider->getAnnotationFilter());
     }
 
     public function runAllScenarios($prefix = 'test') {
@@ -50,6 +69,15 @@ abstract class Specification extends \PHPUnit_Framework_TestCase {
         }
 
         return $result;
+    }
+
+    /**
+     * @param callable $do
+     */
+    private function onFixtures($do) {
+        foreach ($this->provider->getProvidedFixtures() as $fixture) {
+            $do($fixture);
+        }
     }
 
 }
