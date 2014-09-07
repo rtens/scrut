@@ -1,6 +1,6 @@
 {
     "name": "watoki/scrut",
-    "description": "Live documentation web application for PHP.",
+    "description": "Injectable test classes for PHP.",
     "keywords": ["test", "SbE", "living documentation", "watoki"],
     "homepage": "http://github.com/watoki/scrut",
     "type": "library",
