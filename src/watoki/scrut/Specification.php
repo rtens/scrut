@@ -1,7 +1,6 @@
 <?php
 namespace watoki\scrut;
 
-use rtens\mockster\ClassResolver;
 use watoki\factory\Factory;
 use watoki\factory\Injector;
 
