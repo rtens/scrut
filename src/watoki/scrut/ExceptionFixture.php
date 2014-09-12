@@ -23,4 +23,12 @@ class ExceptionFixture extends Fixture {
         $this->spec->assertNull($this->caught, 'An Exception was thrown: ' . $this->caught->getMessage());
     }
 
+    public function thenA_ShouldBeThrown($class) {
+        $this->spec->assertInstanceOf($class, $this->caught);
+    }
+
+    public function getCaughtException() {
+        return $this->caught;
+    }
+
 } 
