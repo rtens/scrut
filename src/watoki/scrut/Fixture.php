@@ -14,6 +14,10 @@ abstract class Fixture {
      */
     public $undos = array();
 
+    /**
+     * @param Specification $spec
+     * @param Factory $factory <-
+     */
     public function __construct(Specification $spec, Factory $factory) {
         $this->spec = $spec;
     }

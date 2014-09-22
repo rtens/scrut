@@ -29,6 +29,9 @@ class LoadDependenciesTest extends Specification {
     public function testReferenceToTest() {
         $this->specification->givenTheClassDefinition_InFile('
             class FixtureWithReference extends \watoki\scrut\Fixture {
+                /**
+                 * @param $factory <-
+                 */
                 public function __construct(\watoki\scrut\Specification $spec, \watoki\factory\Factory $factory) {
                     spec\watoki\scrut\specification\LoadDependenciesTest::$testReference = get_class($spec);
                 }
