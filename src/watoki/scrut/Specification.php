@@ -29,6 +29,12 @@ abstract class Specification extends \PHPUnit_Framework_TestCase {
 
         $injector = new Injector($factory);
         $injector->injectPropertyAnnotations($this, array($this, 'annotationPropertyFilter'));
+
+        $this->setTimeZone();
+    }
+
+    protected function setTimeZone() {
+        date_default_timezone_set('UTC');
     }
 
     public function annotationPropertyFilter($annotation) {
