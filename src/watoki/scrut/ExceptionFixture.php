@@ -20,7 +20,7 @@ class ExceptionFixture extends Fixture {
     }
 
     public function thenNoExceptionShouldBeThrown() {
-        $this->spec->assertNull($this->caught, 'An Exception was thrown: ' . $this->caught->getMessage());
+        $this->spec->assertNull($this->caught, 'An Exception was thrown: ' . get_class($this->caught));
     }
 
     public function thenA_ShouldBeThrown($class) {
