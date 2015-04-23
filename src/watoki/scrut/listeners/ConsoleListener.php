@@ -14,6 +14,9 @@ class ConsoleListener implements ScrutinizeListener {
     public function onRunStarted() {
     }
 
+    public function onTestStarted($name) {
+    }
+
     public function onRunFinished() {
         $this->printLine();
         $this->printLine();
@@ -31,19 +34,20 @@ class ConsoleListener implements ScrutinizeListener {
         }
     }
 
-    public function onTestStarted($name) {
-    }
-
     public function onTestFinished($name, TestResult $result) {
         if ($result instanceof FailedTestResult) {
             $this->failed[$name] = $result->failure();
-            echo "F";
+            $this->output("F");
         } else {
-            echo ".";
+            $this->output(".");
         }
     }
 
-    private function printLine($text = "") {
-        echo $text . PHP_EOL;
+    protected function printLine($text = "") {
+        $this->output($text . PHP_EOL);
+    }
+
+    protected function output($text = "") {
+        echo $text;
     }
 }
