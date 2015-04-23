@@ -8,8 +8,12 @@ class Failure extends \RuntimeException {
     }
 
     public function getFailureFileAndLine() {
-        $trace = $this->getTrace();
-        return $trace[0]['file'] . ':' . $trace[0]['line'];
+        foreach ($this->getTrace() as $step) {
+            if (strpos($step['file'], 'src\\watoki\\scrut') === false) {
+                return $step['file'] . ':' . $step['line'];
+            }
+        }
+        return 'unknown source';
     }
 
     public function getFailureMessage() {

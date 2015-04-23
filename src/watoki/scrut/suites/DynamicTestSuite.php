@@ -1,6 +1,8 @@
 <?php
 namespace watoki\scrut\suites;
 
+use watoki\scrut\failures\EmptyTestSuiteFailure;
+use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\ScrutinizeListener;
 use watoki\scrut\TestSuite;
 
@@ -21,11 +23,15 @@ class DynamicTestSuite extends TestSuite {
         $this->tests = $tests;
     }
 
-    protected function name() {
+    public function name() {
         return $this->name;
     }
 
     public function run(ScrutinizeListener $listener) {
+        if (!$this->tests) {
+            $listener->onTestFinished($this->name(), new IncompleteTestResult(new EmptyTestSuiteFailure($this)));
+        }
+
         foreach ($this->tests as $name => $callback) {
             $this->runTest($listener, $name, $callback);
         }

@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\scrut;
 
+use watoki\scrut\Asserter;
 use watoki\scrut\failures\CaughtExceptionFailure;
 use watoki\scrut\failures\IncompleteTestFailure;
 use watoki\scrut\listeners\ArrayListener;
@@ -27,25 +28,32 @@ class RunDynamicTestSuite extends StaticTestSuite {
 
     public function noSuites() {
         $this->scrutinizer->run();
-        $this->assert($this->listener->count(), 0);
+        $this->assert->equals($this->listener->count(), 0);
     }
 
     public function emptySuite() {
         $this->scrutinizer->add(new DynamicTestSuite("Foo"));
         $this->scrutinizer->run();
-        $this->assert($this->listener->count(), 0);
+
+        $this->assert->equals($this->listener->count(), 1);
+
+        /** @var IncompleteTestResult $testResult */
+        $testResult = $this->listener->getResult(0);
+        $this->assert($testResult instanceof IncompleteTestResult);
+        $this->assert->equals($testResult->failure()->getFailureMessage(), "No tests found in [Foo]");
     }
 
-    public function simpleSuite() {
+    public function emptyTest() {
         $this->scrutinizer->add(new DynamicTestSuite("Foo", [
             'bar' => function () {
             }
         ]));
         $this->scrutinizer->run();
 
-        $this->assert($this->listener->count(), 1);
+        $this->assert->equals($this->listener->count(), 1);
         $this->assert($this->listener->hasStarted("Foo::bar"));
         $this->assert($this->listener->hasFinished("Foo::bar"));
+        $this->assert($this->listener->getResult(0) instanceof IncompleteTestResult);
     }
 
     public function secondListener() {
@@ -57,15 +65,15 @@ class RunDynamicTestSuite extends StaticTestSuite {
         $this->scrutinizer->listen($secondListener);
         $this->scrutinizer->run();
 
-        $this->assert($this->listener->count(), 1);
+        $this->assert->equals($this->listener->count(), 1);
         $this->assert($this->listener->hasStarted("Foo::bar"));
         $this->assert($this->listener->hasFinished("Foo::bar"));
     }
 
     public function passingTest() {
         $this->scrutinizer->add(new DynamicTestSuite("Foo", [
-            'bar' => function () {
-                // Passes
+            'bar' => function (Asserter $assert) {
+                $assert(true);
             }
         ]));
         $this->scrutinizer->run();
@@ -86,7 +94,7 @@ class RunDynamicTestSuite extends StaticTestSuite {
         $result = $this->listener->getResult("Foo::bar");
         $this->assert($result instanceof FailedTestResult);
         $this->assert($result->failure() instanceof CaughtExceptionFailure);
-        $this->assert($result->failure()->getMessage(), "Failed miserably");
+        $this->assert->equals($result->failure()->getMessage(), "Failed miserably");
     }
 
     public function incompleteTest() {
@@ -100,6 +108,6 @@ class RunDynamicTestSuite extends StaticTestSuite {
         /** @var IncompleteTestResult $result */
         $result = $this->listener->getResult("Foo::bar");
         $this->assert($result instanceof IncompleteTestResult);
-        $this->assert($result->failure()->getFailureMessage(), "Not done yet");
+        $this->assert->equals($result->failure()->getFailureMessage(), "Not done yet");
     }
 }

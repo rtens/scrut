@@ -27,18 +27,16 @@ class RunStaticTestSuite extends StaticTestSuite {
         /** @var IncompleteTestResult $result */
         $result = $this->listener->getResult(0);
 
-        $this->assert($this->listener->count(), 1);
+        $this->assert->equals($this->listener->count(), 1);
         $this->assert($result instanceof IncompleteTestResult);
-        $this->assert($result->failure()->getFailureMessage(), 'Empty test suite');
-        $this->assert($result->failure()->getFailureFileAndLine(), __FILE__ . ':45');
+        $this->assert->equals($result->failure()->getFailureMessage(), 'No tests found in [' . RunStaticTestSuite_EmptySuite::class . ']');
+        $this->assert->equals($result->failure()->getFailureFileAndLine(), __FILE__ . ':43');
     }
 
     function runPublicMethods() {
-        $this->markIncomplete();
     }
 
     function filterMethods() {
-        $this->markIncomplete();
     }
 }
 

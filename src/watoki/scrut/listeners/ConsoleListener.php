@@ -42,20 +42,6 @@ class ConsoleListener implements ScrutinizeListener {
             return;
         }
 
-        if ($this->incomplete) {
-            $this->printLine();
-            $this->printLine(count($this->incomplete) . " INCOMPLETE:");
-
-            foreach ($this->incomplete as $name => $failure) {
-                $this->printLine($name . ' [' . $failure->getFailureFileAndLine() . ']');
-
-                $failureMessage = $failure->getFailureMessage();
-                if ($failureMessage) {
-                    $this->printLine('    ' . $failureMessage);
-                }
-            }
-        }
-
         if ($this->failed) {
             $this->printLine();
             $this->printLine(count($this->failed) . " FAILED:");
@@ -66,6 +52,20 @@ class ConsoleListener implements ScrutinizeListener {
                 $failureMessage = $failure->getFailureMessage();
                 if ($failureMessage) {
                     $this->printLine('   ' . $failureMessage);
+                }
+            }
+        }
+
+        if ($this->incomplete) {
+            $this->printLine();
+            $this->printLine(count($this->incomplete) . " INCOMPLETE:");
+
+            foreach ($this->incomplete as $name => $failure) {
+                $this->printLine($name . ' [' . $failure->getFailureFileAndLine() . ']');
+
+                $failureMessage = $failure->getFailureMessage();
+                if ($failureMessage) {
+                    $this->printLine('    ' . $failureMessage);
                 }
             }
         }

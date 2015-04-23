@@ -1,14 +1,17 @@
 <?php
 namespace watoki\scrut\suites;
 
+use watoki\scrut\Asserter;
 use watoki\scrut\failures\EmptyTestSuiteFailure;
 use watoki\scrut\failures\IncompleteTestFailure;
-use watoki\scrut\failures\NotEqualFailure;
 use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\ScrutinizeListener;
 use watoki\scrut\TestSuite;
 
 abstract class StaticTestSuite extends TestSuite {
+
+    /** @var Asserter */
+    protected $assert;
 
     protected function before() {
     }
@@ -30,7 +33,8 @@ abstract class StaticTestSuite extends TestSuite {
         }
 
         foreach ($methods as $methodName) {
-            $this->runTest($listener, $methodName, function () use ($methodName) {
+            $this->runTest($listener, $methodName, function (Asserter $assert) use ($methodName) {
+                $this->assert = $assert;
                 $this->before();
                 $this->$methodName();
                 $this->after();
@@ -38,14 +42,12 @@ abstract class StaticTestSuite extends TestSuite {
         }
     }
 
-    protected function name() {
+    public function name() {
         return get_class($this);
     }
 
-    protected function assert($value, $equals = true, $message = null) {
-        if ($value !== $equals) {
-            throw new NotEqualFailure($value, $equals, $message);
-        }
+    protected function assert($value, $message = null) {
+        $this->assert->isTrue($value, $message);
     }
 
     protected function markIncomplete($message = "") {

@@ -11,7 +11,7 @@ abstract class TestSuite {
 
     abstract public function run(ScrutinizeListener $listener);
 
-    abstract protected function name();
+    abstract public function name();
 
     protected function runTest(ScrutinizeListener $listener, $testName, callable $test) {
         $name = $this->name() . '::' . $testName;
@@ -20,7 +20,11 @@ abstract class TestSuite {
 
         $result = new PassedTestResult();
         try {
-            $test();
+            $asserter = new AsserterProxy(new Asserter());
+            $test($asserter);
+            if (!$asserter->hasCalls()) {
+                throw new IncompleteTestFailure("No assertions made in [$name]");
+            }
         } catch (IncompleteTestFailure $itf) {
             $result = new IncompleteTestResult($itf);
         } catch (Failure $f) {

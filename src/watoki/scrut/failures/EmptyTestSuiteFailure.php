@@ -1,10 +1,9 @@
 <?php
 namespace watoki\scrut\failures;
 
-use watoki\scrut\Failure;
 use watoki\scrut\TestSuite;
 
-class EmptyTestSuiteFailure extends Failure {
+class EmptyTestSuiteFailure extends IncompleteTestFailure {
 
     /** @var TestSuite */
     private $suite;
@@ -15,7 +14,7 @@ class EmptyTestSuiteFailure extends Failure {
     }
 
     public function getFailureMessage() {
-        return "Empty test suite";
+        return "No tests found in [{$this->suite->name()}]";
     }
 
     public function getFailureFileAndLine() {
