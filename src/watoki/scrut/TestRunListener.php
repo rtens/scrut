@@ -3,11 +3,9 @@ namespace watoki\scrut;
 
 interface TestRunListener {
 
-    public function onRunStarted();
+    public function onStarted(Test $test);
 
-    public function onRunFinished();
+    public function onResult(TestResult $result);
 
-    public function onTestStarted($name);
-
-    public function onTestFinished($name, TestResult $result);
+    public function onFinished(Test $test);
 }

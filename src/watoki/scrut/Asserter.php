@@ -1,6 +1,8 @@
 <?php
 namespace watoki\scrut;
 
+use watoki\scrut\assertions\ContainsAssertion;
+use watoki\scrut\assertions\CountAssertion;
 use watoki\scrut\assertions\IsEqualAssertion;
 use watoki\scrut\assertions\IsInstanceOfAssertion;
 use watoki\scrut\assertions\IsTrueAssertion;
@@ -28,5 +30,13 @@ class Asserter {
 
     public function isInstanceOf($object, $class, $message = "") {
         $this->assert(new IsInstanceOfAssertion($object, $class), $message);
+    }
+
+    public function count($countable, $count, $message = "") {
+        $this->assert(new CountAssertion($countable, $count), $message);
+    }
+
+    public function contains($haystack, $needle, $message = "") {
+        $this->assert(new ContainsAssertion($haystack, $needle), $message);
     }
 }

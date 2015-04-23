@@ -1,6 +1,6 @@
 <?php
 namespace watoki\scrut;
 
-abstract class TestResult {
+interface TestResult {
 
 }

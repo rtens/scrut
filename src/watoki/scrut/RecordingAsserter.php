@@ -1,7 +1,7 @@
 <?php
 namespace watoki\scrut;
 
-class AsserterProxy extends Asserter {
+class RecordingAsserter extends Asserter {
 
     /**
      * @var array|Assertion[]
@@ -17,7 +17,7 @@ class AsserterProxy extends Asserter {
         $this->assertions[] = $assertion;
     }
 
-    public function hasAssertions() {
+    public function hasMadeAssertions() {
         return !empty($this->assertions);
     }
 }

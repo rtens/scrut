@@ -7,16 +7,17 @@ class Failure extends \RuntimeException {
         parent::__construct($message);
     }
 
-    public function getFailureFileAndLine() {
-        foreach ($this->getTrace() as $step) {
-            if (strpos($step['file'], 'src\\watoki\\scrut') === false) {
-                return $step['file'] . ':' . $step['line'];
-            }
-        }
-        return 'unknown source';
+    /**
+     * @return string
+     */
+    public function getFailureMessage() {
+        return "";
     }
 
-    public function getFailureMessage() {
-        return $this->getMessage();
+    /**
+     * @return string Containing file and line number
+     */
+    public function getLocation() {
+        return 'unknown location';
     }
 }

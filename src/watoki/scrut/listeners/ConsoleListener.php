@@ -1,77 +1,77 @@
 <?php
 namespace watoki\scrut\listeners;
 
-use watoki\scrut\Failure;
-use watoki\scrut\failures\IncompleteTestFailure;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\IncompleteTestResult;
-use watoki\scrut\TestRunListener;
+use watoki\scrut\results\PassedTestResult;
+use watoki\scrut\Test;
 use watoki\scrut\TestResult;
+use watoki\scrut\TestRunListener;
 
 class ConsoleListener implements TestRunListener {
 
-    /** @var Failure[] $failed */
-    private $failed = [];
+    /** @var array|Test[] */
+    private $running = [];
 
-    /** @var array|IncompleteTestFailure[] */
-    private $incomplete = [];
+    /** @var array|array[]|TestResult[][] */
+    private $results = [];
 
-    public function onRunStarted() {
+    public function onStarted(Test $test) {
+        $this->running[] = $test;
     }
 
-    public function onTestStarted($name) {
-    }
+    public function onFinished(Test $test) {
+        array_pop($this->running);
 
-    public function onTestFinished($name, TestResult $result) {
-        if ($result instanceof IncompleteTestResult) {
-            $this->incomplete[$name] = $result->failure();
-            $this->output('I');
-        } else if ($result instanceof FailedTestResult) {
-            $this->failed[$name] = $result->failure();
-            $this->output("F");
-        } else {
-            $this->output(".");
-        }
-    }
-
-    public function onRunFinished() {
-        $this->printLine();
-
-        if (!$this->failed && !$this->incomplete) {
-            $this->printLine("All passed =)");
+        if ($this->running) {
             return;
         }
 
-        if ($this->failed) {
-            $this->printLine();
-            $this->printLine(count($this->failed) . " FAILED:");
+        $this->printLine();
 
-            foreach ($this->failed as $name => $failure) {
-                $this->printLine($name . ' [' . $failure->getFailureFileAndLine() . ']');
+        $counts = [];
+        foreach ($this->results as $type => $results) {
+            $name = substr($type, 21, -10);
+            $counts[] = count($results) . ' ' . $name;
 
-                $failureMessage = $failure->getFailureMessage();
-                if ($failureMessage) {
-                    $this->printLine('   ' . $failureMessage);
-                }
+            if ($type == PassedTestResult::class) {
+                continue;
             }
-        }
 
-        if ($this->incomplete) {
             $this->printLine();
-            $this->printLine(count($this->incomplete) . " INCOMPLETE:");
+            $this->printLine('---- ' . $name . ' ----');
 
-            foreach ($this->incomplete as $name => $failure) {
-                $this->printLine($name . ' [' . $failure->getFailureFileAndLine() . ']');
-
-                $failureMessage = $failure->getFailureMessage();
-                if ($failureMessage) {
-                    $this->printLine('    ' . $failureMessage);
+            foreach ($results as $name => $result) {
+                if ($result instanceof FailedTestResult) {
+                    $this->printLine($name . ' [' . $result->failure()->getLocation() . ']');
+                    $this->printNotEmptyLine('    ' . $result->failure()->getFailureMessage());
+                    $this->printNotEmptyLine('    ' . $result->failure()->getMessage());
+                } else {
+                    $this->printLine($name);
                 }
             }
         }
 
         $this->printLine();
-        $this->printLine(count($this->incomplete) . ' incomplete and ' . count($this->failed) . ' failed =(');
+        $this->printLine(implode(', ', $counts));
+    }
+
+    public function onResult(TestResult $result) {
+        $fullName = implode(array_map(function (Test $test) {
+            return $test->getName();
+        }, $this->running), '::');
+
+        $this->results[get_class($result)][$fullName] = $result;
+
+        if ($result instanceof IncompleteTestResult) {
+            $this->output('I');
+        } else if ($result instanceof FailedTestResult) {
+            $this->output('F');
+        } else if ($result instanceof PassedTestResult) {
+            $this->output('.');
+        } else {
+            $this->output('?');
+        }
     }
 
     protected function printLine($text = "") {
@@ -80,5 +80,12 @@ class ConsoleListener implements TestRunListener {
 
     protected function output($text = "") {
         echo $text;
+    }
+
+    private function printNotEmptyLine($string) {
+        if (!trim($string)) {
+            return;
+        }
+        $this->printLine($string);
     }
 }

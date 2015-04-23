@@ -1,62 +1,30 @@
 <?php
 namespace watoki\scrut\listeners;
 
-use watoki\scrut\TestRunListener;
+use watoki\scrut\Test;
 use watoki\scrut\TestResult;
+use watoki\scrut\TestRunListener;
 
 class ArrayListener implements TestRunListener {
 
-    /** @var array|string[] Names of started tests */
-    private $started = [];
+    /** @var array|Test[] */
+    public $started = [];
 
-    /** @var array|TestResult[] Results indexed by name */
-    private $results = [];
+    /** @var array|Test[] */
+    public $finished = [];
 
-    public function onRunStarted() {
+    /** @var array|TestResult[] */
+    public $results = [];
+
+    public function onStarted(Test $test) {
+        $this->started[] = $test;
     }
 
-    public function onRunFinished() {
+    public function onFinished(Test $test) {
+        $this->finished[] = $test;
     }
 
-    public function onTestStarted($name) {
-        $this->started[] = $name;
-    }
-
-    public function onTestFinished($name, TestResult $result) {
-        $this->results[$name] = $result;
-    }
-
-    /**
-     * @param int|string $indexOrName
-     * @return TestResult
-     */
-    public function getResult($indexOrName) {
-        if (is_numeric($indexOrName)) {
-            $indexOrName = array_keys($this->results)[$indexOrName];
-        }
-        return $this->results[$indexOrName];
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function hasStarted($name) {
-        return in_array($name, $this->started);
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     */
-    public function hasFinished($name) {
-        return array_key_exists($name, $this->results);
-    }
-
-    /**
-     * @return int Number of finished tests
-     */
-    public function count() {
-        return count($this->results);
+    public function onResult(TestResult $result) {
+        $this->results[] = $result;
     }
 }

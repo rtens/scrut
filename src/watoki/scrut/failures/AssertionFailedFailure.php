@@ -17,8 +17,12 @@ class AssertionFailedFailure extends Failure {
     /**
      * @return Assertion
      */
-    public function assertion() {
+    public function getAssertion() {
         return $this->assertion;
+    }
+
+    public function getFailureMessage() {
+        return $this->assertion->describeFailure();
     }
 
 }

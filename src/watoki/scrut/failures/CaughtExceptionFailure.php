@@ -14,11 +14,7 @@ class CaughtExceptionFailure extends Failure {
     }
 
     public function getFailureMessage() {
-        return "Caught [" . get_class($this->exception) . "]: " . $this->exception->getMessage();
-    }
-
-    public function getFailureFileAndLine() {
-        return $this->exception->getFile() . ':' . $this->exception->getLine();
+        return "Caught [" . get_class($this->exception) . "] thrown at [{$this->exception->getFile()}({$this->exception->getLine()})]";
     }
 
     /**

@@ -4,7 +4,7 @@ namespace watoki\scrut\results;
 use watoki\scrut\Failure;
 use watoki\scrut\TestResult;
 
-class FailedTestResult extends TestResult {
+class FailedTestResult implements TestResult {
 
     private $failure;
 
