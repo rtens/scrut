@@ -1,18 +1,15 @@
 <?php
 namespace spec\watoki\scrut;
 
-require_once __DIR__ . '/../../../bootstrap.php';
-
 use watoki\scrut\failures\CaughtExceptionFailure;
 use watoki\scrut\listeners\ArrayListener;
-use watoki\scrut\listeners\ConsoleListener;
 use watoki\scrut\suites\DynamicTestSuite;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\Scrutinizer;
 use watoki\scrut\suites\StaticTestSuite;
 
-class RunTestSuites extends StaticTestSuite {
+class RunDynamicTestSuite extends StaticTestSuite {
 
     /** @var ArrayListener */
     private $listener;
@@ -90,8 +87,3 @@ class RunTestSuites extends StaticTestSuite {
         $this->assert($result->failure()->getMessage(), "Failed miserably");
     }
 }
-
-$s = new Scrutinizer();
-$s->listen(new ConsoleListener());
-$s->add(new RunTestSuites());
-$s->run();
