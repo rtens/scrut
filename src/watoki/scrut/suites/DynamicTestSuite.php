@@ -21,7 +21,7 @@ class DynamicTestSuite extends TestSuite {
         $this->tests = $tests;
     }
 
-    public function name() {
+    protected function name() {
         return $this->name;
     }
 

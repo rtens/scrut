@@ -12,11 +12,17 @@ class ArrayListener implements ScrutinizeListener {
     /** @var array|TestResult[] Results indexed by name */
     private $results = [];
 
-    public function started($name) {
+    public function onRunStarted() {
+    }
+
+    public function onRunFinished() {
+    }
+
+    public function onTestStarted($name) {
         $this->started[] = $name;
     }
 
-    public function finished($name, TestResult $result) {
+    public function onTestFinished($name, TestResult $result) {
         $this->results[$name] = $result;
     }
 

@@ -13,15 +13,27 @@ class MultiListener implements ScrutinizeListener {
         $this->listeners[] = $listener;
     }
 
-    public function started($name) {
+    public function onTestStarted($name) {
         foreach ($this->listeners as $listener) {
-            $listener->started($name);
+            $listener->onTestStarted($name);
         }
     }
 
-    public function finished($name, TestResult $result) {
+    public function onTestFinished($name, TestResult $result) {
         foreach ($this->listeners as $listener) {
-            $listener->finished($name, $result);
+            $listener->onTestFinished($name, $result);
+        }
+    }
+
+    public function onRunStarted() {
+        foreach ($this->listeners as $listener) {
+            $listener->onRunStarted();
+        }
+    }
+
+    public function onRunFinished() {
+        foreach ($this->listeners as $listener) {
+            $listener->onRunFinished();
         }
     }
 }

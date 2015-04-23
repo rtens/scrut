@@ -3,7 +3,11 @@ namespace watoki\scrut;
 
 interface ScrutinizeListener {
 
-    public function started($name);
+    public function onRunStarted();
 
-    public function finished($name, TestResult $result);
+    public function onRunFinished();
+
+    public function onTestStarted($name);
+
+    public function onTestFinished($name, TestResult $result);
 }

@@ -1,18 +1,19 @@
 <?php
 namespace watoki\scrut\results;
 
+use watoki\scrut\Failure;
 use watoki\scrut\TestResult;
 
 class FailedTestResult extends TestResult {
 
-    private $exception;
+    private $failure;
 
-    function __construct(\Exception $exception) {
-        $this->exception = $exception;
+    function __construct(Failure $failure) {
+        $this->failure = $failure;
     }
 
-    public function exception() {
-        return $this->exception;
+    public function failure() {
+        return $this->failure;
     }
 
 }

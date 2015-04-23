@@ -20,9 +20,13 @@ class Scrutinizer {
     }
 
     public function run() {
+        $this->listener->onRunStarted();
+
         foreach ($this->suites as $suite) {
             $suite->run($this->listener);
         }
+
+        $this->listener->onRunFinished();
     }
 
     public function listen(ScrutinizeListener $listener) {
