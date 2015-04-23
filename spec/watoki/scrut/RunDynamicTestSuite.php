@@ -2,7 +2,9 @@
 namespace spec\watoki\scrut;
 
 use watoki\scrut\failures\CaughtExceptionFailure;
+use watoki\scrut\failures\IncompleteTestFailure;
 use watoki\scrut\listeners\ArrayListener;
+use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\suites\DynamicTestSuite;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\PassedTestResult;
@@ -19,7 +21,7 @@ class RunDynamicTestSuite extends StaticTestSuite {
 
     protected function before() {
         $this->listener = new ArrayListener();
-        $this->scrutinizer = new Scrutinizer($this->listener);
+        $this->scrutinizer = new Scrutinizer();
         $this->scrutinizer->listen($this->listener);
     }
 
@@ -85,5 +87,19 @@ class RunDynamicTestSuite extends StaticTestSuite {
         $this->assert($result instanceof FailedTestResult);
         $this->assert($result->failure() instanceof CaughtExceptionFailure);
         $this->assert($result->failure()->getMessage(), "Failed miserably");
+    }
+
+    public function incompleteTest() {
+        $this->scrutinizer->add(new DynamicTestSuite("Foo", [
+            'bar' => function () {
+                throw new IncompleteTestFailure('Not done yet');
+            }
+        ]));
+        $this->scrutinizer->run();
+
+        /** @var IncompleteTestResult $result */
+        $result = $this->listener->getResult("Foo::bar");
+        $this->assert($result instanceof IncompleteTestResult);
+        $this->assert($result->failure()->getFailureMessage(), "Not done yet");
     }
 }

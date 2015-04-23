@@ -15,8 +15,8 @@ class NotEqualFailure extends Failure {
     }
 
     public function getFailureMessage() {
-        return 'Got ' . var_export($this->value, true)
-        . ' but expected ' . var_export($this->expected, true)
+        return 'Got [' . var_export($this->value, true) . ']'
+        . ' but expected [' . var_export($this->expected, true) . ']'
         . (parent::getFailureMessage() ? (' (' . parent::getFailureMessage() . ')') : '');
     }
 }

@@ -17,6 +17,7 @@ class Scrutinizer {
 
     public function add(TestSuite $suite) {
         $this->suites[] = $suite;
+        return $this;
     }
 
     public function run() {
@@ -31,5 +32,6 @@ class Scrutinizer {
 
     public function listen(ScrutinizeListener $listener) {
         $this->listener->add($listener);
+        return $this;
     }
 }

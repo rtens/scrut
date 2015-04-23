@@ -2,7 +2,9 @@
 namespace watoki\scrut;
 
 use watoki\scrut\failures\CaughtExceptionFailure;
+use watoki\scrut\failures\IncompleteTestFailure;
 use watoki\scrut\results\FailedTestResult;
+use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\results\PassedTestResult;
 
 abstract class TestSuite {
@@ -16,20 +18,15 @@ abstract class TestSuite {
 
         $listener->onTestStarted($name);
 
-        $caught = null;
+        $result = new PassedTestResult();
         try {
             $test();
+        } catch (IncompleteTestFailure $itf) {
+            $result = new IncompleteTestResult($itf);
+        } catch (Failure $f) {
+            $result = new FailedTestResult($f);
         } catch (\Exception $e) {
-            $caught = $e;
-        }
-
-        if ($caught) {
-            if (!($caught instanceof Failure)) {
-                $caught = new CaughtExceptionFailure($caught);
-            }
-            $result = new FailedTestResult($caught);
-        } else {
-            $result = new PassedTestResult();
+            $result = new FailedTestResult(new CaughtExceptionFailure($e));
         }
 
         $listener->onTestFinished($name, $result);

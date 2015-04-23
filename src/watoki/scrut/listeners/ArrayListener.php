@@ -32,7 +32,7 @@ class ArrayListener implements ScrutinizeListener {
      */
     public function getResult($indexOrName) {
         if (is_numeric($indexOrName)) {
-            $indexOrName = $this->started[$indexOrName];
+            $indexOrName = array_keys($this->results)[$indexOrName];
         }
         return $this->results[$indexOrName];
     }
