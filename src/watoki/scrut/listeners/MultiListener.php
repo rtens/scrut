@@ -1,15 +1,15 @@
 <?php
 namespace watoki\scrut\listeners;
 
-use watoki\scrut\ScrutinizeListener;
+use watoki\scrut\TestRunListener;
 use watoki\scrut\TestResult;
 
-class MultiListener implements ScrutinizeListener {
+class MultiListener implements TestRunListener {
 
-    /** @var array|ScrutinizeListener[] */
+    /** @var array|TestRunListener[] */
     private $listeners = [];
 
-    public function add(ScrutinizeListener $listener) {
+    public function add(TestRunListener $listener) {
         $this->listeners[] = $listener;
     }
 

@@ -5,7 +5,7 @@ use watoki\scrut\Asserter;
 use watoki\scrut\failures\EmptyTestSuiteFailure;
 use watoki\scrut\failures\IncompleteTestFailure;
 use watoki\scrut\results\IncompleteTestResult;
-use watoki\scrut\ScrutinizeListener;
+use watoki\scrut\TestRunListener;
 use watoki\scrut\TestSuite;
 
 abstract class StaticTestSuite extends TestSuite {
@@ -19,7 +19,7 @@ abstract class StaticTestSuite extends TestSuite {
     protected function after() {
     }
 
-    public function run(ScrutinizeListener $listener) {
+    public function run(TestRunListener $listener) {
         $class = new \ReflectionClass($this);
         $methods = [];
         foreach ($class->getMethods() as $method) {

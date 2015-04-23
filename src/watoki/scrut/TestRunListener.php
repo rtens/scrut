@@ -1,7 +1,7 @@
 <?php
 namespace watoki\scrut;
 
-interface ScrutinizeListener {
+interface TestRunListener {
 
     public function onRunStarted();
 

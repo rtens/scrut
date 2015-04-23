@@ -5,10 +5,10 @@ use watoki\scrut\Failure;
 use watoki\scrut\failures\IncompleteTestFailure;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\IncompleteTestResult;
-use watoki\scrut\ScrutinizeListener;
+use watoki\scrut\TestRunListener;
 use watoki\scrut\TestResult;
 
-class ConsoleListener implements ScrutinizeListener {
+class ConsoleListener implements TestRunListener {
 
     /** @var Failure[] $failed */
     private $failed = [];

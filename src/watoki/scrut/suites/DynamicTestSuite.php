@@ -3,7 +3,7 @@ namespace watoki\scrut\suites;
 
 use watoki\scrut\failures\EmptyTestSuiteFailure;
 use watoki\scrut\results\IncompleteTestResult;
-use watoki\scrut\ScrutinizeListener;
+use watoki\scrut\TestRunListener;
 use watoki\scrut\TestSuite;
 
 class DynamicTestSuite extends TestSuite {
@@ -27,7 +27,7 @@ class DynamicTestSuite extends TestSuite {
         return $this->name;
     }
 
-    public function run(ScrutinizeListener $listener) {
+    public function run(TestRunListener $listener) {
         if (!$this->tests) {
             $listener->onTestFinished($this->name(), new IncompleteTestResult(new EmptyTestSuiteFailure($this)));
         }

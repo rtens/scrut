@@ -1,10 +1,10 @@
 <?php
 namespace watoki\scrut\listeners;
 
-use watoki\scrut\ScrutinizeListener;
+use watoki\scrut\TestRunListener;
 use watoki\scrut\TestResult;
 
-class CallbackListener implements ScrutinizeListener {
+class CallbackListener implements TestRunListener {
 
     private $testStartedCallbacks = [];
     private $testFinishedCallbacks = [];

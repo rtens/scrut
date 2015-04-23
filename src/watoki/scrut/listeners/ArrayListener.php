@@ -1,10 +1,10 @@
 <?php
 namespace watoki\scrut\listeners;
 
-use watoki\scrut\ScrutinizeListener;
+use watoki\scrut\TestRunListener;
 use watoki\scrut\TestResult;
 
-class ArrayListener implements ScrutinizeListener {
+class ArrayListener implements TestRunListener {
 
     /** @var array|string[] Names of started tests */
     private $started = [];

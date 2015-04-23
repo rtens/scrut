@@ -30,7 +30,7 @@ class Scrutinizer {
         $this->listener->onRunFinished();
     }
 
-    public function listen(ScrutinizeListener $listener) {
+    public function listen(TestRunListener $listener) {
         $this->listener->add($listener);
         return $this;
     }
