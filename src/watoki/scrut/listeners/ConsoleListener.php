@@ -69,6 +69,9 @@ class ConsoleListener implements ScrutinizeListener {
                 }
             }
         }
+
+        $this->printLine();
+        $this->printLine(count($this->incomplete) . ' incomplete and ' . count($this->failed) . ' failed =(');
     }
 
     protected function printLine($text = "") {

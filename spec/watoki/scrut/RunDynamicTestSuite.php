@@ -11,6 +11,7 @@ use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\Scrutinizer;
 use watoki\scrut\suites\StaticTestSuite;
+use watoki\scrut\TestResult;
 
 class RunDynamicTestSuite extends StaticTestSuite {
 
@@ -39,7 +40,7 @@ class RunDynamicTestSuite extends StaticTestSuite {
 
         /** @var IncompleteTestResult $testResult */
         $testResult = $this->listener->getResult(0);
-        $this->assert($testResult instanceof IncompleteTestResult);
+        $this->assert->isInstanceOf($testResult, IncompleteTestResult::class);
         $this->assert->equals($testResult->failure()->getFailureMessage(), "No tests found in [Foo]");
     }
 
@@ -53,7 +54,7 @@ class RunDynamicTestSuite extends StaticTestSuite {
         $this->assert->equals($this->listener->count(), 1);
         $this->assert($this->listener->hasStarted("Foo::bar"));
         $this->assert($this->listener->hasFinished("Foo::bar"));
-        $this->assert($this->listener->getResult(0) instanceof IncompleteTestResult);
+        $this->assert->isInstanceOf($this->listener->getResult(0), TestResult::class);
     }
 
     public function secondListener() {
@@ -78,8 +79,8 @@ class RunDynamicTestSuite extends StaticTestSuite {
         ]));
         $this->scrutinizer->run();
 
-        $this->assert($this->listener->getResult(0) instanceof PassedTestResult);
-        $this->assert($this->listener->getResult("Foo::bar") instanceof PassedTestResult);
+        $this->assert->isInstanceOf($this->listener->getResult(0), PassedTestResult::class);
+        $this->assert->isInstanceOf($this->listener->getResult("Foo::bar"), PassedTestResult::class);
     }
 
     public function failingTest() {
@@ -92,8 +93,8 @@ class RunDynamicTestSuite extends StaticTestSuite {
 
         /** @var FailedTestResult $result */
         $result = $this->listener->getResult("Foo::bar");
-        $this->assert($result instanceof FailedTestResult);
-        $this->assert($result->failure() instanceof CaughtExceptionFailure);
+        $this->assert->isInstanceOf($result, FailedTestResult::class);
+        $this->assert->isInstanceOf($result->failure(), CaughtExceptionFailure::class);
         $this->assert->equals($result->failure()->getMessage(), "Failed miserably");
     }
 
@@ -107,7 +108,7 @@ class RunDynamicTestSuite extends StaticTestSuite {
 
         /** @var IncompleteTestResult $result */
         $result = $this->listener->getResult("Foo::bar");
-        $this->assert($result instanceof IncompleteTestResult);
+        $this->assert->isInstanceOf($result, IncompleteTestResult::class);
         $this->assert->equals($result->failure()->getFailureMessage(), "Not done yet");
     }
 }

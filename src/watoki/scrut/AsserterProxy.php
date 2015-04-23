@@ -3,23 +3,21 @@ namespace watoki\scrut;
 
 class AsserterProxy extends Asserter {
 
-    private $hasCalls = false;
+    /**
+     * @var array|Assertion[]
+     */
+    private $assertions = [];
 
-    public function isTrue($value, $message = "") {
-        $this->addCall();
-        parent::isTrue($value, $message);
+    public function assert(Assertion $assertion, $message = "") {
+        $this->add($assertion);
+        parent::assert($assertion, $message);
     }
 
-    public function equals($value, $expected, $message = "") {
-        $this->addCall();
-        parent::equals($value, $expected, $message);
+    private function add(Assertion $assertion) {
+        $this->assertions[] = $assertion;
     }
 
-    public function hasCalls() {
-        return $this->hasCalls;
-    }
-
-    private function addCall() {
-        $this->hasCalls = true;
+    public function hasAssertions() {
+        return !empty($this->assertions);
     }
 }

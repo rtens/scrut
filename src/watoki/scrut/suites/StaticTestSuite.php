@@ -35,6 +35,7 @@ abstract class StaticTestSuite extends TestSuite {
         foreach ($methods as $methodName) {
             $this->runTest($listener, $methodName, function (Asserter $assert) use ($methodName) {
                 $this->assert = $assert;
+
                 $this->before();
                 $this->$methodName();
                 $this->after();
@@ -47,7 +48,7 @@ abstract class StaticTestSuite extends TestSuite {
     }
 
     protected function assert($value, $message = null) {
-        $this->assert->isTrue($value, $message);
+        $this->assert->__invoke($value, $message);
     }
 
     protected function markIncomplete($message = "") {

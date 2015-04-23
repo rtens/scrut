@@ -3,6 +3,7 @@ namespace watoki\scrut;
 
 use watoki\scrut\failures\CaughtExceptionFailure;
 use watoki\scrut\failures\IncompleteTestFailure;
+use watoki\scrut\failures\NoAssertionsFailure;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\results\PassedTestResult;
@@ -21,9 +22,11 @@ abstract class TestSuite {
         $result = new PassedTestResult();
         try {
             $asserter = new AsserterProxy(new Asserter());
+
             $test($asserter);
-            if (!$asserter->hasCalls()) {
-                throw new IncompleteTestFailure("No assertions made in [$name]");
+
+            if (!$asserter->hasAssertions()) {
+                throw new NoAssertionsFailure($this, $name);
             }
         } catch (IncompleteTestFailure $itf) {
             $result = new IncompleteTestResult($itf);
