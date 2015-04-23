@@ -50,9 +50,23 @@ class RunStaticTestSuite extends StaticTestSuite {
     }
 
     function filterMethods() {
+        $suite = new RunStaticTestSuite_Foo();
+        $currentFilter = $suite->getMethodFilter();
+        $suite->setMethodFilter(function (\ReflectionMethod $method) use ($currentFilter) {
+            return strpos($method->getDocComment(), '@test') && $currentFilter($method);
+        });
+        $suite->run($this->listener);
+
+        $this->assert->count($this->listener->started, 2);
+        $this->assert->equals($this->listener->started[1]->getName(), "bar");
     }
 
     function runTestsInNewInstances() {
+        $suite = new RunStaticTestSuite_Foo();
+        RunStaticTestSuite_Foo::$constructed = 0;
+        $suite->run($this->listener);
+
+        $this->assert->equals(RunStaticTestSuite_Foo::$constructed, 2);
     }
 }
 
@@ -62,10 +76,24 @@ class RunStaticTestSuite_Empty extends StaticTestSuite {
 
 class RunStaticTestSuite_Foo extends StaticTestSuite {
 
+    public static $constructed = 0;
+
+    function __construct() {
+        parent::__construct();
+        self::$constructed++;
+    }
+
+    function __toString() {
+        return "";
+    }
+
     public function foo() {
         $this->assert(true);
     }
 
+    /**
+     * @test
+     */
     public function bar() {
         $this->markIncomplete("Not good");
     }

@@ -15,6 +15,8 @@ abstract class StaticTestSuite extends TestSuite {
     function __construct() {
         $this->methodFilter = function (\ReflectionMethod $method) {
             return $method->getDeclaringClass()->getName() == get_class($this)
+                && substr($method->getName(), 0, 1) != '_'
+                && !$method->isConstructor()
                 && $method->isPublic()
                 && !$method->isStatic();
         };
@@ -70,31 +72,4 @@ abstract class StaticTestSuite extends TestSuite {
         throw new IncompleteTestFailure($message);
     }
 
-
-//    public function run(TestRunListener $listener) {
-//        $class = new \ReflectionClass($this);
-//        $methods = [];
-//        foreach ($class->getMethods() as $method) {
-//            if ($method->getDeclaringClass() == $class && $method->isPublic() && !$method->isStatic()) {
-//                $methods[] = $method->getName();
-//            }
-//        }
-//
-//        if (!$methods) {
-//            $listener->onFinished($this->getName(), new IncompleteTestResult(new EmptyTestSuiteFailure($this)));
-//        }
-//
-//        foreach ($methods as $methodName) {
-//            $this->runTest($listener, $methodName, function (Asserter $assert) use ($methodName) {
-//                $this->assert = $assert;
-//
-//                $this->before();
-//                $this->$methodName();
-//                $this->after();
-//            });
-//        }
-//    }
-//
-//
-//
 }
