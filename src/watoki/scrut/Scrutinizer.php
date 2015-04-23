@@ -1,6 +1,8 @@
 <?php
 namespace watoki\scrut;
 
+use watoki\scrut\listeners\MultiListener;
+
 class Scrutinizer {
 
     /** @var MultiListener */

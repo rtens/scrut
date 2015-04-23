@@ -1,5 +1,7 @@
 <?php
-namespace watoki\scrut;
+namespace watoki\scrut\results;
+
+use watoki\scrut\TestResult;
 
 class FailedTestResult extends TestResult {
 

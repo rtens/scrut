@@ -1,5 +1,8 @@
 <?php
-namespace watoki\scrut;
+namespace watoki\scrut\listeners;
+
+use watoki\scrut\ScrutinizeListener;
+use watoki\scrut\TestResult;
 
 class MultiListener implements ScrutinizeListener {
 

@@ -1,6 +1,9 @@
 <?php
 namespace watoki\scrut;
 
+use watoki\scrut\results\FailedTestResult;
+use watoki\scrut\results\PassedTestResult;
+
 abstract class TestSuite {
 
     abstract public function run(ScrutinizeListener $listener);
