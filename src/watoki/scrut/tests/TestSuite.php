@@ -8,6 +8,9 @@ use watoki\scrut\TestRunListener;
 
 abstract class TestSuite implements Test {
 
+    /**
+     * @param TestRunListener $listener
+     */
     public function run(TestRunListener $listener) {
         $listener->onStarted($this);
 
@@ -27,31 +30,4 @@ abstract class TestSuite implements Test {
      * @return Test[]
      */
     abstract protected function getTests();
-
-//    abstract public function name();
-//
-//    protected function runTest(TestRunListener $listener, $testName, callable $test) {
-//        $name = $this->name() . '::' . $testName;
-//
-//        $listener->onTestStarted($name);
-//
-//        $result = new PassedTestResult();
-//        try {
-//            $asserter = new AsserterProxy(new Asserter());
-//
-//            $test($asserter);
-//
-//            if (!$asserter->hasAssertions()) {
-//                throw new NoAssertionsFailure($this, $name);
-//            }
-//        } catch (IncompleteTestFailure $itf) {
-//            $result = new IncompleteTestResult($itf);
-//        } catch (Failure $f) {
-//            $result = new FailedTestResult($f);
-//        } catch (\Exception $e) {
-//            $result = new FailedTestResult(new CaughtExceptionFailure($e));
-//        }
-//
-//        $listener->onTestFinished($name, $result);
-//    }
 }

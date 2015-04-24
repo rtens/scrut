@@ -18,7 +18,7 @@ class Failure extends \RuntimeException {
     }
 
     /**
-     * @param TestSuite $suite
+     * @param TestSuite $suite The suite of the test that caused the Failure
      * @return string Containing file and line number
      */
     public function getLocation(TestSuite $suite) {
