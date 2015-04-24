@@ -29,7 +29,7 @@ class RunDynamicTestSuite extends StaticTestSuite {
     function emptySuite() {
         $this->suite->run($this->listener);
 
-        $this->assert->count($this->listener->results, 1);
+        $this->assert->size($this->listener->results, 1);
 
         /** @var IncompleteTestResult $testResult */
         $testResult = $this->listener->results[0];
@@ -42,11 +42,11 @@ class RunDynamicTestSuite extends StaticTestSuite {
         }));
         $this->suite->run($this->listener);
 
-        $this->assert->count($this->listener->started, 2);
+        $this->assert->size($this->listener->started, 2);
         $this->assert->equals($this->listener->started[0]->getName(), "Foo");
         $this->assert->equals($this->listener->started[1]->getName(), "bar");
 
-        $this->assert->count($this->listener->results, 1);
+        $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
     }
 
@@ -56,7 +56,7 @@ class RunDynamicTestSuite extends StaticTestSuite {
         });
         $this->suite->run($this->listener);
 
-        $this->assert->count($this->listener->results, 1);
+        $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
@@ -66,7 +66,7 @@ class RunDynamicTestSuite extends StaticTestSuite {
         });
         $this->suite->run($this->listener);
 
-        $this->assert->count($this->listener->results, 1);
+        $this->assert->size($this->listener->results, 1);
         /** @var FailedTestResult $result */
         $result = $this->listener->results[0];
         $this->assert->isInstanceOf($result, FailedTestResult::class);
@@ -79,7 +79,7 @@ class RunDynamicTestSuite extends StaticTestSuite {
         });
         $this->suite->run($this->listener);
 
-        $this->assert->count($this->listener->results, 1);
+        $this->assert->size($this->listener->results, 1);
         /** @var FailedTestResult $result */
         $result = $this->listener->results[0];
         $this->assert->isInstanceOf($result, FailedTestResult::class);
@@ -94,7 +94,7 @@ class RunDynamicTestSuite extends StaticTestSuite {
         });
         $this->suite->run($this->listener);
 
-        $this->assert->count($this->listener->results, 1);
+        $this->assert->size($this->listener->results, 1);
         /** @var IncompleteTestResult $result */
         $result = $this->listener->results[0];
         $this->assert->isInstanceOf($result, IncompleteTestResult::class);

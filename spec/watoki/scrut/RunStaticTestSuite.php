@@ -20,7 +20,7 @@ class RunStaticTestSuite extends StaticTestSuite {
         $suite = new RunStaticTestSuite_Empty();
         $suite->run($this->listener);
 
-        $this->assert->count($this->listener->results, 1);
+        $this->assert->size($this->listener->results, 1);
         /** @var IncompleteTestResult $result */
         $result = $this->listener->results[0];
         $this->assert->isInstanceOf($result, IncompleteTestResult::class);
@@ -31,12 +31,12 @@ class RunStaticTestSuite extends StaticTestSuite {
         $suite = new RunStaticTestSuite_Foo();
         $suite->run($this->listener);
 
-        $this->assert->count($this->listener->started, 3);
+        $this->assert->size($this->listener->started, 3);
         $this->assert->equals($this->listener->started[0]->getName(), RunStaticTestSuite_Foo::class);
         $this->assert->equals($this->listener->started[1]->getName(), "foo");
         $this->assert->equals($this->listener->started[2]->getName(), "bar");
 
-        $this->assert->count($this->listener->results, 2);
+        $this->assert->size($this->listener->results, 2);
         $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
         $this->assert->isInstanceOf($this->listener->results[1], IncompleteTestResult::class);
     }
@@ -45,7 +45,7 @@ class RunStaticTestSuite extends StaticTestSuite {
         $suite = new RunStaticTestSuite_Bar();
         $suite->run($this->listener);
 
-        $this->assert->count($this->listener->results, 1);
+        $this->assert->size($this->listener->results, 1);
         $this->assert->equals($this->listener->started[1]->getName(), "foo");
     }
 
@@ -56,7 +56,7 @@ class RunStaticTestSuite extends StaticTestSuite {
         });
         $suite->run($this->listener);
 
-        $this->assert->count($this->listener->started, 2);
+        $this->assert->size($this->listener->started, 2);
         $this->assert->equals($this->listener->started[1]->getName(), "bar");
     }
 

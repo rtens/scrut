@@ -2,6 +2,7 @@
 namespace watoki\scrut\tests;
 
 use watoki\scrut\Asserter;
+use watoki\scrut\Failure;
 use watoki\scrut\failures\IncompleteTestFailure;
 
 abstract class StaticTestSuite extends TestSuite {
@@ -63,6 +64,10 @@ abstract class StaticTestSuite extends TestSuite {
         $this->before();
         $this->$method();
         $this->after();
+    }
+
+    protected function fail($message = "") {
+        throw new Failure($message);
     }
 
     protected function assert($condition, $equals = true) {

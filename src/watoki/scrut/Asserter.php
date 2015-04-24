@@ -36,8 +36,8 @@ class Asserter {
         $this->assert(new IsInstanceOfAssertion($object, $class), $message);
     }
 
-    public function count($countable, $count, $message = "") {
-        $this->assert(new SizeAssertion($countable, $count), $message);
+    public function size($countable, $size, $message = "") {
+        $this->assert(new SizeAssertion($countable, $size), $message);
     }
 
     public function contains($haystack, $needle, $message = "") {
