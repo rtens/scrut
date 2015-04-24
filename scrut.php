@@ -1,16 +1,12 @@
 <?php
 
 use watoki\scrut\listeners\ConsoleListener;
-use watoki\scrut\tests\GenericTestSuite;
+use watoki\scrut\tests\DirectoryTestSuite;
 
 require_once __DIR__ . '/bootstrap.php';
 
-(new GenericTestSuite("scrut"))
-    ->add(new \spec\watoki\scrut\CheckAssertions())
-    ->add(new \spec\watoki\scrut\RunDynamicTestSuite())
-    ->add(new \spec\watoki\scrut\RunStaticTestSuite())
-    ->add(new \spec\watoki\scrut\FindLocationOfFailure())
-    ->add(new \spec\watoki\scrut\RunTestSuitesFromFiles())
-    ->add(new \spec\watoki\scrut\RunFromConsole())
-    ->add(new \spec\watoki\scrut\InjectDependencies())
+(new DirectoryTestSuite(__DIR__ . '/spec'))
+    ->setClassFilter(function (ReflectionClass $class) {
+        return strpos($class->getShortName(), '_') === false;
+    })
     ->run(new ConsoleListener());

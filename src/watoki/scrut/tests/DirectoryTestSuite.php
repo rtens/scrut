@@ -8,11 +8,17 @@ class DirectoryTestSuite extends TestSuite {
     /** @var string */
     private $directory;
 
+    /** @var callable */
+    private $classFilter;
+
     /**
      * @param string $directory
      */
     function __construct($directory) {
         $this->directory = $directory;
+        $this->classFilter = function () {
+            return true;
+        };
     }
 
     /**
@@ -20,6 +26,22 @@ class DirectoryTestSuite extends TestSuite {
      */
     public function getName() {
         return basename($this->directory);
+    }
+
+    /**
+     * @param callable $filter Is invoked with \ReflectionClass
+     * @return $this
+     */
+    public function setClassFilter(callable $filter) {
+        $this->classFilter = $filter;
+        return $this;
+    }
+
+    /**
+     * @return callable
+     */
+    public function getClassFilter() {
+        return $this->classFilter;
     }
 
     /**
@@ -49,7 +71,9 @@ class DirectoryTestSuite extends TestSuite {
             $newClasses = array_diff(get_declared_classes(), $before);
 
             foreach ($newClasses as $class) {
-                if (is_subclass_of($class, StaticTestSuite::class)) {
+                if (call_user_func($this->classFilter, new \ReflectionClass($class))
+                    && is_subclass_of($class, StaticTestSuite::class)
+                ) {
                     /** @var StaticTestSuite $suite */
                     $suites[] = new $class();
                 }

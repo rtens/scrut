@@ -100,6 +100,23 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->assert($this->listener->started[3]->getName(), "TwoOne");
     }
 
+    function filterClasses() {
+        $this->fileContent('foo/ThisOne.php', '<?php
+            class ThisOne extends \watoki\scrut\tests\StaticTestSuite {}
+        ');
+        $this->fileContent('foo/NotThisOne.php', '<?php
+            class NotThisOne extends \watoki\scrut\tests\StaticTestSuite {}
+        ');
+
+        $suite = new DirectoryTestSuite($this->tmp('foo'));
+        $suite->setClassFilter(function (\ReflectionClass $class) {
+            return $class->getShortName() == 'ThisOne';
+        });
+        $suite->run($this->listener);
+
+        $this->assert->size($this->listener->started, 2);
+    }
+
     private function fileContent($fileName, $content) {
         $this->createFolder(dirname($fileName));
         file_put_contents($this->tmp($fileName), $content);
