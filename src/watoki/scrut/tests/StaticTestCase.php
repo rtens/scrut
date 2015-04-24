@@ -3,37 +3,16 @@ namespace watoki\scrut\tests;
 
 use watoki\scrut\Asserter;
 
-class StaticTestCase extends TestCase {
-
-    /** @var \ReflectionMethod */
-    private $method;
-
-    function __construct(\ReflectionMethod $method) {
-        $this->method = $method;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName() {
-        return $this->method->getName();
-    }
+class StaticTestCase extends PlainTestCase {
 
     protected function execute(Asserter $assert) {
-        $class = $this->method->getDeclaringClass();
+        $class = $this->getMethod()->getDeclaringClass();
         if (!$class->isSubclassOf(StaticTestSuite::class)) {
             throw new \InvalidArgumentException("Not a StaticTestSuite: [{$class->getName()}]");
         }
 
         /** @var StaticTestSuite $suite */
         $suite = $class->newInstanceArgs();
-        $suite->execute($this->method->getName(), $assert);
-    }
-
-    /**
-     * @return \ReflectionMethod
-     */
-    public function getMethod() {
-        return $this->method;
+        $suite->execute($this->getMethod()->getName(), $assert);
     }
 }

@@ -5,23 +5,13 @@ use watoki\scrut\Asserter;
 use watoki\scrut\Failure;
 use watoki\scrut\failures\IncompleteTestFailure;
 
-abstract class StaticTestSuite extends TestSuite {
-
-    /** @var callable */
-    private $methodFilter;
+abstract class StaticTestSuite extends PlainTestSuite {
 
     /** @var Asserter */
     protected $assert;
 
     function __construct() {
-        $this->methodFilter = function (\ReflectionMethod $method) {
-            return $method->getDeclaringClass()->getName() == get_class($this)
-                && substr($method->getName(), 0, 1) != '_'
-                && !strpos($method->getDocComment(), '@internal')
-                && !$method->isConstructor()
-                && !$method->isStatic()
-                && $method->isPublic();
-        };
+        parent::__construct($this);
     }
 
     protected function before() {
@@ -30,33 +20,8 @@ abstract class StaticTestSuite extends TestSuite {
     protected function after() {
     }
 
-    public function getName() {
-        return get_class($this);
-    }
-
-    /**
-     * @param callable $filter
-     */
-    public function setMethodFilter(callable $filter) {
-        $this->methodFilter = $filter;
-    }
-
-    /**
-     * @return callable
-     */
-    public function getMethodFilter() {
-        return $this->methodFilter;
-    }
-
-    /**
-     * @return \watoki\scrut\Test[]
-     */
-    protected function getTests() {
-        $filtered = array_filter((new \ReflectionClass($this))->getMethods(), $this->methodFilter);
-
-        return array_map(function (\ReflectionMethod $method) {
-            return new StaticTestCase($method);
-        }, $filtered);
+    protected function createTestCase(\ReflectionMethod $method) {
+        return new StaticTestCase($method);
     }
 
     public function execute($method, Asserter $assert) {
@@ -83,5 +48,4 @@ abstract class StaticTestSuite extends TestSuite {
     protected function markIncomplete($message = "") {
         throw new IncompleteTestFailure($message);
     }
-
 }
