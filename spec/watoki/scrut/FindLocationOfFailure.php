@@ -7,6 +7,8 @@ use watoki\scrut\failures\IncompleteTestFailure;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\tests\GenericTestCase;
 use watoki\scrut\tests\GenericTestSuite;
+use watoki\scrut\tests\PlainTestCase;
+use watoki\scrut\tests\PlainTestSuite;
 use watoki\scrut\tests\StaticTestCase;
 use watoki\scrut\tests\StaticTestSuite;
 
@@ -16,6 +18,7 @@ class FindLocationOfFailure extends StaticTestSuite {
         return [
             new FindLocationOfFailure_InGenericTestSuite(),
             new FindLocationOfFailure_InStaticTestSuite(),
+            new FindLocationOfFailure_InPlainTestSuite(),
         ];
     }
 }
@@ -182,6 +185,82 @@ class FindLocationOfFailure_InStaticTestSuite extends StaticTestSuite {
 
 }
 
+class FindLocationOfFailure_InPlainTestSuite extends StaticTestSuite {
+
+    /** @var PlainTestSuite */
+    private $suite;
+
+    /** @var ArrayListener */
+    private $listener;
+
+    /** @internal */
+    public function getName() {
+        return 'InPlainTestSuite';
+    }
+
+    protected function before() {
+        $this->markIncomplete("TBC");
+
+        $this->suite = new PlainTestSuite(new FindLocationOfFailure_PlainFoo());
+        $this->listener = new ArrayListener();
+    }
+
+    function directlyThrownFailure() {
+        $this->executeTestCase('throwFailure');
+        $this->assertLocationIsAtLine(3);
+    }
+
+    function failedAssertion() {
+        $this->executeTestCase('failAssertion');
+        $this->assertLocationIsAtLine(7);
+    }
+
+    function incompleteTest() {
+        $this->executeTestCase('incompleteTest');
+        $this->assertLocationIsAtLine(11);
+    }
+
+    function directlyThrownException() {
+        $this->executeTestCase('directlyThrowException');
+        $this->assertLocationIsAtLine(15);
+    }
+
+    function indirectlyThrownException() {
+        $this->executeTestCase('indirectlyThrowException');
+        $this->assertLocationIsAtLine(19);
+    }
+
+    function indirectAssertion() {
+        $this->executeTestCase('indirectAssertion');
+        $this->assertLocationIsAtLine(23);
+    }
+
+    function emptyTestCase() {
+        $this->executeTestCase('noAssertions');
+        $this->assertLocationIsAtLine(26);
+    }
+
+    function emptyTestSuite() {
+        $this->suite = new PlainTestSuite(new FindLocationOfFailure_PlainEmpty());
+        $this->suite->run($this->listener);
+        $this->assertLocationIsAtLine(0);
+    }
+
+    private function executeTestCase($name) {
+        $test = new PlainTestCase(new \ReflectionMethod($this->suite->getSuite(), $name));
+        $test->run($this->listener);
+    }
+
+    private function assertLocationIsAtLine($line) {
+        $start = (new \ReflectionClass($this->suite->getSuite()))->getStartLine();
+
+        /** @var \watoki\scrut\results\FailedTestResult $result */
+        $result = $this->listener->results[0];
+        $this->assert($result->failure()->getLocation($this->suite), __FILE__ . '(' . ($start + $line) . ')');
+    }
+
+}
+
 class FindLocationOfFailure_Empty extends StaticTestSuite {
 
 }
@@ -210,6 +289,39 @@ class FindLocationOfFailure_Foo extends StaticTestSuite {
 
     function indirectAssertion() {
         $this->failAssertion();
+    }
+
+    function noAssertions() {
+    }
+}
+
+class FindLocationOfFailure_PlainEmpty {
+}
+
+class FindLocationOfFailure_PlainFoo {
+
+    function throwFailure() {
+        throw new Failure();
+    }
+
+    function failAssertion(Asserter $assert) {
+        $assert->isTrue(false);
+    }
+
+    function incompleteTest() {
+        throw new IncompleteTestFailure;
+    }
+
+    function directlyThrowException() {
+        throw new \Exception();
+    }
+
+    function indirectlyThrowException() {
+        FindLocationOfFailure_InStaticTestSuite::throwException();
+    }
+
+    function indirectAssertion(Asserter $assert) {
+        $this->failAssertion($assert);
     }
 
     function noAssertions() {

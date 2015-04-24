@@ -51,6 +51,13 @@ class PlainTestSuite extends TestSuite {
     }
 
     /**
+     * @return object
+     */
+    public function getSuite() {
+        return $this->suite;
+    }
+
+    /**
      * @return Test[]
      */
     protected function getTests() {

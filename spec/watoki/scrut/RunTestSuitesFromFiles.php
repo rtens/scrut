@@ -33,9 +33,9 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
     }
 
-    function emptyStaticSuite() {
+    function emptySuite() {
         $this->fileContent('foo/AnEmptyFoo.php', '<?php
-            class EmptyFoo extends \watoki\scrut\tests\StaticTestSuite {}');
+            class EmptyFoo {}');
 
         $suite = new DirectoryTestSuite($this->tmp('foo'));
         $suite->run($this->listener);
@@ -64,11 +64,11 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
 
     function findAllSuites() {
         $this->fileContent('foo/One.php', '<?php
-            class One extends \watoki\scrut\tests\StaticTestSuite {}
-            class AnotherOne extends \watoki\scrut\tests\StaticTestSuite {}
+            class One {}
+            class AnotherOne {}
         ');
         $this->fileContent('foo/Two.php', '<?php
-            class Two extends \watoki\scrut\tests\StaticTestSuite {}
+            class Two {}
         ');
 
         $suite = new DirectoryTestSuite($this->tmp('foo'));
@@ -82,13 +82,13 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
 
     function findTestSuitesInSubFolders() {
         $this->fileContent('foo/one/One.php', '<?php
-            class OneOne extends \watoki\scrut\tests\StaticTestSuite {}
+            class OneOne {}
         ');
         $this->fileContent('foo/one/Two.php', '<?php
-            class OneTwo extends \watoki\scrut\tests\StaticTestSuite {}
+            class OneTwo {}
         ');
         $this->fileContent('foo/two/One.php', '<?php
-            class TwoOne extends \watoki\scrut\tests\StaticTestSuite {}
+            class TwoOne {}
         ');
 
         $suite = new DirectoryTestSuite($this->tmp('foo'));
@@ -102,10 +102,10 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
 
     function filterClasses() {
         $this->fileContent('foo/ThisOne.php', '<?php
-            class ThisOne extends \watoki\scrut\tests\StaticTestSuite {}
+            class ThisOne {}
         ');
         $this->fileContent('foo/NotThisOne.php', '<?php
-            class NotThisOne extends \watoki\scrut\tests\StaticTestSuite {}
+            class NotThisOne {}
         ');
 
         $suite = new DirectoryTestSuite($this->tmp('foo'));

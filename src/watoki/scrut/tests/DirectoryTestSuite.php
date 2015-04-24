@@ -71,11 +71,14 @@ class DirectoryTestSuite extends TestSuite {
             $newClasses = array_diff(get_declared_classes(), $before);
 
             foreach ($newClasses as $class) {
-                if (call_user_func($this->classFilter, new \ReflectionClass($class))
-                    && is_subclass_of($class, StaticTestSuite::class)
-                ) {
-                    /** @var StaticTestSuite $suite */
-                    $suites[] = new $class();
+                $reflection = new \ReflectionClass($class);
+
+                if ($reflection->getNamespaceName() != 'watoki\scrut\tests' && call_user_func($this->classFilter, $reflection)) {
+                    if (is_subclass_of($class, StaticTestSuite::class)) {
+                        $suites[] = new $class();
+                    } else {
+                        $suites[] = new PlainTestSuite(new $class());
+                    }
                 }
             }
         }
