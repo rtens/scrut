@@ -1,9 +1,7 @@
 <?php
 namespace watoki\scrut\assertions;
 
-use watoki\scrut\Assertion;
-
-class ContainsAssertion implements Assertion {
+class ContainsAssertion extends ValueAssertion {
 
     private $haystack;
     private $needle;
@@ -17,8 +15,7 @@ class ContainsAssertion implements Assertion {
      * @return string
      */
     public function describeFailure() {
-        return "Could not find [" . var_export($this->needle, true) . "]" .
-        " in [" . var_export($this->haystack, true) . ']';
+        return $this->export($this->haystack) . " should contain " . $this->export($this->needle);
     }
 
     /**
@@ -30,12 +27,14 @@ class ContainsAssertion implements Assertion {
         } else if (is_string($this->haystack)) {
             return strpos($this->haystack, $this->needle) !== false;
         }
-
-        foreach ($this->haystack as $item) {
-            if ($item == $this->needle) {
-                return true;
+        if (is_object($this->haystack) || $this->haystack instanceof \Traversable) {
+            foreach ($this->haystack as $item) {
+                if ($item == $this->needle) {
+                    return true;
+                }
             }
         }
+
 
         return false;
     }

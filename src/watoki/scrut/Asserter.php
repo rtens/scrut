@@ -2,10 +2,10 @@
 namespace watoki\scrut;
 
 use watoki\scrut\assertions\ContainsAssertion;
-use watoki\scrut\assertions\CountAssertion;
 use watoki\scrut\assertions\IsEqualAssertion;
 use watoki\scrut\assertions\IsInstanceOfAssertion;
 use watoki\scrut\assertions\IsTrueAssertion;
+use watoki\scrut\assertions\SizeAssertion;
 use watoki\scrut\failures\AssertionFailedFailure;
 
 class Asserter {
@@ -16,8 +16,12 @@ class Asserter {
         }
     }
 
-    function __invoke($value, $message = "") {
-        $this->isTrue($value, $message);
+    function __invoke($value, $equals = true) {
+        if ($equals === true) {
+            $this->isTrue($value);
+        } else {
+            $this->equals($value, $equals);
+        }
     }
 
     public function isTrue($value, $message = "") {
@@ -33,7 +37,7 @@ class Asserter {
     }
 
     public function count($countable, $count, $message = "") {
-        $this->assert(new CountAssertion($countable, $count), $message);
+        $this->assert(new SizeAssertion($countable, $count), $message);
     }
 
     public function contains($haystack, $needle, $message = "") {

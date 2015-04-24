@@ -1,9 +1,7 @@
 <?php
 namespace watoki\scrut\assertions;
 
-use watoki\scrut\Assertion;
-
-class IsTrueAssertion implements Assertion {
+class IsTrueAssertion extends ValueAssertion {
 
     private $value;
 
@@ -15,7 +13,7 @@ class IsTrueAssertion implements Assertion {
      * @return string
      */
     public function describeFailure() {
-        return "[" . var_export($this->value, true) . "] should be true";
+        return $this->export($this->value) . " should be TRUE";
     }
 
     /**

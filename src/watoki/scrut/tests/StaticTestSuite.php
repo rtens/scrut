@@ -64,8 +64,8 @@ abstract class StaticTestSuite extends TestSuite {
         $this->after();
     }
 
-    protected function assert($condition, $message = "") {
-        $this->assert->__invoke($condition, $message);
+    protected function assert($condition, $equals = true) {
+        $this->assert->__invoke($condition, $equals);
     }
 
     protected function markIncomplete($message = "") {

@@ -1,9 +1,7 @@
 <?php
 namespace watoki\scrut\assertions;
 
-use watoki\scrut\Assertion;
-
-class IsInstanceOfAssertion implements Assertion {
+class IsInstanceOfAssertion extends ValueAssertion {
 
     private $object;
     private $class;
@@ -17,13 +15,17 @@ class IsInstanceOfAssertion implements Assertion {
      * @return string
      */
     public function describeFailure() {
-        return "Object of class [" . get_class($this->object) . "] should be of class [{$this->class}]";
+        if (!is_object($this->object)) {
+            return $this->export($this->object) . " is not an object";
+        } else {
+            return $this->export($this->object) . " should be a <{$this->class}>";
+        }
     }
 
     /**
      * @return bool
      */
     public function checksOut() {
-        return is_a($this->object, $this->class);
+        return is_object($this->object) && is_a($this->object, $this->class);
     }
 }

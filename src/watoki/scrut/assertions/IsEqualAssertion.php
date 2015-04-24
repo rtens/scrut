@@ -1,9 +1,7 @@
 <?php
 namespace watoki\scrut\assertions;
 
-use watoki\scrut\Assertion;
-
-class IsEqualAssertion implements Assertion {
+class IsEqualAssertion extends ValueAssertion {
 
     private $value;
     private $expected;
@@ -17,14 +15,13 @@ class IsEqualAssertion implements Assertion {
      * @return string
      */
     public function describeFailure() {
-        return '[' . var_export($this->value, true) . ']'
-        . ' should be [' . var_export($this->expected, true) . ']';
+        return $this->export($this->value) . ' should equal ' . $this->export($this->expected);
     }
 
     /**
      * @return bool
      */
     public function checksOut() {
-        return $this->value === $this->expected;
+        return $this->value == $this->expected;
     }
 }
