@@ -51,9 +51,9 @@ class RunDynamicTestSuite extends StaticTestSuite {
     }
 
     function passingTest() {
-        $this->suite->add(new GenericTestCase("bar", function (Asserter $assert) {
+        $this->suite->test("bar", function (Asserter $assert) {
             $assert(true);
-        }));
+        });
         $this->suite->run($this->listener);
 
         $this->assert->count($this->listener->results, 1);
@@ -61,9 +61,9 @@ class RunDynamicTestSuite extends StaticTestSuite {
     }
 
     function failingTest() {
-        $this->suite->add(new GenericTestCase("bar", function (Asserter $assert) {
+        $this->suite->test("bar", function (Asserter $assert) {
             $assert(false);
-        }));
+        });
         $this->suite->run($this->listener);
 
         $this->assert->count($this->listener->results, 1);
@@ -74,9 +74,9 @@ class RunDynamicTestSuite extends StaticTestSuite {
     }
 
     function exceptionInTest() {
-        $this->suite->add(new GenericTestCase("bar", function () {
+        $this->suite->test("bar", function () {
             throw new \InvalidArgumentException('Failed miserably');
-        }));
+        });
         $this->suite->run($this->listener);
 
         $this->assert->count($this->listener->results, 1);
@@ -89,9 +89,9 @@ class RunDynamicTestSuite extends StaticTestSuite {
     }
 
     function incompleteTest() {
-        $this->suite->add(new GenericTestCase("bar", function () {
+        $this->suite->test("bar", function () {
             throw new IncompleteTestFailure('Not done yet');
-        }));
+        });
         $this->suite->run($this->listener);
 
         $this->assert->count($this->listener->results, 1);
