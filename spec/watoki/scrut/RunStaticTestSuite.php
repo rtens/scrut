@@ -51,9 +51,8 @@ class RunStaticTestSuite extends StaticTestSuite {
 
     function filterMethods() {
         $suite = new RunStaticTestSuite_Foo();
-        $currentFilter = $suite->getMethodFilter();
-        $suite->setMethodFilter(function (\ReflectionMethod $method) use ($currentFilter) {
-            return strpos($method->getDocComment(), '@test') && $currentFilter($method);
+        $suite->setMethodFilter(function (\ReflectionMethod $method) {
+            return strpos($method->getDocComment(), '@test');
         });
         $suite->run($this->listener);
 
@@ -113,6 +112,13 @@ class RunStaticTestSuite_Bar extends StaticTestSuite {
     }
 
     public static function staticFoo() {
+    }
+
+    /**
+     * @internal
+     */
+    public function internal() {
+
     }
 
 }

@@ -2,6 +2,7 @@
 namespace watoki\scrut\failures;
 
 use watoki\scrut\Failure;
+use watoki\scrut\tests\TestSuite;
 
 class CaughtExceptionFailure extends Failure {
 
@@ -15,6 +16,10 @@ class CaughtExceptionFailure extends Failure {
 
     public function getFailureMessage() {
         return "Caught [" . get_class($this->exception) . "] thrown at [{$this->exception->getFile()}({$this->exception->getLine()})]";
+    }
+
+    public function getLocation(TestSuite $suite) {
+        return $this->findLocation($suite, $this->exception);
     }
 
     /**

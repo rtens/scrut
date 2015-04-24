@@ -16,9 +16,10 @@ abstract class StaticTestSuite extends TestSuite {
         $this->methodFilter = function (\ReflectionMethod $method) {
             return $method->getDeclaringClass()->getName() == get_class($this)
                 && substr($method->getName(), 0, 1) != '_'
+                && !strpos($method->getDocComment(), '@internal')
                 && !$method->isConstructor()
-                && $method->isPublic()
-                && !$method->isStatic();
+                && !$method->isStatic()
+                && $method->isPublic();
         };
     }
 

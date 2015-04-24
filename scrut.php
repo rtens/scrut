@@ -9,6 +9,7 @@ require_once __DIR__ . '/bootstrap.php';
     ->add(new \spec\watoki\scrut\CheckAssertions())
     ->add(new \spec\watoki\scrut\RunDynamicTestSuite())
     ->add(new \spec\watoki\scrut\RunStaticTestSuite())
+    ->add(new \spec\watoki\scrut\FindLocationOfFailure())
     ->add(new \spec\watoki\scrut\RunTestSuitesFromFiles())
     ->add(new \spec\watoki\scrut\RunFromConsole())
     ->add(new \spec\watoki\scrut\InjectDependencies())
