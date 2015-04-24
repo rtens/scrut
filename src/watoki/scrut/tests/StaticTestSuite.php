@@ -62,8 +62,14 @@ abstract class StaticTestSuite extends TestSuite {
     public function execute($method, Asserter $assert) {
         $this->assert = $assert;
         $this->before();
-        $this->$method();
-        $this->after();
+
+        try {
+            $this->$method();
+        } catch (\Exception $e) {
+            throw $e;
+        } finally {
+            $this->after();
+        }
     }
 
     protected function fail($message = "") {

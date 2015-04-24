@@ -67,6 +67,14 @@ class RunStaticTestSuite extends StaticTestSuite {
 
         $this->assert->equals(RunStaticTestSuite_Foo::$constructed, 2);
     }
+
+    function callBeforeAndAfter() {
+        $suite = new RunStaticTestSuite_BeforeAndAfter();
+        $suite->run($this->listener);
+
+        $this->assert(RunStaticTestSuite_BeforeAndAfter::$calledBefore, 2);
+        $this->assert(RunStaticTestSuite_BeforeAndAfter::$calledAfter, 2);
+    }
 }
 
 class RunStaticTestSuite_Empty extends StaticTestSuite {
@@ -119,6 +127,28 @@ class RunStaticTestSuite_Bar extends StaticTestSuite {
      */
     public function internal() {
 
+    }
+
+}
+
+class RunStaticTestSuite_BeforeAndAfter extends StaticTestSuite {
+
+    public static $calledAfter = 0;
+    public static $calledBefore = 0;
+
+    protected function before() {
+        self::$calledBefore++;
+    }
+
+    protected function after() {
+        self::$calledAfter++;
+    }
+
+    function foo() {
+    }
+
+    function bar() {
+        $this->fail();
     }
 
 }
