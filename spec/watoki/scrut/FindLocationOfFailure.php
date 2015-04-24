@@ -78,14 +78,14 @@ class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
         }));
         $this->suite->run($this->listener);
 
-        $this->markIncomplete("Could this be done?");
+        $this->assertLocationIsAtLine(__LINE__ - 3);
     }
 
     function emptyTestSuite() {
         $suite = new GenericTestSuite("Foo");
         $suite->run($this->listener);
 
-        $this->markIncomplete("Could this be done?");
+        $this->assertLocationIsAtLine(__LINE__ - 3);
     }
 
     private function throwException() {
@@ -154,11 +154,13 @@ class FindLocationOfFailure_InStaticTestSuite extends StaticTestSuite {
 
     function emptyTestCase() {
         $this->executeTestCase('noAssertions');
+        $this->assertLocationIsAtLine(26);
     }
 
     function emptyTestSuite() {
-        $suite = new FindLocationOfFailure_Foo();
-        $suite->run($this->listener);
+        $this->suite = new FindLocationOfFailure_Empty();
+        $this->suite->run($this->listener);
+        $this->assertLocationIsAtLine(0);
     }
 
     private function executeTestCase($name) {

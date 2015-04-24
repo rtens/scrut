@@ -29,4 +29,11 @@ class StaticTestCase extends TestCase {
         $suite = $class->newInstanceArgs();
         $suite->execute($this->method->getName(), $assert);
     }
+
+    /**
+     * @return \ReflectionMethod
+     */
+    public function getMethod() {
+        return $this->method;
+    }
 }

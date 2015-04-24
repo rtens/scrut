@@ -11,8 +11,12 @@ class GenericTestSuite extends TestSuite {
     /** @var string */
     private $name;
 
+    /** @var \Exception */
+    private $creation;
+
     function __construct($name) {
         $this->name = $name;
+        $this->creation = new \Exception();
     }
 
     /**
@@ -36,5 +40,12 @@ class GenericTestSuite extends TestSuite {
      */
     public function getName() {
         return $this->name;
+    }
+
+    /**
+     * @return \Exception
+     */
+    public function getCreation() {
+        return $this->creation;
     }
 }

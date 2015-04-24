@@ -31,7 +31,7 @@ abstract class TestCase implements Test {
             $this->execute($assert);
 
             if (!$assert->hasMadeAssertions()) {
-                $result = new IncompleteTestResult(new NoAssertionsFailure());
+                $result = new IncompleteTestResult(new NoAssertionsFailure($this));
             }
         } catch (IncompleteTestFailure $it) {
             $result = new IncompleteTestResult($it);

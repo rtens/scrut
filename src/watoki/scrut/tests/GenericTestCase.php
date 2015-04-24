@@ -11,6 +11,9 @@ class GenericTestCase extends TestCase {
     /** @var callable */
     private $callback;
 
+    /** @var \Exception */
+    private $creation;
+
     /**
      * @param string $name
      * @param callable $callback
@@ -18,6 +21,7 @@ class GenericTestCase extends TestCase {
     function __construct($name, callable $callback) {
         $this->callback = $callback;
         $this->name = $name;
+        $this->creation = new \Exception();
     }
 
     /**
@@ -25,6 +29,13 @@ class GenericTestCase extends TestCase {
      */
     public function getName() {
         return $this->name;
+    }
+
+    /**
+     * @return \Exception
+     */
+    public function getCreation() {
+        return $this->creation;
     }
 
     protected function execute(Asserter $assert) {

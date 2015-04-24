@@ -13,7 +13,7 @@ abstract class TestSuite implements Test {
 
         $tests = $this->getTests();
         if (!$tests) {
-            $listener->onResult(new IncompleteTestResult(new EmptyTestSuiteFailure()));
+            $listener->onResult(new IncompleteTestResult(new EmptyTestSuiteFailure($this)));
         }
 
         foreach ($tests as $test) {
