@@ -11,11 +11,16 @@ class DirectoryTestSuite extends TestSuite {
     /** @var callable */
     private $classFilter;
 
+    /** @var string */
+    private $name;
+
     /**
      * @param string $directory
+     * @param null|string $name Defaults to directory base name
      */
-    function __construct($directory) {
+    function __construct($directory, $name = null) {
         $this->directory = $directory;
+        $this->name = $name ?: basename($directory);
         $this->classFilter = function () {
             return true;
         };
@@ -25,7 +30,7 @@ class DirectoryTestSuite extends TestSuite {
      * @return string
      */
     public function getName() {
-        return basename($this->directory);
+        return $this->name;
     }
 
     /**
@@ -48,6 +53,9 @@ class DirectoryTestSuite extends TestSuite {
      * @return Test[]
      */
     protected function getTests() {
+        if (!file_exists($this->directory)) {
+            return [];
+        }
         return $this->loadTests($this->directory);
     }
 

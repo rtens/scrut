@@ -3,6 +3,7 @@ namespace spec\watoki\scrut;
 
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\IncompleteTestResult;
+use watoki\scrut\Test;
 use watoki\scrut\tests\DirectoryTestSuite;
 use watoki\scrut\tests\StaticTestSuite;
 
@@ -18,6 +19,14 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->listener = new ArrayListener();
         $this->tmpDir = $tmpDir = __DIR__ . DIRECTORY_SEPARATOR . 'scrut_tmp';
         $this->after();
+    }
+
+    function noExistingFolder() {
+        $suite = new DirectoryTestSuite($this->tmp('some/foo'));
+        $suite->run($this->listener);
+
+        $this->assert->size($this->listener->results, 1);
+        $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
     }
 
     function emptyFolder() {
@@ -95,9 +104,13 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 4);
-        $this->assert($this->listener->started[1]->getName(), "OneOne");
-        $this->assert($this->listener->started[2]->getName(), "OneTwo");
-        $this->assert($this->listener->started[3]->getName(), "TwoOne");
+
+        $names = array_map(function (Test $test) {
+                return $test->getName();
+            }, $this->listener->started);
+        $this->assert->contains($names, "OneOne");
+        $this->assert->contains($names, "OneTwo");
+        $this->assert->contains($names, "TwoOne");
     }
 
     function filterClasses() {
@@ -115,6 +128,13 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
+    }
+
+    function changeName() {
+        $suite = new DirectoryTestSuite($this->tmp('some/foo'), "bar");
+        $suite->run($this->listener);
+
+        $this->assert($this->listener->started[0]->getName(), 'bar');
     }
 
     private function fileContent($fileName, $content) {
