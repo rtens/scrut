@@ -13,7 +13,7 @@ use watoki\scrut\tests\GenericTestCase;
 use watoki\scrut\tests\GenericTestSuite;
 use watoki\scrut\tests\StaticTestSuite;
 
-class RunDynamicTestSuite extends StaticTestSuite {
+class RunGenericTestSuite extends StaticTestSuite {
 
     /** @var ArrayListener */
     private $listener;
