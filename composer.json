@@ -15,7 +15,7 @@
     "require": {
         "php": ">=5.6"
     },
-    "bin": ["bin/scrut"],
+    "bin": ["bin/scrut.php"],
     "autoload": {
         "psr-0": {
             "watoki\\scrut": "src/",
