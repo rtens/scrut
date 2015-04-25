@@ -11,7 +11,7 @@ class PhpUnitCompatibleTestSuite extends StaticTestSuite {
         });
 
         if (!class_exists(\PHPUnit_Framework_Assert::class)) {
-            throw new \Exception("You must install PHPUnit in order to use this class");
+            throw new \Exception("You must install phpunit/phpunit in order to use this class");
         }
     }
 
