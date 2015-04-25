@@ -65,8 +65,6 @@ class PhpUnitCompatibility_Foo extends PhpUnitCompatibleTestSuite {
 class PhpUnitCompatibility_Bar extends PhpUnitCompatibleTestSuite {
 
     public function testThis() {
-        /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertTrue(true);
     }
 
     public function testThat() {
