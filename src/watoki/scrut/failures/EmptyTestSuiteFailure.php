@@ -2,7 +2,7 @@
 namespace watoki\scrut\failures;
 
 use watoki\scrut\tests\GenericTestSuite;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\PlainTestSuite;
 use watoki\scrut\tests\TestSuite;
 
 class EmptyTestSuiteFailure extends IncompleteTestFailure {
@@ -19,15 +19,15 @@ class EmptyTestSuiteFailure extends IncompleteTestFailure {
         return "Empty test suite";
     }
 
-    public function getLocation(TestSuite $suite) {
-        if ($this->testSuite instanceof StaticTestSuite) {
-            $class = new \ReflectionClass($this->testSuite);
-            return $class->getFileName() . '(' . $class->getStartLine() . ')';
+    public function getLocation() {
+        if ($this->testSuite instanceof PlainTestSuite) {
+            $class = new \ReflectionClass($this->testSuite->getSuite());
+            return $this->formatFileAndLine($class->getFileName(), $class->getStartLine());
         } else if ($this->testSuite instanceof GenericTestSuite) {
             $creation = $this->testSuite->getCreation()->getTrace()[0];
-            return $creation['file'] . '(' . $creation['line'] . ')';
+            return $this->formatFileAndLine($creation['file'], $creation['line']);
         }
-        return parent::getLocation($suite);
+        return 'unknown location';
     }
 
 }

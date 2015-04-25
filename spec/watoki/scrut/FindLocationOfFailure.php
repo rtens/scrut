@@ -45,35 +45,35 @@ class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
         $this->runGenericTestCase(function () {
             throw new Failure();
         });
-        $this->assertLocationIsAtLine(__LINE__ - 1);
+        $this->assertLocationIsAtLine(__LINE__ - 2);
     }
 
     function failedAssertion() {
         $this->runGenericTestCase(function (Asserter $assert) {
             $assert->isTrue(false);
         });
-        $this->assertLocationIsAtLine(__LINE__ - 1);
+        $this->assertLocationIsAtLine(__LINE__ - 2);
     }
 
     function incompleteTest() {
         $this->runGenericTestCase(function () {
             throw new IncompleteTestFailure();
         });
-        $this->assertLocationIsAtLine(__LINE__ - 1);
+        $this->assertLocationIsAtLine(__LINE__ - 2);
     }
 
     function directlyThrownException() {
         $this->runGenericTestCase(function () {
             throw new \InvalidArgumentException();
         });
-        $this->assertLocationIsAtLine(__LINE__ - 1);
+        $this->assertLocationIsAtLine(__LINE__ - 2);
     }
 
     function indirectlyThrownException() {
         $this->runGenericTestCase(function () {
             $this->throwException();
         });
-        $this->assertLocationIsAtLine(__LINE__ - 1);
+        $this->assertLocationIsAtLine(__LINE__ - 2);
     }
 
     function emptyTestCase() {
@@ -103,7 +103,7 @@ class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
     private function assertLocationIsAtLine($line) {
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($result->failure()->getLocation($this->suite), __FILE__ . '(' . ($line) . ')');
+        $this->assert($result->failure()->getLocation(), __FILE__ . '(' . ($line) . ')');
     }
 }
 
@@ -133,6 +133,11 @@ class FindLocationOfFailure_InStaticTestSuite extends StaticTestSuite {
     function failedAssertion() {
         $this->executeTestCase('failAssertion');
         $this->assertLocationIsAtLine(7);
+    }
+
+    function failedAssertInvocation() {
+        $this->executeTestCase('failAssertInvocation');
+        $this->assertLocationIsAtLine(30);
     }
 
     function incompleteTest() {
@@ -176,7 +181,7 @@ class FindLocationOfFailure_InStaticTestSuite extends StaticTestSuite {
 
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($result->failure()->getLocation($this->suite), __FILE__ . '(' . ($start + $line) . ')');
+        $this->assert($result->failure()->getLocation(), __FILE__ . '(' . ($start + $line) . ')');
     }
 
     public static function throwException() {
@@ -199,8 +204,6 @@ class FindLocationOfFailure_InPlainTestSuite extends StaticTestSuite {
     }
 
     protected function before() {
-        $this->markIncomplete("TBC");
-
         $this->suite = new PlainTestSuite(new FindLocationOfFailure_PlainFoo());
         $this->listener = new ArrayListener();
     }
@@ -256,7 +259,7 @@ class FindLocationOfFailure_InPlainTestSuite extends StaticTestSuite {
 
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($result->failure()->getLocation($this->suite), __FILE__ . '(' . ($start + $line) . ')');
+        $this->assert($result->failure()->getLocation(), __FILE__ . '(' . ($start + $line) . ')');
     }
 
 }
@@ -292,6 +295,10 @@ class FindLocationOfFailure_Foo extends StaticTestSuite {
     }
 
     function noAssertions() {
+    }
+
+    function failAssertInvocation() {
+        $this->assert(false);
     }
 }
 

@@ -2,9 +2,8 @@
 namespace watoki\scrut\failures;
 
 use watoki\scrut\tests\GenericTestCase;
-use watoki\scrut\tests\StaticTestCase;
+use watoki\scrut\tests\PlainTestCase;
 use watoki\scrut\tests\TestCase;
-use watoki\scrut\tests\TestSuite;
 
 class NoAssertionsFailure extends IncompleteTestFailure {
 
@@ -20,14 +19,14 @@ class NoAssertionsFailure extends IncompleteTestFailure {
         return "No assertions made";
     }
 
-    public function getLocation(TestSuite $suite) {
-        if ($this->testCase instanceof StaticTestCase) {
+    public function getLocation() {
+        if ($this->testCase instanceof PlainTestCase) {
             $method = $this->testCase->getMethod();
-            return $method->getFileName() . '(' . $method->getStartLine() . ')';
+            return $this->formatFileAndLine($method->getFileName(), $method->getStartLine());
         } else if ($this->testCase instanceof GenericTestCase) {
             $creation = $this->testCase->getCreation()->getTrace()[0];
-            return $creation['file'] . '(' . $creation['line'] . ')';
+            return $this->formatFileAndLine($creation['file'], $creation['line']);
         }
-        return parent::getLocation($suite);
+        return 'unknown location';
     }
 }

@@ -2,7 +2,7 @@
 namespace watoki\scrut;
 
 use watoki\scrut\tests\GenericTestCase;
-use watoki\scrut\tests\TestSuite;
+use watoki\scrut\tests\StaticTestSuite;
 
 class Failure extends \RuntimeException {
 
@@ -18,43 +18,48 @@ class Failure extends \RuntimeException {
     }
 
     /**
-     * @param TestSuite $suite The suite of the test that caused the Failure
+     * @internal param TestSuite $suite The suite of the test that caused the Failure
      * @return string Containing file and line number
      */
-    public function getLocation(TestSuite $suite) {
-        return $this->findLocation($suite, $this);
+    public function getLocation() {
+        return $this->findLocation($this);
     }
 
     /**
-     * @param TestSuite $suite
+     * @param \Exception $of
      * @return string
      */
-    protected function findLocation(TestSuite $suite, \Exception $e) {
-        $last = [
-            'file' => $e->getFile(),
-            'line' => $e->getLine()
+    protected function findLocation(\Exception $of) {
+        $first = [
+            'file' => $of->getFile(),
+            'line' => $of->getLine(),
+            'class' => null
         ];
 
-        $candidates = [$last];
-
-        $generic = false;
-        foreach ($e->getTrace() as $step) {
-            $generic = $generic || $step['class'] == GenericTestCase::class;
-
-            if ($generic && substr($step['class'], 0, 13) != 'watoki\\scrut\\'
-                || !$generic && $step['class'] == get_class($suite)
-            ) {
-                $candidates[] = $last;
+        $trace = array_merge([$first], $of->getTrace());
+        foreach ($trace as $i => $step) {
+            if (!isset($step['file'])) {
+                return $this->formatStep($trace[$i - 1]);
+            } else if ($step['class'] == StaticTestSuite::class && $step['function'] == 'execute') {
+                return $this->formatStep($trace[$i - 2]);
+            } else if ($step['class'] == GenericTestCase::class && $step['function'] == 'execute') {
+                return $this->formatStep($trace[$i - 2]);
             }
-
-            $last = $step;
         }
 
-        if (!$candidates) {
-            return 'unknown location';
-        } else {
-            $step = array_pop($candidates);
-            return $step['file'] . '(' . $step['line'] . ')';
-        }
+        return 'unknown location';
+    }
+
+    private function formatStep($step) {
+        return $this->formatFileAndLine($step['file'], $step['line']);
+    }
+
+    /**
+     * @param string $file
+     * @param int $line
+     * @return string
+     */
+    protected function formatFileAndLine($file, $line) {
+        return $file . '(' . $line . ')';
     }
 }
