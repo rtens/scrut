@@ -1,7 +1,7 @@
 {
     "name": "watoki/scrut",
-    "description": "Injectable test classes for PHP.",
-    "keywords": ["test", "SbE", "living documentation", "watoki"],
+    "description": "Light-weight test runner for PHP",
+    "keywords": ["test", "test runner", "tdd", "watoki"],
     "homepage": "http://github.com/watoki/scrut",
     "type": "library",
     "license": "MIT",
@@ -13,11 +13,7 @@
         }
     ],
     "require": {
-        "watoki/factory":"*",
-        "phpunit/phpunit": "3.7.*",
-        "php": ">=5.3.8"
-    },
-    "require-dev": {
+        "php": ">=5.6"
     },
     "autoload": {
         "psr-0": {
