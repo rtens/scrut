@@ -7,25 +7,15 @@ use watoki\scrut\Failure;
 class CaughtErrorFailure extends Failure {
 
     private $errorCode;
-    private $errorFile;
-    private $errorLine;
 
     /**
      * @param string $message
      * @param int $code
-     * @param string $file
-     * @param int $line
      */
-    public function __construct($message, $code, $file, $line) {
+    public function __construct($message, $code) {
         parent::__construct($message);
 
         $this->errorCode = $code;
-        $this->errorFile = $file;
-        $this->errorLine = $line;
-    }
-
-    public function getLocation() {
-        return $this->formatFileAndLine($this->errorFile, $this->errorLine);
     }
 
     public function getFailureMessage() {

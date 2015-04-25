@@ -92,7 +92,10 @@ class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
     }
 
     function caughtError() {
-
+        $this->runGenericTestCase(function () {
+            $this->raiseAWarning();
+        });
+        $this->assertLocationIsAtLine(__LINE__ - 2);
     }
 
     private function throwException() {
@@ -108,6 +111,11 @@ class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
         $this->assert($result->failure()->getLocation(), __FILE__ . '(' . ($line) . ')');
+    }
+
+    private function raiseAWarning() {
+        /** @noinspection PhpParamsInspection */
+        $this->runGenericTestCase();
     }
 }
 
@@ -132,6 +140,11 @@ class FindLocationOfFailure_InStaticTestSuite extends StaticTestSuite {
     function directlyThrownFailure() {
         $this->executeTestCase('throwFailure');
         $this->assertLocationIsAtLine(3);
+    }
+
+    function caughtError() {
+        $this->executeTestCase('raiseAWarning');
+        $this->assertLocationIsAtLine(34);
     }
 
     function failedAssertion() {
@@ -215,6 +228,11 @@ class FindLocationOfFailure_InPlainTestSuite extends StaticTestSuite {
     function directlyThrownFailure() {
         $this->executeTestCase('throwFailure');
         $this->assertLocationIsAtLine(3);
+    }
+
+    function caughtError() {
+        $this->executeTestCase('raiseAWarning');
+        $this->assertLocationIsAtLine(30);
     }
 
     function failedAssertion() {
@@ -304,6 +322,15 @@ class FindLocationOfFailure_Foo extends StaticTestSuite {
     function failAssertInvocation() {
         $this->assert(false);
     }
+
+    function raiseAWarning() {
+        $this->beBad();
+    }
+
+    private function beBad() {
+        /** @noinspection PhpParamsInspection */
+        $this->assert();
+    }
 }
 
 class FindLocationOfFailure_PlainEmpty {
@@ -336,5 +363,14 @@ class FindLocationOfFailure_PlainFoo {
     }
 
     function noAssertions() {
+    }
+
+    function raiseAWarning() {
+        $this->beBad();
+    }
+
+    private function beBad() {
+        /** @noinspection PhpParamsInspection */
+        $this->indirectAssertion();
     }
 }

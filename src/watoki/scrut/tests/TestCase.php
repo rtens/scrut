@@ -29,9 +29,9 @@ abstract class TestCase implements Test {
         $assert = new RecordingAsserter();
 
         try {
-            $errorHandler = function ($code, $message, $file, $line) {
+            $errorHandler = function ($code, $message) {
                 if (error_reporting() == 0) return;
-                throw new CaughtErrorFailure($message, $code, $file, $line);
+                throw new CaughtErrorFailure($message, $code);
             };
 
             set_error_handler($errorHandler, E_ALL);
