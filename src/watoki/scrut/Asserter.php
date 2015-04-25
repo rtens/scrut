@@ -68,7 +68,7 @@ class Asserter {
     }
 
     /**
-     * @param mixed[] $haystack
+     * @param mixed[]|string $haystack
      * @param mixed $needle
      * @param string $message
      */
