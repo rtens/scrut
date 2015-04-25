@@ -91,6 +91,10 @@ class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
         $this->assertLocationIsAtLine(__LINE__ - 3);
     }
 
+    function caughtError() {
+
+    }
+
     private function throwException() {
         throw new \InvalidArgumentException();
     }

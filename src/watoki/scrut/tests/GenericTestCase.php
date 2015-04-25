@@ -39,7 +39,6 @@ class GenericTestCase extends TestCase {
     }
 
     protected function execute(Asserter $assert) {
-        $callback = $this->callback;
-        $callback($assert);
+        call_user_func($this->callback, $assert);
     }
 }
