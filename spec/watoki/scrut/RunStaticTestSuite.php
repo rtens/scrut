@@ -95,7 +95,7 @@ class RunStaticTestSuite_Foo extends StaticTestSuite {
     }
 
     public function foo() {
-        $this->assert(true);
+        $this->pass();
     }
 
     /**

@@ -41,6 +41,10 @@ abstract class StaticTestSuite extends PlainTestSuite {
         throw new Failure($message);
     }
 
+    protected function pass() {
+        $this->assert(true);
+    }
+
     protected function assert($condition, $equals = true) {
         $this->assert->__invoke($condition, $equals);
     }
