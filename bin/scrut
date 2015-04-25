@@ -40,4 +40,4 @@ if (count($argv) > 1) {
 }
 
 $runner = new ConfiguredTestRunner(getcwd(), $config);
-$runner->run();
+exit($runner->run() ? 0 : 1);

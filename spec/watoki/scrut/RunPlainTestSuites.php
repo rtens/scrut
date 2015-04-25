@@ -2,7 +2,6 @@
 namespace watoki\scrut;
 
 use watoki\scrut\listeners\ArrayListener;
-use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\tests\PlainTestSuite;
 use watoki\scrut\tests\StaticTestSuite;
@@ -45,7 +44,7 @@ class RunPlainTestSuites extends StaticTestSuite {
         $suite->run($listener);
 
         $this->assert->size($listener->results, 1);
-        /** @var FailedTestResult $result */
+        /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $listener->results[0];
         $this->assert($result->failure()->getMessage(), 'Method [watoki\\scrut\\RunPlainTestSuites_ProtectedBefore::before] must be public');
     }
@@ -56,7 +55,7 @@ class RunPlainTestSuites extends StaticTestSuite {
         $suite->run($listener);
 
         $this->assert->size($listener->results, 1);
-        /** @var FailedTestResult $result */
+        /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $listener->results[0];
         $this->assert($result->failure()->getMessage(), 'Method [watoki\\scrut\\RunPlainTestSuites_ProtectedAfter::after] must be public');
     }

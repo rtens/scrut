@@ -12,11 +12,11 @@ class ConfiguredTestRunner extends DefaultTestRunner {
         $this->config = $config;
     }
 
-    public function run() {
+    protected function getTest() {
         if ($this->exists("suite")) {
-            $this->buildSuite($this->get("suite"))->run($this->getListener());
+            return $this->buildSuite($this->get("suite"));
         } else {
-            parent::run();
+            return parent::getTest();
         }
     }
 

@@ -3,6 +3,7 @@ namespace watoki\scrut\listeners;
 
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\IncompleteTestResult;
+use watoki\scrut\results\NotPassedTestResult;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\Test;
 use watoki\scrut\TestResult;
@@ -42,7 +43,7 @@ class ConsoleListener implements TestRunListener {
             $this->printLine('---- ' . $name . ' ----');
 
             foreach ($results as $name => $result) {
-                if ($result instanceof FailedTestResult) {
+                if ($result instanceof NotPassedTestResult) {
                     $this->printLine($name . ' [' . $result->failure()->getLocation() . ']');
                     $this->printNotEmptyLine('    ' . $result->failure()->getFailureMessage());
                     $this->printNotEmptyLine('    ' . $result->failure()->getMessage());
