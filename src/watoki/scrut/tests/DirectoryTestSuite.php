@@ -79,17 +79,24 @@ class DirectoryTestSuite extends TestSuite {
             $newClasses = array_diff(get_declared_classes(), $before);
 
             foreach ($newClasses as $class) {
-                $reflection = new \ReflectionClass($class);
+                if (!$this->isAcceptable($class, $fileInfo)) {
+                    continue;
+                }
 
-                if ($reflection->getNamespaceName() != 'watoki\scrut\tests' && call_user_func($this->classFilter, $reflection)) {
-                    if (is_subclass_of($class, StaticTestSuite::class)) {
-                        $suites[] = new $class();
-                    } else {
-                        $suites[] = new PlainTestSuite(new $class());
-                    }
+                if (is_subclass_of($class, StaticTestSuite::class)) {
+                    $suites[] = new $class();
+                } else {
+                    $suites[] = new PlainTestSuite(new $class());
                 }
             }
         }
         return $suites;
+    }
+
+    private function isAcceptable($class, \SplFileInfo $fileInfo) {
+        $reflection = new \ReflectionClass($class);
+
+        return $reflection->getFileName() == $fileInfo->getRealPath()
+            && call_user_func($this->classFilter, $reflection);
     }
 }
