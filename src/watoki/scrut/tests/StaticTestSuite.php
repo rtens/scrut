@@ -45,6 +45,10 @@ abstract class StaticTestSuite extends PlainTestSuite {
         $this->assert(true);
     }
 
+    /**
+     * @param mixed $condition
+     * @param bool|mixed $equals
+     */
     protected function assert($condition, $equals = true) {
         $this->assert->__invoke($condition, $equals);
     }
