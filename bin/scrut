@@ -1,0 +1,43 @@
+#!/usr/bin/env php
+<?php
+
+use watoki\scrut\cli\ConfiguredTestRunner;
+
+$requireAutoload = function ($autoloaders) {
+    foreach ($autoloaders as $file) {
+        if (file_exists($file)) {
+            require_once($file);
+            return true;
+        }
+    }
+    return false;
+};
+
+$autoloaders = [
+    'bootstrap.php',
+    'autoload.php',
+    'vendor/autoload.php',
+];
+
+if (!$requireAutoload($autoloaders)) {
+    die("No auto-loader found.");
+}
+
+$config = [];
+
+foreach (['scrut.json', 'scrut.json.dist'] as $file) {
+    if (file_exists($file)) {
+        $config = json_decode(file_get_contents($file), true);
+        if ($config === null) {
+            die("[$file] contains invalid JSON");
+        }
+        break;
+    }
+}
+
+if (count($argv) > 1) {
+    $config['suite']['directory'] = $argv[1];
+}
+
+$runner = new ConfiguredTestRunner(getcwd(), $config);
+$runner->run();
