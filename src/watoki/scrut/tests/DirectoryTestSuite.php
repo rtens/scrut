@@ -6,7 +6,7 @@ use watoki\scrut\Test;
 class DirectoryTestSuite extends TestSuite {
 
     /** @var string */
-    private $directory;
+    private $path;
 
     /** @var callable */
     private $classFilter;
@@ -15,12 +15,12 @@ class DirectoryTestSuite extends TestSuite {
     private $name;
 
     /**
-     * @param string $directory
+     * @param string $path Directory of file
      * @param null|string $name Defaults to directory base name
      */
-    function __construct($directory, $name = null) {
-        $this->directory = $directory;
-        $this->name = $name ?: basename($directory);
+    function __construct($path, $name = null) {
+        $this->path = $path;
+        $this->name = $name ?: basename($path);
         $this->classFilter = function () {
             return true;
         };
@@ -53,50 +53,68 @@ class DirectoryTestSuite extends TestSuite {
      * @return Test[]
      */
     protected function getTests() {
-        if (!file_exists($this->directory)) {
+        if (!file_exists($this->path)) {
             return [];
         }
-        return $this->loadTests($this->directory);
+        return $this->loadTests($this->path);
     }
 
     private function loadTests($path) {
-        $suites = [];
+        if (is_file($path)) {
+            return $this->loadTestsFromFile($path);
+        } else {
+            return $this->loadTestsFromDirectory($path);
+        }
+    }
+
+    private function loadTestsFromDirectory($path) {
+        $tests = [];
         foreach (new \DirectoryIterator($path) as $fileInfo) {
             if ($fileInfo->isDot()) {
                 continue;
             }
 
             if ($fileInfo->isDir()) {
-                $suites = array_merge($suites, $this->loadTests($fileInfo->getRealPath()));
+                $tests = array_merge($tests, $this->loadTestsFromDirectory($fileInfo->getRealPath()));
+            } else {
+                $tests = array_merge($tests, $this->loadTestsFromFile($fileInfo->getRealPath()));
+            }
+        }
+        return $tests;
+    }
+
+    private function loadTestsFromFile($path) {
+        $tests = [];
+
+        $before = get_declared_classes();
+
+        /** @noinspection PhpIncludeInspection */
+        $returned = include_once($path);
+
+        if (is_a($returned, Test::class)) {
+            return [$returned];
+        }
+
+        $newClasses = array_diff(get_declared_classes(), $before);
+        foreach ($newClasses as $class) {
+            if (!$this->isAcceptable($class, $path)) {
                 continue;
             }
 
-            $before = get_declared_classes();
-
-            /** @noinspection PhpIncludeInspection */
-            require_once($fileInfo->getRealPath());
-
-            $newClasses = array_diff(get_declared_classes(), $before);
-
-            foreach ($newClasses as $class) {
-                if (!$this->isAcceptable($class, $fileInfo)) {
-                    continue;
-                }
-
-                if (is_subclass_of($class, StaticTestSuite::class)) {
-                    $suites[] = new $class();
-                } else {
-                    $suites[] = new PlainTestSuite(new $class());
-                }
+            if (is_subclass_of($class, StaticTestSuite::class)) {
+                $tests[] = new $class();
+            } else {
+                $tests[] = new PlainTestSuite(new $class());
             }
         }
-        return $suites;
+
+        return $tests;
     }
 
-    private function isAcceptable($class, \SplFileInfo $fileInfo) {
+    private function isAcceptable($class, $path) {
         $reflection = new \ReflectionClass($class);
 
-        return $reflection->getFileName() == $fileInfo->getRealPath()
+        return $reflection->getFileName() == $path
             && call_user_func($this->classFilter, $reflection);
     }
 }

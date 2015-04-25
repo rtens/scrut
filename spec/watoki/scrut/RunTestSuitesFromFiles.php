@@ -9,15 +9,11 @@ use watoki\scrut\tests\StaticTestSuite;
 
 class RunTestSuitesFromFiles extends StaticTestSuite {
 
-    /** @var string */
-    private $tmpDir;
-
     /** @var ArrayListener */
     private $listener;
 
     protected function before() {
         $this->listener = new ArrayListener();
-        $this->tmpDir = $tmpDir = __DIR__ . DIRECTORY_SEPARATOR . 'scrut_tmp';
         $this->after();
     }
 
@@ -40,6 +36,18 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
 
         $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
+    }
+
+    function loadSingleFile() {
+        $this->fileContent('foo/SingleFile.php', '<?php
+            class SingleFoo {}');
+
+        $suite = new DirectoryTestSuite($this->tmp('foo/SingleFile.php'));
+        $suite->run($this->listener);
+
+        $this->assert->size($this->listener->started, 2);
+        $this->assert($this->listener->started[0]->getName(), 'SingleFile.php');
+        $this->assert($this->listener->started[1]->getName(), 'SingleFoo');
     }
 
     function emptySuite() {
@@ -71,6 +79,18 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->assert($this->listener->started[3]->getName(), "baz");
     }
 
+    function loadGenericTestSuite() {
+        $this->fileContent('foo/GenericFoo.php', '<?php
+            class IgnoreThisOne {}
+            return new \watoki\scrut\tests\GenericTestSuite("Generic foo");');
+
+        $suite = new DirectoryTestSuite($this->tmp('foo/GenericFoo.php'));
+        $suite->run($this->listener);
+
+        $this->assert->size($this->listener->started, 2);
+        $this->assert($this->listener->started[1]->getName(), 'Generic foo');
+    }
+
     function findAllSuites() {
         $this->fileContent('foo/One.php', '<?php
             class One {}
@@ -83,10 +103,12 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite = new DirectoryTestSuite($this->tmp('foo'));
         $suite->run($this->listener);
 
-        $this->assert->size($this->listener->started, 4);
-        $this->assert($this->listener->started[1]->getName(), "One");
-        $this->assert($this->listener->started[2]->getName(), "AnotherOne");
-        $this->assert($this->listener->started[3]->getName(), "Two");
+        $names = array_map(function (Test $test) {
+            return $test->getName();
+        }, $this->listener->started);
+        $this->assert->contains($names, "One");
+        $this->assert->contains($names, "AnotherOne");
+        $this->assert->contains($names, "Two");
     }
 
     function findTestSuitesInSubFolders() {
@@ -106,8 +128,8 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->assert->size($this->listener->started, 4);
 
         $names = array_map(function (Test $test) {
-                return $test->getName();
-            }, $this->listener->started);
+            return $test->getName();
+        }, $this->listener->started);
         $this->assert->contains($names, "OneOne");
         $this->assert->contains($names, "OneTwo");
         $this->assert->contains($names, "TwoOne");
@@ -147,11 +169,11 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     }
 
     private function tmp($path) {
-        return $this->tmpDir . DIRECTORY_SEPARATOR . $path;
+        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . "scrut_tmp" . DIRECTORY_SEPARATOR . $path;
     }
 
     protected function after() {
-        $this->clear($this->tmpDir);
+        $this->clear($this->tmp(""));
     }
 
     private function clear($dir) {
@@ -161,11 +183,11 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
 
         foreach (new \DirectoryIterator($dir) as $file) {
             if ($file->isFile()) {
-                @unlink($file->getRealPath());
+                unlink($file->getRealPath());
             } else if (!$file->isDot()) {
                 $this->clear($file->getRealPath());
             }
         }
-        @rmDir($dir);
+        rmDir($dir);
     }
 }
