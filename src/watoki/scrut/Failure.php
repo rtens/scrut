@@ -6,23 +6,31 @@ use watoki\scrut\tests\StaticTestSuite;
 
 class Failure extends \RuntimeException {
 
-    public function __construct($message = null) {
-        parent::__construct($message);
+    /** @var string */
+    private $failureMessage;
+
+    /** @var string */
+    private $location;
+
+    public function __construct($failureMessage = "", $userMessage = "", $location = null) {
+        parent::__construct($userMessage);
+        $this->failureMessage = $failureMessage;
+        $this->location = $location ?: $this->findLocation($this);
     }
 
     /**
      * @return string
      */
-    public function getFailureMessage() {
-        return "";
+    final public function getFailureMessage() {
+        return $this->failureMessage;
     }
 
     /**
      * @internal param TestSuite $suite The suite of the test that caused the Failure
      * @return string Containing file and line number
      */
-    public function getLocation() {
-        return $this->findLocation($this);
+    final public function getLocation() {
+        return $this->location;
     }
 
     /**

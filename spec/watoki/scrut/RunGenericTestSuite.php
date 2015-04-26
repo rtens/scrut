@@ -98,7 +98,7 @@ class RunGenericTestSuite extends StaticTestSuite {
         /** @var IncompleteTestResult $result */
         $result = $this->listener->results[0];
         $this->assert->isInstanceOf($result, IncompleteTestResult::class);
-        $this->assert->equals($result->failure()->getFailureMessage(), "");
-        $this->assert->equals($result->failure()->getMessage(), "Not done yet");
+        $this->assert->equals($result->failure()->getFailureMessage(), "Not done yet");
+        $this->assert->equals($result->failure()->getMessage(), "");
     }
 }

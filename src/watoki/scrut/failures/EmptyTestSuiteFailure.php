@@ -7,24 +7,16 @@ use watoki\scrut\tests\TestSuite;
 
 class EmptyTestSuiteFailure extends IncompleteTestFailure {
 
-    /** @var TestSuite */
-    private $testSuite;
-
     function __construct(TestSuite $testSuite) {
-        parent::__construct();
-        $this->testSuite = $testSuite;
+        parent::__construct("Empty test suite", $this->determineLocation($testSuite));
     }
 
-    public function getFailureMessage() {
-        return "Empty test suite";
-    }
-
-    public function getLocation() {
-        if ($this->testSuite instanceof PlainTestSuite) {
-            $class = new \ReflectionClass($this->testSuite->getSuite());
+    public function determineLocation($testSuite) {
+        if ($testSuite instanceof PlainTestSuite) {
+            $class = new \ReflectionClass($testSuite->getSuite());
             return $this->formatFileAndLine($class->getFileName(), $class->getStartLine());
-        } else if ($this->testSuite instanceof GenericTestSuite) {
-            $creation = $this->testSuite->getCreation()->getTrace()[0];
+        } else if ($testSuite instanceof GenericTestSuite) {
+            $creation = $testSuite->getCreation()->getTrace()[0];
             return $this->formatFileAndLine($creation['file'], $creation['line']);
         }
         return 'unknown location';

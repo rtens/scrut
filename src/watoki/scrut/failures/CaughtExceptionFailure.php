@@ -5,28 +5,10 @@ use watoki\scrut\Failure;
 
 class CaughtExceptionFailure extends Failure {
 
-    /** @var \Exception */
-    private $exception;
-
     public function __construct(\Exception $exception) {
-        parent::__construct($exception->getMessage());
-        $this->exception = $exception;
+        $location = $this->formatFileAndLine($exception->getFile(), $exception->getLine());
+        parent::__construct("Caught [" . get_class($exception) . "] thrown at [" . $location . "]",
+            $exception->getMessage(),
+            $this->findLocation($exception));
     }
-
-    public function getFailureMessage() {
-        $fileAndLine = $this->formatFileAndLine($this->exception->getFile(), $this->exception->getLine());
-        return "Caught [" . get_class($this->exception) . "] thrown at [$fileAndLine]";
-    }
-
-    public function getLocation() {
-        return $this->findLocation($this->exception);
-    }
-
-    /**
-     * @return \Exception
-     */
-    public function getException() {
-        return $this->exception;
-    }
-
 }

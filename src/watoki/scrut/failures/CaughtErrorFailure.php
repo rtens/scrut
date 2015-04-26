@@ -6,20 +6,12 @@ use watoki\scrut\Failure;
 
 class CaughtErrorFailure extends Failure {
 
-    private $errorCode;
-
     /**
      * @param string $message
      * @param int $code
      */
     public function __construct($message, $code) {
-        parent::__construct($message);
-
-        $this->errorCode = $code;
-    }
-
-    public function getFailureMessage() {
-        return "Caught " . $this->errorType($this->errorCode);
+        parent::__construct("Caught " . $this->errorType($code), $message);
     }
 
     private function errorType($code) {

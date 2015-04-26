@@ -38,7 +38,7 @@ abstract class StaticTestSuite extends PlainTestSuite {
     }
 
     protected function fail($message = "") {
-        throw new Failure($message);
+        throw new Failure("Failed", $message);
     }
 
     protected function pass() {
