@@ -4,7 +4,9 @@ namespace watoki\scrut;
 use watoki\scrut\assertions\ContainsAssertion;
 use watoki\scrut\assertions\IsEqualAssertion;
 use watoki\scrut\assertions\IsInstanceOfAssertion;
+use watoki\scrut\assertions\IsNullAssertion;
 use watoki\scrut\assertions\IsTrueAssertion;
+use watoki\scrut\assertions\NotAsserter;
 use watoki\scrut\assertions\SizeAssertion;
 use watoki\scrut\failures\AssertionFailedFailure;
 
@@ -18,6 +20,10 @@ class Asserter {
         if (!$assertion->checksOut()) {
             throw new AssertionFailedFailure($assertion, $message);
         }
+    }
+
+    public function not() {
+        return new NotAsserter($this);
     }
 
     /**
@@ -74,5 +80,9 @@ class Asserter {
      */
     public function contains($haystack, $needle, $message = "") {
         $this->assert(new ContainsAssertion($haystack, $needle), $message);
+    }
+
+    public function isNull($value, $message = "") {
+        $this->assert(new IsNullAssertion($value), $message);
     }
 }

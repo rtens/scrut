@@ -6,9 +6,18 @@ use watoki\scrut\assertions\IsEqualAssertion;
 use watoki\scrut\assertions\IsInstanceOfAssertion;
 use watoki\scrut\assertions\IsTrueAssertion;
 use watoki\scrut\assertions\SizeAssertion;
+use watoki\scrut\failures\AssertionFailedFailure;
 use watoki\scrut\tests\StaticTestSuite;
 
 class CheckAssertions extends StaticTestSuite {
+
+    /** @var null|AssertionFailedFailure */
+    private $failure;
+
+    function assertingTheOpposite() {
+        $this->assert->not()->isTrue(false);
+        $this->assert->not()->equals("foo", "bar");
+    }
 
     function assertSomethingIsTrue() {
         $assertion = new IsTrueAssertion(true);
@@ -111,5 +120,27 @@ class CheckAssertions extends StaticTestSuite {
         $stack->push(new \DateTime());
         $assertion = new IsTrueAssertion($stack);
         $this->assert($assertion->describeFailure(), "<SplStack>[<DateTime>, ['foo', 'bar']] should be TRUE");
+    }
+
+    function somethingIsNull() {
+        $this->tryTo(function () {
+            $this->assert->isNull("not");
+        });
+        $this->assertFailureMessage("'not' should be NULL");
+
+        $this->assert->isNull(null);
+    }
+
+    private function assertFailureMessage($message) {
+        $this->assert->not()->isNull($this->failure);
+        $this->assert($this->failure->getFailureMessage(), $message);
+    }
+
+    private function tryTo(callable $do) {
+        try {
+            $do();
+        } catch (AssertionFailedFailure $f) {
+            $this->failure = $f;
+        }
     }
 }
