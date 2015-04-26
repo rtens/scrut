@@ -3,7 +3,7 @@ namespace watoki\scrut;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\PassedTestResult;
-use watoki\scrut\tests\PhpUnitCompatibleTestSuite;
+use watoki\scrut\tests\migration\PhpUnitTestSuite;
 use watoki\scrut\tests\StaticTestSuite;
 
 /**
@@ -45,7 +45,7 @@ class PhpUnitCompatibility extends StaticTestSuite {
     }
 }
 
-class PhpUnitCompatibility_Foo extends PhpUnitCompatibleTestSuite {
+class PhpUnitCompatibility_Foo extends PhpUnitTestSuite {
 
     public static $calledSetUp = 0;
     public static $calledTearDown = 0;
@@ -62,7 +62,7 @@ class PhpUnitCompatibility_Foo extends PhpUnitCompatibleTestSuite {
     }
 }
 
-class PhpUnitCompatibility_Bar extends PhpUnitCompatibleTestSuite {
+class PhpUnitCompatibility_Bar extends PhpUnitTestSuite {
 
     public function testThis() {
     }

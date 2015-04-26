@@ -1,7 +1,9 @@
 <?php
-namespace watoki\scrut\tests;
+namespace watoki\scrut\tests\migration;
 
-class PhpUnitCompatibleTestSuite extends StaticTestSuite {
+use watoki\scrut\tests\StaticTestSuite;
+
+class PhpUnitTestSuite extends StaticTestSuite {
 
     function __construct() {
         parent::__construct();
