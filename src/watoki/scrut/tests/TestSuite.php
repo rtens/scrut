@@ -14,13 +14,14 @@ abstract class TestSuite implements Test {
     public function run(TestRunListener $listener) {
         $listener->onStarted($this);
 
-        $tests = $this->getTests();
-        if (!$tests) {
-            $listener->onResult(new IncompleteTestResult(new EmptyTestSuiteFailure($this)));
+        $hasTest = false;
+        foreach ($this->getTests() as $test) {
+            $test->run($listener);
+            $hasTest = true;
         }
 
-        foreach ($tests as $test) {
-            $test->run($listener);
+        if (!$hasTest) {
+            $listener->onResult(new IncompleteTestResult(new EmptyTestSuiteFailure($this)));
         }
 
         $listener->onFinished($this);

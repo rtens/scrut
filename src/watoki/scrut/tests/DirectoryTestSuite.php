@@ -68,31 +68,32 @@ class DirectoryTestSuite extends TestSuite {
     }
 
     private function loadTestsFromDirectory($path) {
-        $tests = [];
         foreach (new \DirectoryIterator($path) as $fileInfo) {
             if ($fileInfo->isDot()) {
                 continue;
             }
 
             if ($fileInfo->isDir()) {
-                $tests = array_merge($tests, $this->loadTestsFromDirectory($fileInfo->getRealPath()));
+                foreach ($this->loadTestsFromDirectory($fileInfo->getRealPath()) as $test) {
+                    yield $test;
+                }
             } else {
-                $tests = array_merge($tests, $this->loadTestsFromFile($fileInfo->getRealPath()));
+                foreach ($this->loadTestsFromFile($fileInfo->getRealPath()) as $test) {
+                    yield $test;
+                }
             }
         }
-        return $tests;
     }
 
     private function loadTestsFromFile($path) {
-        $tests = [];
-
         $before = get_declared_classes();
 
         /** @noinspection PhpIncludeInspection */
         $returned = include_once($path);
 
         if (is_a($returned, Test::class)) {
-            return [$returned];
+            yield $returned;
+            return;
         }
 
         $newClasses = array_diff(get_declared_classes(), $before);
@@ -102,13 +103,11 @@ class DirectoryTestSuite extends TestSuite {
             }
 
             if (is_subclass_of($class, StaticTestSuite::class)) {
-                $tests[] = new $class();
+                yield new $class();
             } else {
-                $tests[] = new PlainTestSuite(new $class());
+                yield new PlainTestSuite(new $class());
             }
         }
-
-        return $tests;
     }
 
     private function isAcceptable($class, $path) {

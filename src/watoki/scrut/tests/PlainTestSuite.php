@@ -64,9 +64,9 @@ class PlainTestSuite extends TestSuite {
         $methods = (new \ReflectionClass($this->suite))->getMethods();
         $filtered = array_filter($methods, $this->methodFilter);
 
-        return array_map(function (\ReflectionMethod $method) {
-            return $this->createTestCase($method);
-        }, $filtered);
+        foreach ($filtered as $method) {
+            yield $this->createTestCase($method);
+        }
     }
 
     /**
