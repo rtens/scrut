@@ -10,7 +10,7 @@ class AssertExceptions extends StaticTestSuite {
     private $try;
 
     function before() {
-        $this->try = new ExceptionFixture($this, $this->assert);
+        $this->try = new ExceptionFixture($this->assert);
     }
 
     function catchExceptions() {

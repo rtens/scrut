@@ -169,7 +169,8 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     }
 
     private function tmp($path) {
-        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . "scrut_tmp" . DIRECTORY_SEPARATOR . $path;
+        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . "scrut_tmp" . DIRECTORY_SEPARATOR
+        . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
     }
 
     protected function after() {
