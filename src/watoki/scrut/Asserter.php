@@ -9,6 +9,7 @@ use watoki\scrut\assertions\IsTrueAssertion;
 use watoki\scrut\assertions\NotAsserter;
 use watoki\scrut\assertions\SizeAssertion;
 use watoki\scrut\failures\AssertionFailedFailure;
+use watoki\scrut\failures\IncompleteTestFailure;
 
 class Asserter {
 
@@ -20,6 +21,18 @@ class Asserter {
         if (!$assertion->checksOut()) {
             throw new AssertionFailedFailure($assertion, $message);
         }
+    }
+
+    public function fail($message = "") {
+        throw new Failure("Failed", $message);
+    }
+
+    public function pass() {
+        $this->assert(new IsTrueAssertion(true));
+    }
+
+    public function incomplete($message = "") {
+        throw new IncompleteTestFailure($message);
     }
 
     public function not() {

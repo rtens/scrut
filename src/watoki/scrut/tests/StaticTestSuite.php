@@ -2,8 +2,6 @@
 namespace watoki\scrut\tests;
 
 use watoki\scrut\Asserter;
-use watoki\scrut\Failure;
-use watoki\scrut\failures\IncompleteTestFailure;
 
 abstract class StaticTestSuite extends PlainTestSuite {
 
@@ -37,14 +35,6 @@ abstract class StaticTestSuite extends PlainTestSuite {
         }
     }
 
-    protected function fail($message = "") {
-        throw new Failure("Failed", $message);
-    }
-
-    protected function pass() {
-        $this->assert(true);
-    }
-
     /**
      * @param mixed $condition
      * @param bool|mixed $equals
@@ -53,7 +43,15 @@ abstract class StaticTestSuite extends PlainTestSuite {
         $this->assert->__invoke($condition, $equals);
     }
 
+    protected function pass() {
+        $this->assert->pass();
+    }
+
+    protected function fail($message = "") {
+        $this->assert->fail($message);
+    }
+
     protected function markIncomplete($message = "") {
-        throw new IncompleteTestFailure($message);
+        $this->assert->incomplete($message);
     }
 }
