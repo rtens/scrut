@@ -57,4 +57,9 @@ class GenericTestSuite extends TestSuite {
     public function getCreation() {
         return $this->creation;
     }
+
+    protected function getEmptyTestSuiteFailureSource() {
+        $creation = $this->getCreation()->getTrace()[0];
+        return $creation['file'] . ':' . $creation['line'];
+    }
 }

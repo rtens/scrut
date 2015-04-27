@@ -63,7 +63,7 @@ class DefaultTestRunner implements TestRunner, TestRunListener {
     public function onStarted(Test $test) {
     }
 
-    public function onResult(TestResult $result) {
+    public function onResult(Test $test, TestResult $result) {
         $this->failed = $this->failed || $result instanceof FailedTestResult;
     }
 

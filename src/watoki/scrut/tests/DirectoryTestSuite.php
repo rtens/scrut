@@ -116,4 +116,8 @@ class DirectoryTestSuite extends TestSuite {
         return $reflection->getFileName() == $path
             && call_user_func($this->classFilter, $reflection);
     }
+
+    protected function getEmptyTestSuiteFailureSource() {
+        return $this->path;
+    }
 }

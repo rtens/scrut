@@ -76,4 +76,9 @@ class PlainTestSuite extends TestSuite {
     protected function createTestCase(\ReflectionMethod $method) {
         return new PlainTestCase($method);
     }
+
+    protected function getEmptyTestSuiteFailureSource() {
+        $class = new \ReflectionClass($this->getSuite());
+        return $class->getFileName() . ':' . $class->getStartLine();
+    }
 }

@@ -6,7 +6,7 @@ use watoki\scrut\Asserter;
 class PlainTestCase extends TestCase {
 
     /** @var \ReflectionMethod */
-    private $method;
+    protected $method;
 
     function __construct(\ReflectionMethod $method) {
         $this->method = $method;
@@ -20,7 +20,7 @@ class PlainTestCase extends TestCase {
     }
 
     protected function execute(Asserter $assert) {
-        $class = $this->getMethod()->getDeclaringClass();
+        $class = $this->method->getDeclaringClass();
 
         $suite = $class->newInstanceArgs();
 
@@ -32,7 +32,7 @@ class PlainTestCase extends TestCase {
         }
 
         try {
-            $this->getMethod()->invoke($suite, $assert);
+            $this->method->invoke($suite, $assert);
         } catch (\Exception $e) {
             throw $e;
         } finally {
@@ -45,10 +45,18 @@ class PlainTestCase extends TestCase {
         }
     }
 
-    /**
-     * @return \ReflectionMethod
-     */
-    public function getMethod() {
-        return $this->method;
+    protected function getNoAssertionsFailureSource() {
+        $method = $this->method;
+        return $this->formatFileAndLine($method->getFileName(), $method->getStartLine());
+    }
+
+    protected function getExceptionSourceFromTrace($trace) {
+        foreach ($trace as $i => $step) {
+            if (!isset($step['file'])) {
+                return $this->formatStep($trace[$i - 1]);
+            }
+        }
+
+        return 'unknown location';
     }
 }

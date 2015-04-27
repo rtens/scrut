@@ -110,7 +110,7 @@ class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
     private function assertLocationIsAtLine($line) {
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($result->failure()->getLocation(), __FILE__ . '(' . ($line) . ')');
+        $this->assert($this->listener->testResults[0]->getFailureSource($result->failure()), __FILE__ . ':' . ($line));
     }
 
     private function raiseAWarning() {
@@ -198,7 +198,7 @@ class FindLocationOfFailure_InStaticTestSuite extends StaticTestSuite {
 
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($result->failure()->getLocation(), __FILE__ . '(' . ($start + $line) . ')');
+        $this->assert($this->listener->testResults[0]->getFailureSource($result->failure()), __FILE__ . ':' . ($start + $line));
     }
 
     public static function throwException() {
@@ -281,7 +281,7 @@ class FindLocationOfFailure_InPlainTestSuite extends StaticTestSuite {
 
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($result->failure()->getLocation(), __FILE__ . '(' . ($start + $line) . ')');
+        $this->assert($this->listener->testResults[0]->getFailureSource($result->failure()), __FILE__ . ':' . ($start + $line));
     }
 
 }

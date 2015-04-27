@@ -31,14 +31,26 @@ class GenericTestCase extends TestCase {
         return $this->name;
     }
 
-    /**
-     * @return \Exception
-     */
-    public function getCreation() {
-        return $this->creation;
-    }
-
     protected function execute(Asserter $assert) {
         call_user_func($this->callback, $assert);
+    }
+
+    protected function getNoAssertionsFailureSource() {
+        $creation = $this->creation->getTrace()[0];
+        return $this->formatFileAndLine($creation['file'], $creation['line']);
+    }
+
+    protected function getExceptionSourceFromTrace($trace) {
+        foreach ($trace as $i => $step) {
+            if (!isset($step['file'])) {
+                return $this->formatStep($trace[$i - 1]);
+            } else if ($step['class'] == StaticTestSuite::class && $step['function'] == 'execute') {
+                return $this->formatStep($trace[$i - 2]);
+            } else if ($step['class'] == GenericTestCase::class && $step['function'] == 'execute') {
+                return $this->formatStep($trace[$i - 2]);
+            }
+        }
+
+        return 'unknown location';
     }
 }

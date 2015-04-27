@@ -5,8 +5,8 @@ use watoki\scrut\Failure;
 
 class IncompleteTestFailure extends Failure {
 
-    public function __construct($failureMessage = "", $location = null) {
-        parent::__construct($failureMessage, "", $location);
+    public function __construct($failureMessage = "") {
+        parent::__construct($failureMessage, "");
     }
 
 }

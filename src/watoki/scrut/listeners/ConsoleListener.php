@@ -42,9 +42,10 @@ class ConsoleListener implements TestRunListener {
             $this->printLine();
             $this->printLine('---- ' . $name . ' ----');
 
-            foreach ($results as $name => $result) {
+            /** @var Test $test */
+            foreach ($results as $name => list($test, $result)) {
                 if ($result instanceof NotPassedTestResult) {
-                    $this->printLine($name . ' [' . $result->failure()->getLocation() . ']');
+                    $this->printLine($name . ' [' . $test->getFailureSource($result->failure()) . ']');
                     $this->printNotEmptyLine('    ' . $result->failure()->getFailureMessage());
                     $this->printNotEmptyLine('    ' . $result->failure()->getMessage());
                 } else {
@@ -57,12 +58,12 @@ class ConsoleListener implements TestRunListener {
         $this->printLine(implode(', ', $counts));
     }
 
-    public function onResult(TestResult $result) {
+    public function onResult(Test $test, TestResult $result) {
         $fullName = implode(array_map(function (Test $test) {
             return $test->getName();
         }, $this->running), '::');
 
-        $this->results[get_class($result)][$fullName] = $result;
+        $this->results[get_class($result)][$fullName] = [$test, $result];
 
         if ($result instanceof IncompleteTestResult) {
             $this->output('I');

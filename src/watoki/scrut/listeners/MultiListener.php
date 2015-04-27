@@ -27,9 +27,9 @@ class MultiListener implements TestRunListener {
         }
     }
 
-    public function onResult(TestResult $result) {
+    public function onResult(Test $test, TestResult $result) {
         foreach ($this->listeners as $listener) {
-            $listener->onResult($result);
+            $listener->onResult($test, $result);
         }
     }
 }

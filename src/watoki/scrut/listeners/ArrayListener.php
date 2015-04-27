@@ -16,6 +16,9 @@ class ArrayListener implements TestRunListener {
     /** @var array|TestResult[] */
     public $results = [];
 
+    /** @var array|Test[] */
+    public $testResults = [];
+
     public function onStarted(Test $test) {
         $this->started[] = $test;
     }
@@ -24,7 +27,8 @@ class ArrayListener implements TestRunListener {
         $this->finished[] = $test;
     }
 
-    public function onResult(TestResult $result) {
+    public function onResult(Test $test, TestResult $result) {
         $this->results[] = $result;
+        $this->testResults[] = $test;
     }
 }

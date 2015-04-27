@@ -36,8 +36,8 @@ class GenericListener implements TestRunListener {
         call_user_func($this->whenStarted, $test);
     }
 
-    public function onResult(TestResult $result) {
-        call_user_func($this->whenResult, $result);
+    public function onResult(Test $test, TestResult $result) {
+        call_user_func($this->whenResult, $test, $result);
     }
 
     public function onFinished(Test $test) {
