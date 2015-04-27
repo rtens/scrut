@@ -4,8 +4,8 @@ namespace watoki\scrut;
 use watoki\scrut\failures\CaughtErrorFailure;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\FailedTestResult;
-use watoki\scrut\tests\GenericTestCase;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\generic\GenericTestCase;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class CatchWarningsAndErrors extends StaticTestSuite {
 

@@ -7,8 +7,8 @@ use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\Test;
 use watoki\scrut\TestResult;
 use watoki\scrut\TestRunListener;
-use watoki\scrut\tests\DirectoryTestSuite;
-use watoki\scrut\tests\GenericTestSuite;
+use watoki\scrut\tests\file\FileTestSuite;
+use watoki\scrut\tests\generic\GenericTestSuite;
 
 class DefaultTestRunner implements TestRunner, TestRunListener {
 
@@ -53,7 +53,7 @@ class DefaultTestRunner implements TestRunner, TestRunListener {
             $dir = $this->cwd($dir);
 
             if (file_exists($dir)) {
-                $tests[] = new DirectoryTestSuite($dir);
+                $tests[] = new FileTestSuite($dir);
             }
         }
 

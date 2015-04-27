@@ -7,7 +7,7 @@ use watoki\scrut\assertions\IsInstanceOfAssertion;
 use watoki\scrut\assertions\IsTrueAssertion;
 use watoki\scrut\assertions\SizeAssertion;
 use watoki\scrut\failures\AssertionFailedFailure;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class CheckAssertions extends StaticTestSuite {
 

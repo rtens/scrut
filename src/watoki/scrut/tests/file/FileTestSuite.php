@@ -1,9 +1,12 @@
 <?php
-namespace watoki\scrut\tests;
+namespace watoki\scrut\tests\file;
 
 use watoki\scrut\Test;
+use watoki\scrut\tests\plain\PlainTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
+use watoki\scrut\tests\TestSuite;
 
-class DirectoryTestSuite extends TestSuite {
+class FileTestSuite extends TestSuite {
 
     /** @var string */
     private $path;
@@ -117,7 +120,10 @@ class DirectoryTestSuite extends TestSuite {
             && call_user_func($this->classFilter, $reflection);
     }
 
-    protected function getEmptyTestSuiteFailureSource() {
-        return $this->path;
+    /**
+     * @return \watoki\scrut\tests\FailureSourceLocator
+     */
+    public function getFailureSourceLocator() {
+        return new FileFailureSourceLocator($this->path);
     }
 }

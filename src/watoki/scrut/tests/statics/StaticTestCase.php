@@ -1,7 +1,8 @@
 <?php
-namespace watoki\scrut\tests;
+namespace watoki\scrut\tests\statics;
 
 use watoki\scrut\Asserter;
+use watoki\scrut\tests\plain\PlainTestCase;
 
 class StaticTestCase extends PlainTestCase {
 
@@ -16,13 +17,7 @@ class StaticTestCase extends PlainTestCase {
         $suite->execute($this->method->getName(), $assert);
     }
 
-    protected function getExceptionSourceFromTrace($trace) {
-        foreach ($trace as $i => $step) {
-            if ($step['class'] == StaticTestSuite::class && $step['function'] == 'execute') {
-                return $this->formatStep($trace[$i - 2]);
-            }
-        }
-
-        return 'unknown location';
+    public function getFailureSourceLocator() {
+        return new StaticFailureSourceLocator($this->method);
     }
 }

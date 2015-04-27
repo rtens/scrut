@@ -3,8 +3,8 @@ namespace watoki\scrut;
 
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\IncompleteTestResult;
-use watoki\scrut\tests\PlainTestSuite;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\plain\PlainTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class RunPlainTestSuites extends StaticTestSuite {
 

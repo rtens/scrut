@@ -1,7 +1,8 @@
 <?php
-namespace watoki\scrut\tests;
+namespace watoki\scrut\tests\statics;
 
 use watoki\scrut\Asserter;
+use watoki\scrut\tests\plain\PlainTestSuite;
 
 abstract class StaticTestSuite extends PlainTestSuite {
 

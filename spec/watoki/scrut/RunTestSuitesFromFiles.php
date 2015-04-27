@@ -4,8 +4,9 @@ namespace spec\watoki\scrut;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\Test;
-use watoki\scrut\tests\DirectoryTestSuite;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\file\FileTestSuite;
+use watoki\scrut\tests\generic\GenericTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class RunTestSuitesFromFiles extends StaticTestSuite {
 
@@ -18,7 +19,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     }
 
     function noExistingFolder() {
-        $suite = new DirectoryTestSuite($this->tmp('some/foo'));
+        $suite = new FileTestSuite($this->tmp('some/foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 1);
@@ -28,7 +29,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     function emptyFolder() {
         $this->createFolder('some/foo');
 
-        $suite = new DirectoryTestSuite($this->tmp('some/foo'));
+        $suite = new FileTestSuite($this->tmp('some/foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 1);
@@ -42,7 +43,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->fileContent('foo/SingleFile.php', '<?php
             class SingleFoo {}');
 
-        $suite = new DirectoryTestSuite($this->tmp('foo/SingleFile.php'));
+        $suite = new FileTestSuite($this->tmp('foo/SingleFile.php'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
@@ -54,7 +55,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->fileContent('foo/AnEmptyFoo.php', '<?php
             class EmptyFoo {}');
 
-        $suite = new DirectoryTestSuite($this->tmp('foo'));
+        $suite = new FileTestSuite($this->tmp('foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
@@ -66,12 +67,12 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
 
     function runStaticSuite() {
         $this->fileContent('foo/MyFoo.php', '<?php
-            class Foo extends \watoki\scrut\tests\StaticTestSuite {
+            class Foo extends ' . StaticTestSuite::class . ' {
                 function bar() {}
                 function baz() {}
             }');
 
-        $suite = new DirectoryTestSuite($this->tmp('foo'));
+        $suite = new FileTestSuite($this->tmp('foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 4);
@@ -82,9 +83,9 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     function loadGenericTestSuite() {
         $this->fileContent('foo/GenericFoo.php', '<?php
             class IgnoreThisOne {}
-            return new \watoki\scrut\tests\GenericTestSuite("Generic foo");');
+            return new ' . GenericTestSuite::class . '("Generic foo");');
 
-        $suite = new DirectoryTestSuite($this->tmp('foo/GenericFoo.php'));
+        $suite = new FileTestSuite($this->tmp('foo/GenericFoo.php'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
@@ -100,7 +101,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class Two {}
         ');
 
-        $suite = new DirectoryTestSuite($this->tmp('foo'));
+        $suite = new FileTestSuite($this->tmp('foo'));
         $suite->run($this->listener);
 
         $names = array_map(function (Test $test) {
@@ -122,7 +123,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class TwoOne {}
         ');
 
-        $suite = new DirectoryTestSuite($this->tmp('foo'));
+        $suite = new FileTestSuite($this->tmp('foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 4);
@@ -143,7 +144,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class NotThisOne {}
         ');
 
-        $suite = new DirectoryTestSuite($this->tmp('foo'));
+        $suite = new FileTestSuite($this->tmp('foo'));
         $suite->setClassFilter(function (\ReflectionClass $class) {
             return $class->getShortName() == 'ThisOne';
         });
@@ -153,7 +154,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     }
 
     function changeName() {
-        $suite = new DirectoryTestSuite($this->tmp('some/foo'), "bar");
+        $suite = new FileTestSuite($this->tmp('some/foo'), "bar");
         $suite->run($this->listener);
 
         $this->assert($this->listener->started[0]->getName(), 'bar');

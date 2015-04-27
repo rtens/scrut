@@ -9,9 +9,9 @@ use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\results\PassedTestResult;
-use watoki\scrut\tests\GenericTestCase;
-use watoki\scrut\tests\GenericTestSuite;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\generic\GenericTestCase;
+use watoki\scrut\tests\generic\GenericTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class RunGenericTestSuite extends StaticTestSuite {
 

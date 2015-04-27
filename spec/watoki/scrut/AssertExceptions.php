@@ -2,7 +2,7 @@
 namespace watoki\scrut;
 
 use watoki\scrut\fixtures\ExceptionFixture;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class AssertExceptions extends StaticTestSuite {
 

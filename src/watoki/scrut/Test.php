@@ -15,8 +15,7 @@ interface Test {
     public function getName();
 
     /**
-     * @param Failure $failure
-     * @return string Containing file name and optionally the line in test case where this exception originated
+     * @return \watoki\scrut\tests\FailureSourceLocator
      */
-    public function getFailureSource(Failure $failure);
+    public function getFailureSourceLocator();
 } 

@@ -1,7 +1,7 @@
 <?php
 namespace watoki\scrut\cli;
 
-use watoki\scrut\tests\DirectoryTestSuite;
+use watoki\scrut\tests\file\FileTestSuite;
 
 class ConfiguredTestRunner extends DefaultTestRunner {
 
@@ -39,7 +39,7 @@ class ConfiguredTestRunner extends DefaultTestRunner {
      */
     private function buildSuite($config) {
         if (array_key_exists('directory', $config)) {
-            $suite = new DirectoryTestSuite($this->cwd($config['directory']));
+            $suite = new FileTestSuite($this->cwd($config['directory']));
 
             if (array_key_exists('filter', $config)) {
                 $suite->setClassFilter(function (\ReflectionClass $class) use ($config) {

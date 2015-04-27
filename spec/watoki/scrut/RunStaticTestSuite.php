@@ -5,7 +5,7 @@ use watoki\scrut\failures\EmptyTestSuiteFailure;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\results\PassedTestResult;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class RunStaticTestSuite extends StaticTestSuite {
 

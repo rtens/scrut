@@ -1,7 +1,7 @@
 <?php
 namespace watoki\scrut\tests\migration;
 
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class PhpUnitTestSuite extends StaticTestSuite {
 

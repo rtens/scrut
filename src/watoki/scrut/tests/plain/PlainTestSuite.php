@@ -1,7 +1,9 @@
 <?php
-namespace watoki\scrut\tests;
+namespace watoki\scrut\tests\plain;
 
 use watoki\scrut\Test;
+use watoki\scrut\tests\TestCase;
+use watoki\scrut\tests\TestSuite;
 
 class PlainTestSuite extends TestSuite {
 
@@ -77,8 +79,10 @@ class PlainTestSuite extends TestSuite {
         return new PlainTestCase($method);
     }
 
-    protected function getEmptyTestSuiteFailureSource() {
-        $class = new \ReflectionClass($this->getSuite());
-        return $class->getFileName() . ':' . $class->getStartLine();
+    /**
+     * @return \watoki\scrut\tests\FailureSourceLocator
+     */
+    public function getFailureSourceLocator() {
+        return new PlainFailureSourceLocator(new \ReflectionClass($this->suite));
     }
 }

@@ -4,7 +4,7 @@ use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\tests\migration\PhpUnitTestSuite;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 /**
  * In order to facilitate migration, there should be a subclass of StaticTestSuite that

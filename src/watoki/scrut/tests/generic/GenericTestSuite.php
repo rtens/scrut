@@ -1,18 +1,19 @@
 <?php
-namespace watoki\scrut\tests;
+namespace watoki\scrut\tests\generic;
 
 use watoki\scrut\Test;
+use watoki\scrut\tests\TestSuite;
 
 class GenericTestSuite extends TestSuite {
+
+    /** @var \Exception */
+    private $creation;
 
     /** @var Test[] */
     private $tests = [];
 
     /** @var string */
     private $name;
-
-    /** @var \Exception */
-    private $creation;
 
     function __construct($name) {
         $this->name = $name;
@@ -52,14 +53,9 @@ class GenericTestSuite extends TestSuite {
     }
 
     /**
-     * @return \Exception
+     * @return \watoki\scrut\tests\FailureSourceLocator
      */
-    public function getCreation() {
-        return $this->creation;
-    }
-
-    protected function getEmptyTestSuiteFailureSource() {
-        $creation = $this->getCreation()->getTrace()[0];
-        return $creation['file'] . ':' . $creation['line'];
+    public function getFailureSourceLocator() {
+        return new GenericFailureSourceLocator($this->creation);
     }
 }

@@ -4,13 +4,14 @@ namespace spec\watoki\scrut;
 use watoki\scrut\Asserter;
 use watoki\scrut\Failure;
 use watoki\scrut\failures\IncompleteTestFailure;
+use watoki\scrut\tests\FailureSourceLocator;
 use watoki\scrut\listeners\ArrayListener;
-use watoki\scrut\tests\GenericTestCase;
-use watoki\scrut\tests\GenericTestSuite;
-use watoki\scrut\tests\PlainTestCase;
-use watoki\scrut\tests\PlainTestSuite;
-use watoki\scrut\tests\StaticTestCase;
-use watoki\scrut\tests\StaticTestSuite;
+use watoki\scrut\tests\generic\GenericTestCase;
+use watoki\scrut\tests\generic\GenericTestSuite;
+use watoki\scrut\tests\plain\PlainTestCase;
+use watoki\scrut\tests\plain\PlainTestSuite;
+use watoki\scrut\tests\statics\StaticTestCase;
+use watoki\scrut\tests\statics\StaticTestSuite;
 
 class FindLocationOfFailure extends StaticTestSuite {
 
@@ -110,7 +111,8 @@ class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
     private function assertLocationIsAtLine($line) {
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($this->listener->testResults[0]->getFailureSource($result->failure()), __FILE__ . ':' . ($line));
+        $expected = FailureSourceLocator::formatFileAndLine(__FILE__, $line);
+        $this->assert($this->listener->testResults[0]->getFailureSourceLocator()->locate($result->failure()), $expected);
     }
 
     private function raiseAWarning() {
@@ -198,7 +200,9 @@ class FindLocationOfFailure_InStaticTestSuite extends StaticTestSuite {
 
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($this->listener->testResults[0]->getFailureSource($result->failure()), __FILE__ . ':' . ($start + $line));
+        $expected = FailureSourceLocator::formatFileAndLine(__FILE__, $start + $line);
+        $locator = $this->listener->testResults[0]->getFailureSourceLocator();
+        $this->assert($locator->locate($result->failure()), $expected);
     }
 
     public static function throwException() {
@@ -281,7 +285,8 @@ class FindLocationOfFailure_InPlainTestSuite extends StaticTestSuite {
 
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($this->listener->testResults[0]->getFailureSource($result->failure()), __FILE__ . ':' . ($start + $line));
+        $expected = FailureSourceLocator::formatFileAndLine(__FILE__, $start + $line);
+        $this->assert($this->listener->testResults[0]->getFailureSourceLocator()->locate($result->failure()), $expected);
     }
 
 }

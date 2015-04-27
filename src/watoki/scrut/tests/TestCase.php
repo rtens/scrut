@@ -53,41 +53,4 @@ abstract class TestCase implements Test {
         $listener->onFinished($this);
     }
 
-    public function getFailureSource(Failure $failure) {
-        if ($failure instanceof NoAssertionsFailure) {
-            return $this->getNoAssertionsFailureSource();
-        } else if ($failure instanceof CaughtExceptionFailure) {
-            return $this->getExceptionSource($failure->getException());
-        } else {
-            return $this->getExceptionSource($failure);
-        }
-    }
-
-    private function getExceptionSource(\Exception $exception) {
-        $first = [
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'class' => null
-        ];
-
-        return $this->getExceptionSourceFromTrace(array_merge([$first], $exception->getTrace()));
-    }
-
-    protected function formatStep($step) {
-        return $this->formatFileAndLine($step['file'], $step['line']);
-    }
-
-    /**
-     * @param string $file
-     * @param int $line
-     * @return string
-     */
-    protected function formatFileAndLine($file, $line) {
-        return $file . ':' . $line;
-    }
-
-    abstract protected function getNoAssertionsFailureSource();
-
-    abstract protected function getExceptionSourceFromTrace($trace);
-
 }

@@ -1,7 +1,8 @@
 <?php
-namespace watoki\scrut\tests;
+namespace watoki\scrut\tests\plain;
 
 use watoki\scrut\Asserter;
+use watoki\scrut\tests\TestCase;
 
 class PlainTestCase extends TestCase {
 
@@ -45,18 +46,10 @@ class PlainTestCase extends TestCase {
         }
     }
 
-    protected function getNoAssertionsFailureSource() {
-        $method = $this->method;
-        return $this->formatFileAndLine($method->getFileName(), $method->getStartLine());
-    }
-
-    protected function getExceptionSourceFromTrace($trace) {
-        foreach ($trace as $i => $step) {
-            if (!isset($step['file'])) {
-                return $this->formatStep($trace[$i - 1]);
-            }
-        }
-
-        return 'unknown location';
+    /**
+     * @return \watoki\scrut\tests\FailureSourceLocator
+     */
+    public function getFailureSourceLocator() {
+        return new PlainFailureSourceLocator($this->method);
     }
 }
