@@ -33,7 +33,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 1);
-        $this->assert($this->listener->started[0], 'foo');
+        $this->assert($this->listener->started[0]->last(), $this->tmp('some/foo'));
 
         $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
@@ -47,7 +47,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
-        $this->assert($this->listener->started[0]->last(), 'SingleFile.php');
+        $this->assert($this->listener->started[0]->last(), $this->tmp('foo/SingleFile.php'));
         $this->assert($this->listener->started[1]->last(), 'SingleFoo');
     }
 

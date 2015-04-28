@@ -26,7 +26,7 @@ class FileTestSuite extends TestSuite {
     function __construct($path, $name = null, TestName $parent = null) {
         parent::__construct($parent);
         $this->path = $path;
-        $this->name = $name ?: basename($path);
+        $this->name = $name ?: $path;
         $this->classFilter = function () {
             return true;
         };
