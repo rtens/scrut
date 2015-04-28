@@ -12,7 +12,7 @@ class NotPassedTestResult implements TestResult {
         $this->failure = $failure;
     }
 
-    public function failure() {
+    public function getFailure() {
         return $this->failure;
     }
 

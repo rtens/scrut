@@ -40,8 +40,8 @@ class PhpUnitCompatibility extends StaticTestSuite {
         /** @var FailedTestResult $result */
         $result = $this->listener->results[1];
         $this->assert->isInstanceOf($result, FailedTestResult::class);
-        $this->assert->contains($result->failure()->getFailureMessage(), "Caught [PHPUnit_Framework_ExpectationFailedException]");
-        $this->assert($result->failure()->getMessage(), "Failed asserting that false is true.");
+        $this->assert->contains($result->getFailure()->getFailureMessage(), "Caught [PHPUnit_Framework_ExpectationFailedException]");
+        $this->assert($result->getFailure()->getMessage(), "Failed asserting that false is true.");
     }
 }
 

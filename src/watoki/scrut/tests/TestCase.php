@@ -52,7 +52,7 @@ abstract class TestCase extends Test {
         }
 
         if ($result instanceof NotPassedTestResult) {
-            $result->failure()->useSourceLocator($this->getFailureSourceLocator());
+            $result->getFailure()->useSourceLocator($this->getFailureSourceLocator());
         }
 
         $listener->onResult($name, $result);

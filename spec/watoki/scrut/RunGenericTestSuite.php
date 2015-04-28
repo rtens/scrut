@@ -33,7 +33,7 @@ class RunGenericTestSuite extends StaticTestSuite {
         /** @var IncompleteTestResult $testResult */
         $testResult = $this->listener->results[0];
         $this->assert->isInstanceOf($testResult, IncompleteTestResult::class);
-        $this->assert->equals($testResult->failure()->getFailureMessage(), "Empty test suite");
+        $this->assert->equals($testResult->getFailure()->getFailureMessage(), "Empty test suite");
     }
 
     function emptyTest() {
@@ -69,7 +69,7 @@ class RunGenericTestSuite extends StaticTestSuite {
         /** @var FailedTestResult $result */
         $result = $this->listener->results[0];
         $this->assert->isInstanceOf($result, FailedTestResult::class);
-        $this->assert->isInstanceOf($result->failure(), AssertionFailedFailure::class);
+        $this->assert->isInstanceOf($result->getFailure(), AssertionFailedFailure::class);
     }
 
     function exceptionInTest() {
@@ -82,9 +82,9 @@ class RunGenericTestSuite extends StaticTestSuite {
         /** @var FailedTestResult $result */
         $result = $this->listener->results[0];
         $this->assert->isInstanceOf($result, FailedTestResult::class);
-        $this->assert->isInstanceOf($result->failure(), CaughtExceptionFailure::class);
-        $this->assert->contains($result->failure()->getFailureMessage(), "Caught [InvalidArgumentException] thrown at [" . __FILE__);
-        $this->assert->equals($result->failure()->getMessage(), "Failed miserably");
+        $this->assert->isInstanceOf($result->getFailure(), CaughtExceptionFailure::class);
+        $this->assert->contains($result->getFailure()->getFailureMessage(), "Caught [InvalidArgumentException] thrown at [" . __FILE__);
+        $this->assert->equals($result->getFailure()->getMessage(), "Failed miserably");
     }
 
     function incompleteTest() {
@@ -97,7 +97,7 @@ class RunGenericTestSuite extends StaticTestSuite {
         /** @var IncompleteTestResult $result */
         $result = $this->listener->results[0];
         $this->assert->isInstanceOf($result, IncompleteTestResult::class);
-        $this->assert->equals($result->failure()->getFailureMessage(), "Not done yet");
-        $this->assert->equals($result->failure()->getMessage(), "");
+        $this->assert->equals($result->getFailure()->getFailureMessage(), "Not done yet");
+        $this->assert->equals($result->getFailure()->getMessage(), "");
     }
 }

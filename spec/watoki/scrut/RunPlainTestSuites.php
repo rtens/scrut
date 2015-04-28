@@ -46,7 +46,7 @@ class RunPlainTestSuites extends StaticTestSuite {
         $this->assert->size($listener->results, 1);
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $listener->results[0];
-        $this->assert($result->failure()->getMessage(), 'Method [watoki\\scrut\\RunPlainTestSuites_ProtectedBefore::before] must be public');
+        $this->assert($result->getFailure()->getMessage(), 'Method [watoki\\scrut\\RunPlainTestSuites_ProtectedBefore::before] must be public');
     }
 
     function afterMethodMustBePublic() {
@@ -57,7 +57,7 @@ class RunPlainTestSuites extends StaticTestSuite {
         $this->assert->size($listener->results, 1);
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $listener->results[0];
-        $this->assert($result->failure()->getMessage(), 'Method [watoki\\scrut\\RunPlainTestSuites_ProtectedAfter::after] must be public');
+        $this->assert($result->getFailure()->getMessage(), 'Method [watoki\\scrut\\RunPlainTestSuites_ProtectedAfter::after] must be public');
     }
 }
 

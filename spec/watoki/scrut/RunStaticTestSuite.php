@@ -24,7 +24,7 @@ class RunStaticTestSuite extends StaticTestSuite {
         /** @var IncompleteTestResult $result */
         $result = $this->listener->results[0];
         $this->assert->isInstanceOf($result, IncompleteTestResult::class);
-        $this->assert->isInstanceOf($result->failure(), EmptyTestSuiteFailure::class);
+        $this->assert->isInstanceOf($result->getFailure(), EmptyTestSuiteFailure::class);
     }
 
     function runOwnMethods() {

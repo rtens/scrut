@@ -12,8 +12,8 @@ class IncompleteTestResult extends NotPassedTestResult {
     /**
      * @return IncompleteTestFailure
      */
-    public function failure() {
-        return parent::failure();
+    public function getFailure() {
+        return parent::getFailure();
     }
 
 }
