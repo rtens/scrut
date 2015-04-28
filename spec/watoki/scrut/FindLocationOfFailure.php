@@ -24,10 +24,30 @@ class FindLocationOfFailure extends StaticTestSuite {
     }
 }
 
-class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
+class FindLocationOfFailure_TestSuite extends StaticTestSuite {
 
     /** @var ArrayListener */
-    private $listener;
+    protected $listener;
+
+    /** @internal */
+    public function getName() {
+        return substr(get_class($this), -18);
+    }
+
+    protected function before() {
+        $this->listener = new ArrayListener();
+    }
+
+    protected function assertLocationIsAtLine($line) {
+        /** @var \watoki\scrut\results\FailedTestResult $result */
+        $result = $this->listener->results[0];
+        $expected = FailureSourceLocator::formatFileAndLine(__FILE__, $line);
+        $this->assert($this->listener->testResults[0]->getFailureSourceLocator()->locate($result->failure()), $expected);
+    }
+
+}
+
+class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_TestSuite {
 
     /** @var GenericTestSuite */
     private $suite;
@@ -38,7 +58,7 @@ class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
     }
 
     protected function before() {
-        $this->listener = new ArrayListener();
+        parent::before();
         $this->suite = new GenericTestSuite("Foo");
     }
 
@@ -108,86 +128,71 @@ class FindLocationOfFailure_InGenericTestSuite extends StaticTestSuite {
         $this->suite->run($this->listener);
     }
 
-    private function assertLocationIsAtLine($line) {
-        /** @var \watoki\scrut\results\FailedTestResult $result */
-        $result = $this->listener->results[0];
-        $expected = FailureSourceLocator::formatFileAndLine(__FILE__, $line);
-        $this->assert($this->listener->testResults[0]->getFailureSourceLocator()->locate($result->failure()), $expected);
-    }
-
     private function raiseAWarning() {
         /** @noinspection PhpParamsInspection */
         $this->runGenericTestCase();
     }
 }
 
-class FindLocationOfFailure_InStaticTestSuite extends StaticTestSuite {
+class FindLocationOfFailure_InStaticTestSuite extends FindLocationOfFailure_TestSuite {
 
     /** @var StaticTestSuite */
     private $suite;
 
-    /** @var ArrayListener */
-    private $listener;
-
-    /** @internal */
-    public function getName() {
-        return 'InStaticTestSuite';
-    }
-
     protected function before() {
+        parent::before();
         $this->suite = new FindLocationOfFailure_Foo();
-        $this->listener = new ArrayListener();
     }
 
     function directlyThrownFailure() {
         $this->executeTestCase('throwFailure');
-        $this->assertLocationIsAtLine(3);
+        $this->assertLocationIsAtLineOfSuite(3);
     }
 
     function caughtError() {
         $this->executeTestCase('raiseAWarning');
-        $this->assertLocationIsAtLine(34);
+        $this->assertLocationIsAtLineOfSuite(34);
     }
 
     function failedAssertion() {
         $this->executeTestCase('failAssertion');
-        $this->assertLocationIsAtLine(7);
+        $this->assertLocationIsAtLineOfSuite(7);
     }
 
     function failedAssertInvocation() {
         $this->executeTestCase('failAssertInvocation');
-        $this->assertLocationIsAtLine(30);
+        $this->assertLocationIsAtLineOfSuite(30);
     }
 
     function incompleteTest() {
         $this->executeTestCase('incompleteTest');
-        $this->assertLocationIsAtLine(11);
+        $this->assertLocationIsAtLineOfSuite(11);
     }
 
     function directlyThrownException() {
         $this->executeTestCase('directlyThrowException');
-        $this->assertLocationIsAtLine(15);
+        $this->assertLocationIsAtLineOfSuite(15);
     }
 
     function indirectlyThrownException() {
         $this->executeTestCase('indirectlyThrowException');
-        $this->assertLocationIsAtLine(19);
+        $this->assertLocationIsAtLineOfSuite(19);
     }
 
     function indirectAssertion() {
         $this->executeTestCase('indirectAssertion');
-        $this->assertLocationIsAtLine(23);
+        $this->assertLocationIsAtLineOfSuite(23);
     }
 
     function emptyTestCase() {
         $this->executeTestCase('noAssertions');
-        $this->assertLocationIsAtLine(26);
+        $this->assertLocationIsAtLineOfSuite(26);
     }
 
     function emptyTestSuite() {
         $this->suite = new FindLocationOfFailure_Empty();
         $this->suite->run($this->listener);
-        $this->assertLocationIsAtLine(0);
+        $this->assertLocationIsAtLineOfSuite(0);
     }
 
     private function executeTestCase($name) {
@@ -195,14 +200,9 @@ class FindLocationOfFailure_InStaticTestSuite extends StaticTestSuite {
         $test->run($this->listener);
     }
 
-    private function assertLocationIsAtLine($line) {
+    private function assertLocationIsAtLineOfSuite($line) {
         $start = (new \ReflectionClass($this->suite))->getStartLine();
-
-        /** @var \watoki\scrut\results\FailedTestResult $result */
-        $result = $this->listener->results[0];
-        $expected = FailureSourceLocator::formatFileAndLine(__FILE__, $start + $line);
-        $locator = $this->listener->testResults[0]->getFailureSourceLocator();
-        $this->assert($locator->locate($result->failure()), $expected);
+        $this->assertLocationIsAtLine($start + $line);
     }
 
     public static function throwException() {
@@ -211,68 +211,60 @@ class FindLocationOfFailure_InStaticTestSuite extends StaticTestSuite {
 
 }
 
-class FindLocationOfFailure_InPlainTestSuite extends StaticTestSuite {
+class FindLocationOfFailure_InPlainTestSuite extends FindLocationOfFailure_TestSuite {
 
     /** @var PlainTestSuite */
     private $suite;
 
-    /** @var ArrayListener */
-    private $listener;
-
-    /** @internal */
-    public function getName() {
-        return 'InPlainTestSuite';
-    }
-
     protected function before() {
+        parent::before();
         $this->suite = new PlainTestSuite(new FindLocationOfFailure_PlainFoo());
-        $this->listener = new ArrayListener();
     }
 
     function directlyThrownFailure() {
         $this->executeTestCase('throwFailure');
-        $this->assertLocationIsAtLine(3);
+        $this->assertLocationIsAtLineOfSuite(3);
     }
 
     function caughtError() {
         $this->executeTestCase('raiseAWarning');
-        $this->assertLocationIsAtLine(30);
+        $this->assertLocationIsAtLineOfSuite(30);
     }
 
     function failedAssertion() {
         $this->executeTestCase('failAssertion');
-        $this->assertLocationIsAtLine(7);
+        $this->assertLocationIsAtLineOfSuite(7);
     }
 
     function incompleteTest() {
         $this->executeTestCase('incompleteTest');
-        $this->assertLocationIsAtLine(11);
+        $this->assertLocationIsAtLineOfSuite(11);
     }
 
     function directlyThrownException() {
         $this->executeTestCase('directlyThrowException');
-        $this->assertLocationIsAtLine(15);
+        $this->assertLocationIsAtLineOfSuite(15);
     }
 
     function indirectlyThrownException() {
         $this->executeTestCase('indirectlyThrowException');
-        $this->assertLocationIsAtLine(19);
+        $this->assertLocationIsAtLineOfSuite(19);
     }
 
     function indirectAssertion() {
         $this->executeTestCase('indirectAssertion');
-        $this->assertLocationIsAtLine(23);
+        $this->assertLocationIsAtLineOfSuite(23);
     }
 
     function emptyTestCase() {
         $this->executeTestCase('noAssertions');
-        $this->assertLocationIsAtLine(26);
+        $this->assertLocationIsAtLineOfSuite(26);
     }
 
     function emptyTestSuite() {
         $this->suite = new PlainTestSuite(new FindLocationOfFailure_PlainEmpty());
         $this->suite->run($this->listener);
-        $this->assertLocationIsAtLine(0);
+        $this->assertLocationIsAtLineOfSuite(0);
     }
 
     private function executeTestCase($name) {
@@ -280,13 +272,9 @@ class FindLocationOfFailure_InPlainTestSuite extends StaticTestSuite {
         $test->run($this->listener);
     }
 
-    private function assertLocationIsAtLine($line) {
+    private function assertLocationIsAtLineOfSuite($line) {
         $start = (new \ReflectionClass($this->suite->getSuite()))->getStartLine();
-
-        /** @var \watoki\scrut\results\FailedTestResult $result */
-        $result = $this->listener->results[0];
-        $expected = FailureSourceLocator::formatFileAndLine(__FILE__, $start + $line);
-        $this->assert($this->listener->testResults[0]->getFailureSourceLocator()->locate($result->failure()), $expected);
+        $this->assertLocationIsAtLine($start + $line);
     }
 
 }
