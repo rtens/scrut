@@ -38,8 +38,8 @@ class ConfiguredTestRunner extends DefaultTestRunner {
      * @return \watoki\scrut\tests\TestSuite
      */
     private function buildSuite($config) {
-        if (array_key_exists('directory', $config)) {
-            $suite = new FileTestSuite($this->cwd($config['directory']));
+        if (array_key_exists('file', $config)) {
+            $suite = new FileTestSuite($this->cwd($config['file']));
 
             if (array_key_exists('filter', $config)) {
                 $suite->setClassFilter(function (\ReflectionClass $class) use ($config) {
