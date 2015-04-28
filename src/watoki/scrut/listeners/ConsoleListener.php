@@ -6,23 +6,24 @@ use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\results\NotPassedTestResult;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\Test;
+use watoki\scrut\TestName;
 use watoki\scrut\TestResult;
 use watoki\scrut\TestRunListener;
 
 class ConsoleListener implements TestRunListener {
 
-    /** @var array|Test[] */
-    private $running = [];
-
     /** @var array|array[]|TestResult[][] */
     private $results = [];
 
-    public function onStarted(Test $test) {
-        $this->running[] = $test;
+    /** @var bool[] indexed by TestName */
+    private $running;
+
+    public function onStarted(TestName $test) {
+        $this->running[$test->toString()] = true;
     }
 
-    public function onFinished(Test $test) {
-        array_pop($this->running);
+    public function onFinished(TestName $test) {
+        unset($this->running[$test->toString()]);
 
         if ($this->running) {
             return;
@@ -58,12 +59,8 @@ class ConsoleListener implements TestRunListener {
         $this->printLine(implode(', ', $counts));
     }
 
-    public function onResult(Test $test, TestResult $result) {
-        $fullName = implode(array_map(function (Test $test) {
-            return $test->getName();
-        }, $this->running), '::');
-
-        $this->results[get_class($result)][$fullName] = [$test, $result];
+    public function onResult(TestName $test, TestResult $result) {
+        $this->results[get_class($result)][$test->toString()] = [$test, $result];
 
         if ($result instanceof IncompleteTestResult) {
             $this->output('I');

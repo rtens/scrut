@@ -1,7 +1,7 @@
 <?php
 namespace watoki\scrut\listeners;
 
-use watoki\scrut\Test;
+use watoki\scrut\TestName;
 use watoki\scrut\TestResult;
 use watoki\scrut\TestRunListener;
 
@@ -15,19 +15,19 @@ class MultiListener implements TestRunListener {
         return $this;
     }
 
-    public function onStarted(Test $test) {
+    public function onStarted(TestName $test) {
         foreach ($this->listeners as $listener) {
             $listener->onStarted($test);
         }
     }
 
-    public function onFinished(Test $test) {
+    public function onFinished(TestName $test) {
         foreach ($this->listeners as $listener) {
             $listener->onFinished($test);
         }
     }
 
-    public function onResult(Test $test, TestResult $result) {
+    public function onResult(TestName $test, TestResult $result) {
         foreach ($this->listeners as $listener) {
             $listener->onResult($test, $result);
         }

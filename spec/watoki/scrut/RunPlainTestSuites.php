@@ -23,8 +23,8 @@ class RunPlainTestSuites extends StaticTestSuite {
         $suite->run($listener);
 
         $this->assert->size($listener->results, 2);
-        $this->assert($listener->started[1]->getName(), 'foo');
-        $this->assert($listener->started[2]->getName(), 'bar');
+        $this->assert($listener->started[1]->last(), 'foo');
+        $this->assert($listener->started[2]->last(), 'bar');
     }
 
     function callBeforeAndAfter() {

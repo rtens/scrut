@@ -1,7 +1,7 @@
 <?php
 namespace watoki\scrut\listeners;
 
-use watoki\scrut\Test;
+use watoki\scrut\TestName;
 use watoki\scrut\TestResult;
 use watoki\scrut\TestRunListener;
 
@@ -32,15 +32,15 @@ class GenericListener implements TestRunListener {
         $this->whenResult = $callback;
     }
 
-    public function onStarted(Test $test) {
+    public function onStarted(TestName $test) {
         call_user_func($this->whenStarted, $test);
     }
 
-    public function onResult(Test $test, TestResult $result) {
+    public function onResult(TestName $test, TestResult $result) {
         call_user_func($this->whenResult, $test, $result);
     }
 
-    public function onFinished(Test $test) {
+    public function onFinished(TestName $test) {
         call_user_func($this->whenFinished, $test);
     }
 }

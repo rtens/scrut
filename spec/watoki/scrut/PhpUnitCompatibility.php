@@ -32,8 +32,8 @@ class PhpUnitCompatibility extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 3);
-        $this->assert($this->listener->started[1]->getName(), 'testThis');
-        $this->assert($this->listener->started[2]->getName(), 'testThat');
+        $this->assert($this->listener->started[1]->last(), 'testThis');
+        $this->assert($this->listener->started[2]->last(), 'testThat');
 
         $this->assert->size($this->listener->results, 2);
         $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);

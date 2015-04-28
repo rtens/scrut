@@ -2,6 +2,7 @@
 namespace watoki\scrut\tests\generic;
 
 use watoki\scrut\Test;
+use watoki\scrut\TestName;
 use watoki\scrut\tests\TestSuite;
 
 class GenericTestSuite extends TestSuite {
@@ -15,7 +16,12 @@ class GenericTestSuite extends TestSuite {
     /** @var string */
     private $name;
 
-    function __construct($name) {
+    /**
+     * @param string $name
+     * @param null|TestName $parent
+     */
+    function __construct($name, TestName $parent = null) {
+        parent::__construct($parent);
         $this->name = $name;
         $this->creation = new \Exception();
     }
@@ -35,7 +41,7 @@ class GenericTestSuite extends TestSuite {
      * @param callable $callback
      */
     public function test($name, callable $callback) {
-        $this->add(new GenericTestCase($name, $callback));
+        $this->add(new GenericTestCase($callback, $name, $this->getName()));
     }
 
     /**
@@ -48,7 +54,7 @@ class GenericTestSuite extends TestSuite {
     /**
      * @return string
      */
-    public function getName() {
+    protected function getOwnName() {
         return $this->name;
     }
 

@@ -2,6 +2,7 @@
 namespace watoki\scrut\tests\plain;
 
 use watoki\scrut\Asserter;
+use watoki\scrut\TestName;
 use watoki\scrut\tests\TestCase;
 
 class PlainTestCase extends TestCase {
@@ -9,14 +10,15 @@ class PlainTestCase extends TestCase {
     /** @var \ReflectionMethod */
     protected $method;
 
-    function __construct(\ReflectionMethod $method) {
+    function __construct(\ReflectionMethod $method, TestName $parent = null) {
+        parent::__construct($parent);
         $this->method = $method;
     }
 
     /**
      * @return string
      */
-    public function getName() {
+    protected function getOwnName() {
         return $this->method->getName();
     }
 

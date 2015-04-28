@@ -2,6 +2,7 @@
 namespace watoki\scrut\tests\plain;
 
 use watoki\scrut\Test;
+use watoki\scrut\TestName;
 use watoki\scrut\tests\TestCase;
 use watoki\scrut\tests\TestSuite;
 
@@ -15,8 +16,10 @@ class PlainTestSuite extends TestSuite {
 
     /**
      * @param object $suite
+     * @param null|TestName $parent
      */
-    function __construct($suite) {
+    function __construct($suite, TestName $parent = null) {
+        parent::__construct($parent);
         $this->suite = $suite;
 
         $this->methodFilter = function (\ReflectionMethod $method) {
@@ -34,7 +37,7 @@ class PlainTestSuite extends TestSuite {
     /**
      * @return string
      */
-    public function getName() {
+    protected function getOwnName() {
         return get_class($this->suite);
     }
 
@@ -76,7 +79,7 @@ class PlainTestSuite extends TestSuite {
      * @return TestCase
      */
     protected function createTestCase(\ReflectionMethod $method) {
-        return new PlainTestCase($method);
+        return new PlainTestCase($method, $this->getName());
     }
 
     /**

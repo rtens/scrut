@@ -2,6 +2,7 @@
 namespace watoki\scrut\tests\statics;
 
 use watoki\scrut\Asserter;
+use watoki\scrut\TestName;
 use watoki\scrut\tests\plain\PlainTestSuite;
 
 abstract class StaticTestSuite extends PlainTestSuite {
@@ -9,8 +10,8 @@ abstract class StaticTestSuite extends PlainTestSuite {
     /** @var Asserter */
     protected $assert;
 
-    function __construct() {
-        parent::__construct($this);
+    function __construct(TestName $parent = null) {
+        parent::__construct($this, $parent);
     }
 
     protected function before() {
@@ -20,7 +21,7 @@ abstract class StaticTestSuite extends PlainTestSuite {
     }
 
     protected function createTestCase(\ReflectionMethod $method) {
-        return new StaticTestCase($method);
+        return new StaticTestCase($method, $this->getName());
     }
 
     public function execute($method, Asserter $assert) {

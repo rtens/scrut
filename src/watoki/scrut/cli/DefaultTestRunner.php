@@ -5,6 +5,7 @@ use watoki\scrut\listeners\ConsoleListener;
 use watoki\scrut\listeners\MultiListener;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\Test;
+use watoki\scrut\TestName;
 use watoki\scrut\TestResult;
 use watoki\scrut\TestRunListener;
 use watoki\scrut\tests\file\FileTestSuite;
@@ -40,33 +41,33 @@ class DefaultTestRunner implements TestRunner, TestRunListener {
 
     protected function getTest() {
         $suite = new GenericTestSuite($this->getName());
-        foreach ($this->getTests() as $test) {
+        foreach ($this->getTests($suite) as $test) {
             $suite->add($test);
         }
         return $suite;
     }
 
-    private function getTests() {
+    private function getTests(Test $parent) {
         $tests = [];
 
         foreach (['test', 'tests', 'spec'] as $dir) {
             $dir = $this->cwd($dir);
 
             if (file_exists($dir)) {
-                $tests[] = new FileTestSuite($dir);
+                $tests[] = new FileTestSuite($dir, $parent->getName());
             }
         }
 
         return $tests;
     }
 
-    public function onStarted(Test $test) {
-    }
-
-    public function onResult(Test $test, TestResult $result) {
+    public function onResult(TestName $test, TestResult $result) {
         $this->failed = $this->failed || $result instanceof FailedTestResult;
     }
 
-    public function onFinished(Test $test) {
+    public function onStarted(TestName $test) {
+    }
+
+    public function onFinished(TestName $test) {
     }
 }

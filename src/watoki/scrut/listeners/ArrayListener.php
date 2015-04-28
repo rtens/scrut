@@ -1,34 +1,30 @@
 <?php
 namespace watoki\scrut\listeners;
 
-use watoki\scrut\Test;
+use watoki\scrut\TestName;
 use watoki\scrut\TestResult;
 use watoki\scrut\TestRunListener;
 
 class ArrayListener implements TestRunListener {
 
-    /** @var array|Test[] */
+    /** @var array|TestName[] */
     public $started = [];
 
-    /** @var array|Test[] */
+    /** @var array|TestName[] */
     public $finished = [];
 
     /** @var array|TestResult[] */
     public $results = [];
 
-    /** @var array|Test[] */
-    public $testResults = [];
-
-    public function onStarted(Test $test) {
+    public function onStarted(TestName $test) {
         $this->started[] = $test;
     }
 
-    public function onFinished(Test $test) {
+    public function onFinished(TestName $test) {
         $this->finished[] = $test;
     }
 
-    public function onResult(Test $test, TestResult $result) {
+    public function onResult(TestName $test, TestResult $result) {
         $this->results[] = $result;
-        $this->testResults[] = $test;
     }
 }

@@ -3,7 +3,7 @@ namespace spec\watoki\scrut;
 
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\IncompleteTestResult;
-use watoki\scrut\Test;
+use watoki\scrut\TestName;
 use watoki\scrut\tests\file\FileTestSuite;
 use watoki\scrut\tests\generic\GenericTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
@@ -33,7 +33,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 1);
-        $this->assert($this->listener->started[0]->getName(), 'foo');
+        $this->assert($this->listener->started[0], 'foo');
 
         $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
@@ -47,8 +47,8 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
-        $this->assert($this->listener->started[0]->getName(), 'SingleFile.php');
-        $this->assert($this->listener->started[1]->getName(), 'SingleFoo');
+        $this->assert($this->listener->started[0]->last(), 'SingleFile.php');
+        $this->assert($this->listener->started[1]->last(), 'SingleFoo');
     }
 
     function emptySuite() {
@@ -59,7 +59,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
-        $this->assert($this->listener->started[1]->getName(), 'EmptyFoo');
+        $this->assert($this->listener->started[1]->last(), 'EmptyFoo');
 
         $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
@@ -76,8 +76,8 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 4);
-        $this->assert($this->listener->started[2]->getName(), "bar");
-        $this->assert($this->listener->started[3]->getName(), "baz");
+        $this->assert($this->listener->started[2]->last(), "bar");
+        $this->assert($this->listener->started[3]->last(), "baz");
     }
 
     function loadGenericTestSuite() {
@@ -89,7 +89,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
-        $this->assert($this->listener->started[1]->getName(), 'Generic foo');
+        $this->assert($this->listener->started[1], 'Generic foo');
     }
 
     function findAllSuites() {
@@ -104,8 +104,8 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite = new FileTestSuite($this->tmp('foo'));
         $suite->run($this->listener);
 
-        $names = array_map(function (Test $test) {
-            return $test->getName();
+        $names = array_map(function (TestName $test) {
+            return $test->last();
         }, $this->listener->started);
         $this->assert->contains($names, "One");
         $this->assert->contains($names, "AnotherOne");
@@ -128,8 +128,8 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
 
         $this->assert->size($this->listener->started, 4);
 
-        $names = array_map(function (Test $test) {
-            return $test->getName();
+        $names = array_map(function (TestName $test) {
+            return $test->last();
         }, $this->listener->started);
         $this->assert->contains($names, "OneOne");
         $this->assert->contains($names, "OneTwo");
@@ -157,7 +157,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $suite = new FileTestSuite($this->tmp('some/foo'), "bar");
         $suite->run($this->listener);
 
-        $this->assert($this->listener->started[0]->getName(), 'bar');
+        $this->assert($this->listener->started[0], 'bar');
     }
 
     private function fileContent($fileName, $content) {

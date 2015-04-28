@@ -6,13 +6,14 @@ use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\Test;
 use watoki\scrut\TestRunListener;
 
-abstract class TestSuite implements Test {
+abstract class TestSuite extends Test {
 
     /**
      * @param TestRunListener $listener
      */
     public function run(TestRunListener $listener) {
-        $listener->onStarted($this);
+        $name = $this->getName();
+        $listener->onStarted($name);
 
         $hasTest = false;
         foreach ($this->getTests() as $test) {
@@ -21,22 +22,17 @@ abstract class TestSuite implements Test {
         }
 
         if (!$hasTest) {
-            $listener->onResult($this, new IncompleteTestResult(
+            $listener->onResult($name, new IncompleteTestResult(
                 (new EmptyTestSuiteFailure($this))
                     ->useSourceLocator($this->getFailureSourceLocator())
             ));
         }
 
-        $listener->onFinished($this);
+        $listener->onFinished($name);
     }
 
     /**
      * @return Test[]
      */
     abstract protected function getTests();
-
-    /**
-     * @return \watoki\scrut\tests\FailureSourceLocator
-     */
-    abstract protected function getFailureSourceLocator();
 }

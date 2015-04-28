@@ -32,9 +32,9 @@ class RunStaticTestSuite extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 3);
-        $this->assert->equals($this->listener->started[0]->getName(), RunStaticTestSuite_Foo::class);
-        $this->assert->equals($this->listener->started[1]->getName(), "foo");
-        $this->assert->equals($this->listener->started[2]->getName(), "bar");
+        $this->assert->equals($this->listener->started[0]->last(), RunStaticTestSuite_Foo::class);
+        $this->assert->equals($this->listener->started[1]->last(), "foo");
+        $this->assert->equals($this->listener->started[2]->last(), "bar");
 
         $this->assert->size($this->listener->results, 2);
         $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -46,7 +46,7 @@ class RunStaticTestSuite extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 1);
-        $this->assert->equals($this->listener->started[1]->getName(), "foo");
+        $this->assert->equals($this->listener->started[1]->last(), "foo");
     }
 
     function filterMethods() {
@@ -57,7 +57,7 @@ class RunStaticTestSuite extends StaticTestSuite {
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
-        $this->assert->equals($this->listener->started[1]->getName(), "bar");
+        $this->assert->equals($this->listener->started[1]->last(), "bar");
     }
 
     function runTestsInNewInstances() {

@@ -4,8 +4,8 @@ namespace spec\watoki\scrut;
 use watoki\scrut\Asserter;
 use watoki\scrut\Failure;
 use watoki\scrut\failures\IncompleteTestFailure;
-use watoki\scrut\tests\FailureSourceLocator;
 use watoki\scrut\listeners\ArrayListener;
+use watoki\scrut\tests\FailureSourceLocator;
 use watoki\scrut\tests\generic\GenericTestCase;
 use watoki\scrut\tests\generic\GenericTestSuite;
 use watoki\scrut\tests\plain\PlainTestCase;
@@ -29,8 +29,7 @@ class FindLocationOfFailure_TestSuite extends StaticTestSuite {
     /** @var ArrayListener */
     protected $listener;
 
-    /** @internal */
-    public function getName() {
+    protected function getOwnName() {
         return substr(get_class($this), -18);
     }
 
@@ -53,7 +52,7 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
     private $suite;
 
     /** @internal */
-    public function getName() {
+    protected function getOwnName() {
         return 'InGenericTestSuite';
     }
 
@@ -98,8 +97,8 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
     }
 
     function emptyTestCase() {
-        $this->suite->add(new GenericTestCase('bar', function () {
-        }));
+        $this->suite->add(new GenericTestCase(function () {
+        }, 'bar'));
         $this->suite->run($this->listener);
 
         $this->assertLocationIsAtLine(__LINE__ - 3);
@@ -124,7 +123,7 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
     }
 
     private function runGenericTestCase($callback) {
-        $this->suite->add(new GenericTestCase('bar', $callback));
+        $this->suite->add(new GenericTestCase($callback, 'bar'));
         $this->suite->run($this->listener);
     }
 

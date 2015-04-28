@@ -15,7 +15,7 @@ use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\Test;
 use watoki\scrut\TestRunListener;
 
-abstract class TestCase implements Test {
+abstract class TestCase extends Test {
 
     abstract protected function execute(Asserter $assert);
 
@@ -24,7 +24,8 @@ abstract class TestCase implements Test {
      * @return void
      */
     public function run(TestRunListener $listener) {
-        $listener->onStarted($this);
+        $name = $this->getName();
+        $listener->onStarted($name);
 
         $result = new PassedTestResult();
         $assert = new RecordingAsserter();
@@ -54,13 +55,8 @@ abstract class TestCase implements Test {
             $result->failure()->useSourceLocator($this->getFailureSourceLocator());
         }
 
-        $listener->onResult($this, $result);
-        $listener->onFinished($this);
+        $listener->onResult($name, $result);
+        $listener->onFinished($name);
     }
-
-    /**
-     * @return \watoki\scrut\tests\FailureSourceLocator
-     */
-    abstract protected function getFailureSourceLocator();
 
 }

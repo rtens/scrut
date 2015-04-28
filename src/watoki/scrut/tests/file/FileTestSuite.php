@@ -2,6 +2,7 @@
 namespace watoki\scrut\tests\file;
 
 use watoki\scrut\Test;
+use watoki\scrut\TestName;
 use watoki\scrut\tests\plain\PlainTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
 use watoki\scrut\tests\TestSuite;
@@ -20,8 +21,10 @@ class FileTestSuite extends TestSuite {
     /**
      * @param string $path Directory of file
      * @param null|string $name Defaults to directory base name
+     * @param null|TestName $parent
      */
-    function __construct($path, $name = null) {
+    function __construct($path, $name = null, TestName $parent = null) {
+        parent::__construct($parent);
         $this->path = $path;
         $this->name = $name ?: basename($path);
         $this->classFilter = function () {
@@ -32,7 +35,7 @@ class FileTestSuite extends TestSuite {
     /**
      * @return string
      */
-    public function getName() {
+    protected function getOwnName() {
         return $this->name;
     }
 
@@ -108,7 +111,7 @@ class FileTestSuite extends TestSuite {
             if (is_subclass_of($class, StaticTestSuite::class)) {
                 yield new $class();
             } else {
-                yield new PlainTestSuite(new $class());
+                yield new PlainTestSuite(new $class(), $this->getName());
             }
         }
     }

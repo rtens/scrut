@@ -9,7 +9,6 @@ use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\results\PassedTestResult;
-use watoki\scrut\tests\generic\GenericTestCase;
 use watoki\scrut\tests\generic\GenericTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
 
@@ -38,13 +37,13 @@ class RunGenericTestSuite extends StaticTestSuite {
     }
 
     function emptyTest() {
-        $this->suite->add(new GenericTestCase("bar", function () {
-        }));
+        $this->suite->test("bar", function () {
+        });
         $this->suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
-        $this->assert->equals($this->listener->started[0]->getName(), "Foo");
-        $this->assert->equals($this->listener->started[1]->getName(), "bar");
+        $this->assert->equals($this->listener->started[0]->toString(), "Foo");
+        $this->assert->equals($this->listener->started[1]->toString(), "Foo::bar");
 
         $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
