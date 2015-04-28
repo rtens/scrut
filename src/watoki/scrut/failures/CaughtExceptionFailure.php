@@ -10,9 +10,9 @@ class CaughtExceptionFailure extends Failure {
     public function __construct(\Exception $exception) {
         $location = $exception->getFile() . '(' . $exception->getLine() . ')';
         $failureMessage = "Caught [" . get_class($exception) . "] thrown at [" . $location . "]";
+        $this->exception = $exception;
 
         parent::__construct($failureMessage, $exception->getMessage());
-        $this->exception = $exception;
     }
 
     public function getException() {

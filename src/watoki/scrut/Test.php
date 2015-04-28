@@ -13,9 +13,4 @@ interface Test {
      * @return string
      */
     public function getName();
-
-    /**
-     * @return \watoki\scrut\tests\FailureSourceLocator
-     */
-    public function getFailureSourceLocator();
-} 
+}

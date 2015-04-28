@@ -42,7 +42,7 @@ class FindLocationOfFailure_TestSuite extends StaticTestSuite {
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
         $expected = FailureSourceLocator::formatFileAndLine(__FILE__, $line);
-        $this->assert($this->listener->testResults[0]->getFailureSourceLocator()->locate($result->failure()), $expected);
+        $this->assert($result->failure()->getFailureSource(), $expected);
     }
 
 }

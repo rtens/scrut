@@ -41,7 +41,7 @@ class CatchWarningsAndErrors extends StaticTestSuite {
             $this->fail("Should be a FailedTestResult");
         }
         $this->assert->isInstanceOf($result->failure(), CaughtErrorFailure::class);
-        $this->assert($result->failure()->getFailureMessage(), "Caught " . $type);
+        $this->assert->contains($result->failure()->getFailureMessage(), "Caught " . $type);
         $this->assert->contains($result->failure()->getMessage(), $withMessage);
     }
 

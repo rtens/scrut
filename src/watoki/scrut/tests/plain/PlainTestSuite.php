@@ -82,7 +82,7 @@ class PlainTestSuite extends TestSuite {
     /**
      * @return \watoki\scrut\tests\FailureSourceLocator
      */
-    public function getFailureSourceLocator() {
+    protected function getFailureSourceLocator() {
         return new PlainFailureSourceLocator(new \ReflectionClass($this->suite));
     }
 }

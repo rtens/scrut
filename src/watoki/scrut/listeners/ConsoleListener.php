@@ -45,7 +45,7 @@ class ConsoleListener implements TestRunListener {
             /** @var Test $test */
             foreach ($results as $name => list($test, $result)) {
                 if ($result instanceof NotPassedTestResult) {
-                    $this->printLine($name . ' [' . $test->getFailureSourceLocator()->locate($result->failure()) . ']');
+                    $this->printLine($name . ' [' . $result->failure()->getFailureSource() . ']');
                     $this->printNotEmptyLine('    ' . $result->failure()->getFailureMessage());
                     $this->printNotEmptyLine('    ' . $result->failure()->getMessage());
                 } else {

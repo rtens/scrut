@@ -39,7 +39,7 @@ class GenericTestCase extends TestCase {
     /**
      * @return \watoki\scrut\tests\FailureSourceLocator
      */
-    public function getFailureSourceLocator() {
+    protected function getFailureSourceLocator() {
         return new GenericFailureSourceLocator($this->creation);
     }
 }

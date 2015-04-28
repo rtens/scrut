@@ -17,7 +17,7 @@ class StaticTestCase extends PlainTestCase {
         $suite->execute($this->method->getName(), $assert);
     }
 
-    public function getFailureSourceLocator() {
+    protected function getFailureSourceLocator() {
         return new StaticFailureSourceLocator($this->method);
     }
 }

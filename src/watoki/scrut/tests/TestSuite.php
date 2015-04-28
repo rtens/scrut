@@ -21,7 +21,10 @@ abstract class TestSuite implements Test {
         }
 
         if (!$hasTest) {
-            $listener->onResult($this, new IncompleteTestResult(new EmptyTestSuiteFailure($this)));
+            $listener->onResult($this, new IncompleteTestResult(
+                (new EmptyTestSuiteFailure($this))
+                    ->useSourceLocator($this->getFailureSourceLocator())
+            ));
         }
 
         $listener->onFinished($this);
@@ -31,4 +34,9 @@ abstract class TestSuite implements Test {
      * @return Test[]
      */
     abstract protected function getTests();
+
+    /**
+     * @return \watoki\scrut\tests\FailureSourceLocator
+     */
+    abstract protected function getFailureSourceLocator();
 }

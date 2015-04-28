@@ -9,9 +9,11 @@ class CaughtErrorFailure extends Failure {
     /**
      * @param string $message
      * @param int $code
+     * @param string $file
+     * @param int $line
      */
-    public function __construct($message, $code) {
-        parent::__construct("Caught " . $this->errorType($code), $message);
+    public function __construct($message, $code, $file, $line) {
+        parent::__construct("Caught " . $this->errorType($code) . " from " . $file . ':' . $line, $message);
     }
 
     private function errorType($code) {

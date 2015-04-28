@@ -123,7 +123,7 @@ class FileTestSuite extends TestSuite {
     /**
      * @return \watoki\scrut\tests\FailureSourceLocator
      */
-    public function getFailureSourceLocator() {
+    protected function getFailureSourceLocator() {
         return new FileFailureSourceLocator($this->path);
     }
 }
