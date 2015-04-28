@@ -5,8 +5,11 @@ class TestName {
 
     private $parts;
 
-    function __construct(array $parts = []) {
-        $this->parts = $parts;
+    /**
+     * @param array|string $parts
+     */
+    function __construct($parts) {
+        $this->parts = is_array($parts) ? $parts : [$parts];
     }
 
     public function with($childName) {

@@ -29,10 +29,10 @@ class GenericTestCase extends TestCase {
     }
 
     /**
-     * @return string
+     * @return TestName
      */
-    protected function getOwnName() {
-        return $this->name;
+    public function getName() {
+        return parent::getName()->with($this->name);
     }
 
     protected function execute(Asserter $assert) {

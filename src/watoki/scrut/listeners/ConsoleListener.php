@@ -15,15 +15,18 @@ class ConsoleListener implements TestRunListener {
     /** @var array|array[]|TestResult[][] */
     private $results = [];
 
-    /** @var bool[] indexed by TestName */
+    /** @var string[] The names of all started but not finished Tests */
     private $running;
 
     public function onStarted(TestName $test) {
-        $this->running[$test->toString()] = true;
+        $this->running[] = $test->toString();
     }
 
     public function onFinished(TestName $test) {
-        unset($this->running[$test->toString()]);
+        $key = array_search($test->toString(), $this->running);
+        if ($key !== false) {
+            unset($this->running[$key]);
+        }
 
         if ($this->running) {
             return;

@@ -8,56 +8,65 @@ use watoki\scrut\tests\statics\StaticTestSuite;
 
 class RunPlainTestSuites extends StaticTestSuite {
 
-    function emptySuite() {
-        $listener = new ArrayListener();
-        $suite = new PlainTestSuite(new RunPlainTestSuites_Empty());
-        $suite->run($listener);
+    /** @var ArrayListener */
+    private $listener;
 
-        $this->assert->size($listener->results, 1);
-        $this->assert->isInstanceOf($listener->results[0], IncompleteTestResult::class);
+    protected function before() {
+        $this->listener = new ArrayListener();
+    }
+
+    function emptySuite() {
+        $suite = new PlainTestSuite(new RunPlainTestSuites_Empty());
+        $suite->run($this->listener);
+
+        $this->assert->size($this->listener->results, 1);
+        $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
     }
 
     function executeMethods() {
-        $listener = new ArrayListener();
         $suite = new PlainTestSuite(new RunPlainTestSuites_Foo());
-        $suite->run($listener);
+        $suite->run($this->listener);
 
-        $this->assert->size($listener->results, 2);
-        $this->assert($listener->started[1]->last(), 'foo');
-        $this->assert($listener->started[2]->last(), 'bar');
+        $this->assert->size($this->listener->results, 2);
+        $this->assert($this->listener->started[1]->last(), 'foo');
+        $this->assert($this->listener->started[2]->last(), 'bar');
     }
 
     function callBeforeAndAfter() {
-        $listener = new ArrayListener();
         $suite = new PlainTestSuite(new RunPlainTestSuites_Bar());
         RunPlainTestSuites_Bar::reset();
-        $suite->run($listener);
+        $suite->run($this->listener);
 
-        $this->assert->size($listener->results, 2);
+        $this->assert->size($this->listener->results, 2);
         $this->assert(RunPlainTestSuites_Bar::$beforeCalled, 2);
         $this->assert(RunPlainTestSuites_Bar::$afterCalled, 2);
     }
 
     function beforeMethodMustBePublic() {
-        $listener = new ArrayListener();
         $suite = new PlainTestSuite(new RunPlainTestSuites_ProtectedBefore());
-        $suite->run($listener);
+        $suite->run($this->listener);
 
-        $this->assert->size($listener->results, 1);
+        $this->assert->size($this->listener->results, 1);
         /** @var \watoki\scrut\results\FailedTestResult $result */
-        $result = $listener->results[0];
+        $result = $this->listener->results[0];
         $this->assert($result->getFailure()->getMessage(), 'Method [watoki\\scrut\\RunPlainTestSuites_ProtectedBefore::before] must be public');
     }
 
     function afterMethodMustBePublic() {
-        $listener = new ArrayListener();
         $suite = new PlainTestSuite(new RunPlainTestSuites_ProtectedAfter());
-        $suite->run($listener);
+        $suite->run($this->listener);
 
-        $this->assert->size($listener->results, 1);
+        $this->assert->size($this->listener->results, 1);
         /** @var \watoki\scrut\results\FailedTestResult $result */
-        $result = $listener->results[0];
+        $result = $this->listener->results[0];
         $this->assert($result->getFailure()->getMessage(), 'Method [watoki\\scrut\\RunPlainTestSuites_ProtectedAfter::after] must be public');
+    }
+
+    function discardParentName() {
+        $suite = new PlainTestSuite(new RunPlainTestSuites_Empty(), new TestName("Foo"));
+        $suite->run($this->listener);
+
+        $this->assert($this->listener->started[0]->toString(), RunPlainTestSuites_Empty::class);
     }
 }
 

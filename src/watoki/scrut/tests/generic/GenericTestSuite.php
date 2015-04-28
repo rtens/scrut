@@ -27,6 +27,13 @@ class GenericTestSuite extends TestSuite {
     }
 
     /**
+     * @return TestName
+     */
+    public function getName() {
+        return parent::getName()->with($this->name);
+    }
+
+    /**
      * @param Test $test
      * @return $this
      */
@@ -39,9 +46,24 @@ class GenericTestSuite extends TestSuite {
      * Adds a new GenericTestCase with $name and $callback
      * @param string $name
      * @param callable $callback
+     * @return $this
      */
     public function test($name, callable $callback) {
-        $this->add(new GenericTestCase($callback, $name, $this->getName()));
+        return $this->add(new GenericTestCase($callback, $name, $this->getName()));
+    }
+
+    /**
+     * Adds a new GenericTestSuite
+     * @param string $name
+     * @param callable $configureSuite Receives the new GenericTestSuite
+     * @return GenericTestSuite
+     */
+    public function suite($name, callable $configureSuite = null) {
+        $suite = new GenericTestSuite($name, $this->getName());
+        if ($configureSuite) {
+            $configureSuite($suite);
+        }
+        return $this->add($suite);
     }
 
     /**
@@ -49,13 +71,6 @@ class GenericTestSuite extends TestSuite {
      */
     protected function getTests() {
         return $this->tests;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getOwnName() {
-        return $this->name;
     }
 
     /**

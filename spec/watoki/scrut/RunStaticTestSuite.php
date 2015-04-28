@@ -5,6 +5,7 @@ use watoki\scrut\failures\EmptyTestSuiteFailure;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\results\PassedTestResult;
+use watoki\scrut\TestName;
 use watoki\scrut\tests\statics\StaticTestSuite;
 
 class RunStaticTestSuite extends StaticTestSuite {
@@ -74,6 +75,13 @@ class RunStaticTestSuite extends StaticTestSuite {
 
         $this->assert(RunStaticTestSuite_BeforeAndAfter::$calledBefore, 2);
         $this->assert(RunStaticTestSuite_BeforeAndAfter::$calledAfter, 2);
+    }
+
+    function discardParentName() {
+        $suite = new RunStaticTestSuite_Empty(new TestName("Foo"));
+        $suite->run($this->listener);
+
+        $this->assert($this->listener->started[0]->toString(), RunStaticTestSuite_Empty::class);
     }
 }
 

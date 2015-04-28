@@ -15,28 +15,23 @@ class FileTestSuite extends TestSuite {
     /** @var callable */
     private $classFilter;
 
-    /** @var string */
-    private $name;
-
     /**
      * @param string $path Directory of file
-     * @param null|string $name Defaults to directory base name
      * @param null|TestName $parent
      */
-    function __construct($path, $name = null, TestName $parent = null) {
+    function __construct($path, TestName $parent = null) {
         parent::__construct($parent);
         $this->path = $path;
-        $this->name = $name ?: $path;
         $this->classFilter = function () {
             return true;
         };
     }
 
     /**
-     * @return string
+     * @return TestName
      */
-    protected function getOwnName() {
-        return $this->name;
+    public function getName() {
+        return new TestName($this->path);
     }
 
     /**

@@ -16,10 +16,10 @@ class PlainTestCase extends TestCase {
     }
 
     /**
-     * @return string
+     * @return TestName
      */
-    protected function getOwnName() {
-        return $this->method->getName();
+    public function getName() {
+        return parent::getName()->with($this->method->getName());
     }
 
     protected function execute(Asserter $assert) {

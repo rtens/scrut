@@ -100,4 +100,18 @@ class RunGenericTestSuite extends StaticTestSuite {
         $this->assert->equals($result->getFailure()->getFailureMessage(), "Not done yet");
         $this->assert->equals($result->getFailure()->getMessage(), "");
     }
+
+    function composedSuites() {
+        $this->suite->suite("Bar", function (GenericTestSuite $suite) {
+            $suite->test("baz", function () {
+            });
+        });
+        $this->suite->run($this->listener);
+
+        $this->assert->size($this->listener->results, 1);
+        $this->assert->size($this->listener->started, 3);
+        $this->assert($this->listener->started[0]->toString(), "Foo");
+        $this->assert($this->listener->started[1]->toString(), "Foo::Bar");
+        $this->assert($this->listener->started[2]->toString(), "Foo::Bar::baz");
+    }
 }

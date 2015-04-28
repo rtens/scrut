@@ -153,11 +153,11 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->assert->size($this->listener->started, 2);
     }
 
-    function changeName() {
-        $suite = new FileTestSuite($this->tmp('some/foo'), "bar");
+    function discardParentName() {
+        $suite = new FileTestSuite('some/foo', new TestName("Foo"));
         $suite->run($this->listener);
 
-        $this->assert($this->listener->started[0], 'bar');
+        $this->assert($this->listener->started[0]->toString(), 'some/foo');
     }
 
     private function fileContent($fileName, $content) {

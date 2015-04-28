@@ -35,10 +35,10 @@ class PlainTestSuite extends TestSuite {
     }
 
     /**
-     * @return string
+     * @return TestName
      */
-    protected function getOwnName() {
-        return get_class($this->suite);
+    public function getName() {
+        return new TestName(get_class($this->suite));
     }
 
     /**

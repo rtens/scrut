@@ -29,10 +29,6 @@ class FindLocationOfFailure_TestSuite extends StaticTestSuite {
     /** @var ArrayListener */
     protected $listener;
 
-    protected function getOwnName() {
-        return substr(get_class($this), -18);
-    }
-
     protected function before() {
         $this->listener = new ArrayListener();
     }
