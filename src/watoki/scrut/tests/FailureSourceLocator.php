@@ -1,11 +1,6 @@
 <?php
 namespace watoki\scrut\tests;
 
-use watoki\scrut\Failure;
-use watoki\scrut\failures\CaughtExceptionFailure;
-use watoki\scrut\failures\EmptyTestSuiteFailure;
-use watoki\scrut\failures\NoAssertionsFailure;
-
 abstract class FailureSourceLocator {
 
     /**
@@ -17,34 +12,18 @@ abstract class FailureSourceLocator {
     /**
      * @return string
      */
-    abstract protected function getEmptyTestSuiteFailureSource();
+    abstract public function locateEmptyTestSuiteFailureSource();
 
     /**
      * @return string
      */
-    abstract protected function getNoAssertionsFailureSource();
-
-    protected function unknownSource() {
-        return "unknown source";
-    }
+    abstract public function locatorNoAssertionsFailureSource();
 
     /**
-     * @param Failure $failure
+     * @param \Exception $exception
      * @return string
      */
-    public function locate(Failure $failure) {
-        if ($failure instanceof EmptyTestSuiteFailure) {
-            return $this->getEmptyTestSuiteFailureSource($failure);
-        } else if ($failure instanceof NoAssertionsFailure) {
-            return $this->getNoAssertionsFailureSource();
-        } else if ($failure instanceof CaughtExceptionFailure) {
-            return $this->getExceptionSource($failure->getException());
-        } else {
-            return $this->getExceptionSource($failure);
-        }
-    }
-
-    private function getExceptionSource(\Exception $exception) {
+    public function locateSource(\Exception $exception) {
         $first = [
             'file' => $exception->getFile(),
             'line' => $exception->getLine(),
@@ -54,6 +33,17 @@ abstract class FailureSourceLocator {
         return $this->getExceptionSourceFromTrace(array_merge([$first], $exception->getTrace()));
     }
 
+    /**
+     * @return string
+     */
+    protected function unknownSource() {
+        return "unknown source";
+    }
+
+    /**
+     * @param array $step with 'file' and 'line'
+     * @return string
+     */
     protected function formatStep($step) {
         if (!isset($step['file']) || !isset($step['line'])) {
             return $this->unknownSource();

@@ -2,6 +2,7 @@
 namespace watoki\scrut\failures;
 
 use watoki\scrut\Failure;
+use watoki\scrut\tests\FailureSourceLocator;
 
 class CaughtExceptionFailure extends Failure {
 
@@ -15,7 +16,7 @@ class CaughtExceptionFailure extends Failure {
         parent::__construct($failureMessage, $exception->getMessage());
     }
 
-    public function getException() {
-        return $this->exception;
+    protected function getFailureSourceFromLocator(FailureSourceLocator $locator) {
+        return $locator->locateSource($this->exception);
     }
 }

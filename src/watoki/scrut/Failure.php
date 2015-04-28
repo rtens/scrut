@@ -24,13 +24,13 @@ class Failure extends \RuntimeException {
      * @param FailureSourceLocator $locator
      * @return $this
      */
-    public function useSourceLocator(FailureSourceLocator $locator) {
+    final public function useSourceLocator(FailureSourceLocator $locator) {
         $this->failureSource = $this->getFailureSourceFromLocator($locator);
         return $this;
     }
 
     protected function getFailureSourceFromLocator(FailureSourceLocator $locator) {
-        return $locator->locate($this);
+        return $locator->locateSource($this);
     }
 
     /**

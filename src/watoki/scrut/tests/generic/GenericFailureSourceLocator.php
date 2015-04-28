@@ -11,12 +11,12 @@ class GenericFailureSourceLocator extends FailureSourceLocator {
         $this->creation = $creation;
     }
 
-    protected function getEmptyTestSuiteFailureSource() {
+    public function locateEmptyTestSuiteFailureSource() {
         $creation = $this->creation->getTrace()[0];
         return $creation['file'] . ':' . $creation['line'];
     }
 
-    protected function getNoAssertionsFailureSource() {
+    public function locatorNoAssertionsFailureSource() {
         $creation = $this->creation->getTrace()[0];
         return FailureSourceLocator::formatFileAndLine($creation['file'], $creation['line']);
     }
