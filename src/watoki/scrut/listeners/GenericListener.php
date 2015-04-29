@@ -22,14 +22,17 @@ class GenericListener implements TestRunListener {
 
     public function whenStarted(callable $callback) {
         $this->whenStarted = $callback;
+        return $this;
     }
 
     public function whenFinished(callable $callback) {
         $this->whenFinished = $callback;
+        return $this;
     }
 
     public function whenResult(callable $callback) {
         $this->whenResult = $callback;
+        return $this;
     }
 
     public function onStarted(TestName $test) {
