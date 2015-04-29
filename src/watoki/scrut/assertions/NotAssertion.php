@@ -16,7 +16,7 @@ class NotAssertion implements Assertion {
      * @return string
      */
     public function describeFailure() {
-        return "Should not: " . $this->assertion->describeFailure();
+        return str_replace('should', 'should not', $this->assertion->describeFailure());
     }
 
     /**

@@ -5,6 +5,7 @@ use watoki\scrut\assertions\ContainsAssertion;
 use watoki\scrut\assertions\IsEqualAssertion;
 use watoki\scrut\assertions\IsInstanceOfAssertion;
 use watoki\scrut\assertions\IsTrueAssertion;
+use watoki\scrut\assertions\NotAssertion;
 use watoki\scrut\assertions\SizeAssertion;
 use watoki\scrut\failures\AssertionFailedFailure;
 use watoki\scrut\tests\statics\StaticTestSuite;
@@ -17,6 +18,10 @@ class CheckAssertions extends StaticTestSuite {
     function assertingTheOpposite() {
         $this->assert->not()->isTrue(false);
         $this->assert->not()->equals("foo", "bar");
+
+        $assertion = new NotAssertion(new IsEqualAssertion('a', 'a'));
+        $this->assert(!$assertion->checksOut());
+        $this->assert($assertion->describeFailure(), "'a' should not equal 'a'");
     }
 
     function assertSomethingIsTrue() {
@@ -52,7 +57,7 @@ class CheckAssertions extends StaticTestSuite {
 
         $assertion = new IsInstanceOfAssertion("foo", \DateTime::class);
         $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), "'foo' is not an object");
+        $this->assert($assertion->describeFailure(), "'foo' should be an object");
 
         $assertion = new IsInstanceOfAssertion(new \StdClass(), \DateTime::class);
         $this->assert(!$assertion->checksOut());
@@ -97,7 +102,7 @@ class CheckAssertions extends StaticTestSuite {
 
         $assertion = new SizeAssertion(true, 1);
         $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), "TRUE is not countable");
+        $this->assert($assertion->describeFailure(), "TRUE should be countable");
 
         $assertion = new SizeAssertion("foo", 1);
         $this->assert(!$assertion->checksOut());

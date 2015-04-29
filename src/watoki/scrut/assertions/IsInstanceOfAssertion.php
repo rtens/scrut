@@ -16,7 +16,7 @@ class IsInstanceOfAssertion extends ValueAssertion {
      */
     public function describeFailure() {
         if (!is_object($this->object)) {
-            return $this->export($this->object) . " is not an object";
+            return $this->export($this->object) . " should be an object";
         } else {
             return $this->export($this->object) . " should be a <{$this->class}>";
         }

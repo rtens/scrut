@@ -27,7 +27,7 @@ class SizeAssertion extends ValueAssertion {
         } else if (is_array($this->countable) || is_object($this->countable)) {
             return "Counted size " . $this->export(count($this->countable)) . " should be " . $this->export($this->count);
         } else {
-            return $this->export($this->countable) . " is not countable";
+            return $this->export($this->countable) . " should be countable";
         }
     }
 
