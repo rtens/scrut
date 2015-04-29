@@ -34,6 +34,7 @@ class ConsoleListener implements TestRunListener {
 
         $this->printLine();
 
+        $level = 0;
         $counts = [];
         foreach ($this->results as $type => $results) {
             $name = substr($type, 21, -10);
@@ -41,6 +42,10 @@ class ConsoleListener implements TestRunListener {
 
             if ($type == PassedTestResult::class) {
                 continue;
+            } else if ($type == IncompleteTestResult::class) {
+                $level = max($level, 1);
+            } else if ($type == FailedTestResult::class) {
+                $level = max($level, 2);
             }
 
             $this->printLine();
@@ -58,8 +63,14 @@ class ConsoleListener implements TestRunListener {
             }
         }
 
+        $results = [
+            'Passed =)',
+            'Incomplete =|',
+            'FAILED =('
+        ];
+
         $this->printLine();
-        $this->printLine(implode(', ', $counts));
+        $this->printLine($results[$level] . ' (' . implode(', ', $counts) . ')');
     }
 
     public function onResult(TestName $test, TestResult $result) {
