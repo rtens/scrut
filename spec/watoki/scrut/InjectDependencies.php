@@ -1,6 +1,139 @@
 <?php
 namespace spec\watoki\scrut;
 
+use watoki\scrut\Asserter;
+use watoki\scrut\listeners\ArrayListener;
+use watoki\scrut\results\FailedTestResult;
+use watoki\scrut\results\PassedTestResult;
+use watoki\scrut\tests\file\FileTestSuite;
+use watoki\scrut\tests\statics\StaticTestSuite;
+
 class InjectDependencies {
 
+    function __construct() {
+        $this->listener = new ArrayListener();
+    }
+
+    function injectConstructor(Asserter $assert) {
+        $this->fileContent('inject/InjectConstructor.php', '<?php
+            class InjectConstructor {
+                /**
+                 * @param $foo <-
+                 * @param $bar <-
+                 */
+                function __construct(\StdClass $foo, \StdClass $bar) {
+                    assert($foo && $bar);
+                    $this->foo = $foo;
+                }
+
+                function foo() {
+                    assert($this->foo);
+                }
+            }
+        ');
+        $suite = new FileTestSuite($this->tmp('inject/InjectConstructor.php'));
+        $suite->run($this->listener);
+
+        $assert->not()->isInstanceOf($this->listener->results[0], FailedTestResult::class);
+    }
+
+    function injectProperties(Asserter $assert) {
+        $this->fileContent('inject/InjectProperties.php', '<?php
+            class InjectProperties {
+
+                /** @var \StdClass <- */
+                protected $foo;
+
+                function foo() {
+                    assert($this->foo);
+                }
+            }
+        ');
+        $suite = new FileTestSuite($this->tmp('inject/InjectProperties.php'));
+        $suite->run($this->listener);
+
+        $assert->not()->isInstanceOf($this->listener->results[0], FailedTestResult::class);
+    }
+
+    function injectPropertiesIntoStaticTestSuite(Asserter $assert) {
+        $this->fileContent('inject/InjectPropertiesIntoStatic.php', '<?php
+            class InjectPropertiesIntoStatic extends ' . StaticTestSuite::class . ' {
+
+                /** @var \StdClass <- */
+                protected $foo;
+
+                function foo() {
+                    assert($this->foo);
+                }
+            }
+        ');
+        $suite = new FileTestSuite($this->tmp('inject/InjectPropertiesIntoStatic.php'));
+        $suite->run($this->listener);
+
+        $assert->not()->isInstanceOf($this->listener->results[0], FailedTestResult::class);
+    }
+
+    function injectAnnotationsForTestRun(Asserter $assert) {
+        $this->fileContent('inject/InjectAnnotations.php', '<?php
+            /** @property \StdClass $foo */
+            class InjectDependencies_InjectAnnotations {
+
+                function foo() {
+                    assert($this->foo);
+                }
+            }
+        ');
+        $suite = new FileTestSuite($this->tmp('inject/InjectAnnotations.php'));
+        $suite->run($this->listener);
+
+        $assert->not()->isInstanceOf($this->listener->results[0], FailedTestResult::class);
+    }
+
+    function asserterIsPassedToInjectedObject(Asserter $assert) {
+        $this->fileContent('inject/InjectAsserter.php', '<?php
+            /** @property ' . Asserter::class . ' $assert */
+            class InjectAsserter {
+                function foo() {
+                    $this->assert->pass();
+                }
+            }
+        ');
+        $suite = new FileTestSuite($this->tmp('inject/InjectAsserter.php'));
+        $suite->run($this->listener);
+
+        $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
+    }
+
+    private function fileContent($fileName, $content) {
+        $this->createFolder(dirname($fileName));
+        file_put_contents($this->tmp($fileName), $content);
+    }
+
+    private function createFolder($path) {
+        @mkdir($this->tmp($path), 0777, true);
+    }
+
+    private function tmp($path) {
+        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . time() . DIRECTORY_SEPARATOR
+        . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
+    }
+
+    public function after() {
+        $this->clear($this->tmp(""));
+    }
+
+    private function clear($dir) {
+        if (!file_exists($dir)) {
+            return;
+        }
+
+        foreach (new \DirectoryIterator($dir) as $file) {
+            if ($file->isFile()) {
+                unlink($file->getRealPath());
+            } else if (!$file->isDot()) {
+                $this->clear($file->getRealPath());
+            }
+        }
+        rmDir($dir);
+    }
 }

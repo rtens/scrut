@@ -13,7 +13,7 @@ class StaticTestCase extends PlainTestCase {
         }
 
         /** @var StaticTestSuite $suite */
-        $suite = $class->newInstanceArgs();
+        $suite = $this->createInstance($class, $assert);
         $suite->execute($this->method->getName(), $assert);
     }
 
