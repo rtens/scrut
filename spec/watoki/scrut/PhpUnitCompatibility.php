@@ -31,17 +31,28 @@ class PhpUnitCompatibility extends StaticTestSuite {
         $suite = new PhpUnitCompatibility_Bar();
         $suite->run($this->listener);
 
-        $this->assert->size($this->listener->started, 3);
+        $this->assert->size($this->listener->started, 4);
         $this->assert($this->listener->started[1]->last(), 'testThis');
-        $this->assert($this->listener->started[2]->last(), 'testThat');
+        $this->assert($this->listener->started[2]->last(), 'TestThat');
+        $this->assert($this->listener->started[3]->last(), 'andThis');
 
-        $this->assert->size($this->listener->results, 2);
+        $this->assert->size($this->listener->results, 3);
         $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
         /** @var FailedTestResult $result */
         $result = $this->listener->results[1];
         $this->assert->isInstanceOf($result, FailedTestResult::class);
         $this->assert->contains($result->getFailure()->getFailureMessage(), "Caught [PHPUnit_Framework_ExpectationFailedException]");
         $this->assert($result->getFailure()->getMessage(), "Failed asserting that false is true.");
+    }
+
+    function callTestSuiteHooks() {
+        // Implement when needed
+        $this->pass();
+    }
+
+    function dataProviders() {
+        // Implement when needed
+        $this->pass();
     }
 }
 
@@ -67,9 +78,15 @@ class PhpUnitCompatibility_Bar extends PhpUnitTestSuite {
     public function testThis() {
     }
 
-    public function testThat() {
+    public function TestThat() {
         /** @noinspection PhpUndefinedMethodInspection */
         $this->assertTrue(false);
+    }
+
+    /**
+     * @test
+     */
+    public function andThis() {
     }
 
     public function butNotThis() {

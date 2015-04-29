@@ -10,7 +10,8 @@ class PhpUnitTestSuite extends StaticTestSuite {
         parent::__construct($parent);
 
         $this->setMethodFilter(function (\ReflectionMethod $method) {
-            return substr($method->getName(), 0, 4) == 'test';
+            return substr(strtolower($method->getName()), 0, 4) == 'test'
+                || strpos(strtolower($method->getDocComment()), '@test');
         });
 
         if (!class_exists(\PHPUnit_Framework_Assert::class)) {
