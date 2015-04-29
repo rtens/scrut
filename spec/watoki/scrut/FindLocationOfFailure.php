@@ -5,6 +5,7 @@ use watoki\scrut\Asserter;
 use watoki\scrut\Failure;
 use watoki\scrut\failures\IncompleteTestFailure;
 use watoki\scrut\listeners\ArrayListener;
+use watoki\scrut\TestName;
 use watoki\scrut\tests\FailureSourceLocator;
 use watoki\scrut\tests\generic\GenericTestCase;
 use watoki\scrut\tests\generic\GenericTestSuite;
@@ -32,6 +33,12 @@ class FindLocationOfFailure_TestSuite extends StaticTestSuite {
     protected function before() {
         $this->listener = new ArrayListener();
     }
+
+    public function getName() {
+        return (new TestName(FindLocationOfFailure::class))
+            ->with(substr(get_class($this), strlen(FindLocationOfFailure::class) + 1, -9));
+    }
+
 
     protected function assertLocationIsAtLine($line) {
         /** @var \watoki\scrut\results\FailedTestResult $result */
