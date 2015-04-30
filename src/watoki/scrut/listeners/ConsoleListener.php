@@ -64,14 +64,13 @@ class ConsoleListener implements TestRunListener {
         }
 
         $results = [
-            'Passed =D',
-            'Incomplete =|',
-            'FAILED =('
+            '=D',
+            '=|',
+            '=('
         ];
 
         $this->printLine();
-        $this->printLine($results[$level]);
-        $this->printLine(implode(', ', $counts));
+        $this->printLine($results[$level] . ' ' . implode(', ', $counts));
     }
 
     public function onResult(TestName $test, TestResult $result) {
