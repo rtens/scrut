@@ -11,7 +11,7 @@ use watoki\scrut\tests\statics\StaticTestSuite;
  * In order to facilitate migration, there should be a subclass of StaticTestSuite that
  * is compatible with PHPUnit_Framework_Assert.
  */
-class PhpUnitCompatibility extends StaticTestSuite {
+class FacilitateMigrationFromPhpUnit extends StaticTestSuite {
 
     /** @var ArrayListener */
     private $listener;
