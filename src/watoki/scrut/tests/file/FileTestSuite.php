@@ -105,11 +105,12 @@ class FileTestSuite extends TestSuite {
                 continue;
             }
 
-            $instance = $this->factory->getInstance($class);
 
             if (is_subclass_of($class, StaticTestSuite::class)) {
+                $instance = $this->factory->getInstance($class, [$this->getName(), $this->factory]);
                 yield $instance;
             } else {
+                $instance = $this->factory->getInstance($class);
                 yield new PlainTestSuite($instance, $this->getName(), $this->factory);
             }
         }

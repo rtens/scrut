@@ -22,7 +22,7 @@ abstract class StaticTestSuite extends PlainTestSuite {
     }
 
     protected function createTestCase(\ReflectionMethod $method) {
-        return new StaticTestCase($method, $this->getName());
+        return new StaticTestCase($method, $this->getName(), $this->factory);
     }
 
     public function execute($method, Asserter $assert) {

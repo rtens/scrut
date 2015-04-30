@@ -130,7 +130,18 @@ class InjectDependencies {
              * @property ' . Fixture::class . ' $fix @inject
              * @property ' . Fixture::class . ' $not @doNotInject
              */
-             class OnlyMarkedOnes {
+             class OnlyMarkedOnesStatic extends ' . StaticTestSuite::class . ' {
+                function foo() {
+                    $this->assert($this->fix);
+                    $this->assert(!isset($this->not));
+                }
+             }
+
+            /**
+             * @property ' . Fixture::class . ' $fix @inject
+             * @property ' . Fixture::class . ' $not @doNotInject
+             */
+             class OnlyMarkedOnesPlain {
                 function foo($assert) {
                     $assert($this->fix);
                     $assert(!isset($this->not));
