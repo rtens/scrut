@@ -1,170 +1,137 @@
 <?php
 namespace spec\watoki\scrut;
 
-use watoki\scrut\Asserter;
-use watoki\scrut\assertions\ContainsAssertion;
-use watoki\scrut\assertions\IsEqualAssertion;
-use watoki\scrut\assertions\IsInstanceOfAssertion;
-use watoki\scrut\assertions\IsTrueAssertion;
-use watoki\scrut\assertions\NotAssertion;
-use watoki\scrut\assertions\SizeAssertion;
 use watoki\scrut\failures\AssertionFailedFailure;
 use watoki\scrut\tests\statics\StaticTestSuite;
 
 class CheckAssertions extends StaticTestSuite {
 
-    /** @var null|AssertionFailedFailure */
-    private $failure;
-
     function assertSomething() {
-        $assert = new Asserter();
-        $assert(true);
-        $assert("foo");
-
-        try {
-            $assert("");
-            $this->fail("Should have failed");
-        } catch (AssertionFailedFailure $f) {
-        }
-
-        try {
-            $assert(null);
-            $this->fail("Should have failed");
-        } catch (AssertionFailedFailure $f) {
-        }
+        $this->assert(true);
+        $this->assert("foo");
     }
 
     function assertingTheOpposite() {
+        $this->assert->not("");
+        $this->assert->not(null);
+
         $this->assert->not()->isTrue(false);
         $this->assert->not()->equals("foo", "bar");
 
-        $assertion = new NotAssertion(new IsEqualAssertion('a', 'a'));
-        $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), "'a' should not equal 'a'");
+        $this->shouldFail(function () {
+            $this->assert->not()->equals('a', 'a');
+        }, "'a' should not equal 'a'");
     }
 
     function assertSomethingIsTrue() {
-        $assertion = new IsTrueAssertion(true);
-        $this->assert($assertion->checksOut());
+        $this->assert->isTrue(42 > 27);
 
-        $assertion = new IsTrueAssertion("not true");
-        $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), "'not true' should be TRUE");
+        $this->shouldFail(function () {
+            $this->assert->isTrue("not true");
+        }, "'not true' should be TRUE");
     }
 
     function assertThingsAreEqual() {
-        $assertion = new IsEqualAssertion("foo", "foo");
-        $this->assert($assertion->checksOut());
+        $this->assert->equals("foo", "foo");
+        $this->assert->equals("1", 1.0);
+        $this->assert->equals(new \DateTime(), new \DateTime());
 
-        $assertion = new IsEqualAssertion("1", 1.0);
-        $this->assert($assertion->checksOut());
-
-        $assertion = new IsEqualAssertion(new \DateTime(), new \DateTime());
-        $this->assert($assertion->checksOut());
-
-        $assertion = new IsEqualAssertion("foo", "bar");
-        $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), "'foo' should equal 'bar'");
+        $this->shouldFail(function () {
+            $this->assert->equals("foo", "bar");
+        }, "'foo' should equal 'bar'");
     }
 
     function assertInstanceOfSomething() {
-        $assertion = new IsInstanceOfAssertion(new \DateTime(), \DateTime::class);
-        $this->assert($assertion->checksOut());
+        $this->assert->isInstanceOf(new \DateTime(), \DateTime::class);
+        $this->assert->isInstanceOf(new \DateTime(), \DateTime::class);
+        $this->assert->isInstanceOf(new \DateTime(), \DateTimeInterface::class);
 
-        $assertion = new IsInstanceOfAssertion(new \DateTime(), \DateTimeInterface::class);
-        $this->assert($assertion->checksOut());
+        $this->shouldFail(function () {
+            /** @noinspection PhpParamsInspection */
+            $this->assert->isInstanceOf("foo", \DateTime::class);
+        }, "'foo' should be an object");
 
-        $assertion = new IsInstanceOfAssertion("foo", \DateTime::class);
-        $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), "'foo' should be an object");
-
-        $assertion = new IsInstanceOfAssertion(new \StdClass(), \DateTime::class);
-        $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), '<stdClass> should be a <DateTime>');
+        $this->shouldFail(function () {
+            $this->assert->isInstanceOf(new \StdClass(), \DateTime::class);
+        }, '<stdClass> should be a <DateTime>');
     }
 
     function assertSomethingContainsSomething() {
-        $assertion = new ContainsAssertion("foobar", "oob");
-        $this->assert($assertion->checksOut());
-
-        $assertion = new ContainsAssertion(["foo", "bar"], "foo");
-        $this->assert($assertion->checksOut());
+        $this->assert->contains(["foo", "bar"], "foo");
+        $this->assert->contains("foobar", "oob");
+        $this->assert->contains(["foo", "bar"], "foo");
 
         $stack = new \SplStack();
         $stack->push("foo");
         $stack->push("bar");
-        $assertion = new ContainsAssertion($stack, "bar");
-        $this->assert($assertion->checksOut());
+        $this->assert->contains($stack, "bar");
 
         $object = new \StdClass;
         $object->property = "foo";
-        $assertion = new ContainsAssertion($object, "foo");
-        $this->assert($assertion->checksOut());
+        $this->assert->contains($object, "foo");
 
-        $assertion = new ContainsAssertion(true, "foo");
-        $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), "TRUE should contain 'foo'");
+        $this->shouldFail(function () {
+            $this->assert->contains(true, "foo");
+        }, "TRUE should contain 'foo'");
     }
 
     function assertSizeOfSomething() {
-        $assertion = new SizeAssertion(["foo", "bar"], 2);
-        $this->assert($assertion->checksOut());
+        $this->assert->size(["foo", 42, 27], 3);
+        $this->assert->size(["foo", "bar"], 2);
+        $this->assert->size("foo", 3);
 
         $stack = new \SplStack();
         $stack->push("foo");
         $stack->push("bar");
-        $assertion = new SizeAssertion($stack, 2);
-        $this->assert($assertion->checksOut());
+        $this->assert->size($stack, 2);
 
-        $assertion = new SizeAssertion("foo", 3);
-        $this->assert($assertion->checksOut());
+        $this->shouldFail(function () {
+            $this->assert->size(true, 1);
+        }, "TRUE should be countable");
 
-        $assertion = new SizeAssertion(true, 1);
-        $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), "TRUE should be countable");
+        $this->shouldFail(function () {
+            $this->assert->size("foo", 1);
+        }, "'foo' should have length 1");
 
-        $assertion = new SizeAssertion("foo", 1);
-        $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), "'foo' should have length 1");
-
-        $assertion = new SizeAssertion(["foo", "bar"], 3);
-        $this->assert(!$assertion->checksOut());
-        $this->assert($assertion->describeFailure(), "Counted size 2 should be 3");
-    }
-
-    function printComplexValues() {
-        $assertion = new IsTrueAssertion(["foo", "bar" => "baz"]);
-        $this->assert($assertion->describeFailure(), "[0 => 'foo', 'bar' => 'baz'] should be TRUE");
-
-        $assertion = new IsTrueAssertion(new \DateTime());
-        $this->assert($assertion->describeFailure(), "<DateTime> should be TRUE");
-
-        $stack = new \SplStack();
-        $stack->push(["foo", "bar"]);
-        $stack->push(new \DateTime());
-        $assertion = new IsTrueAssertion($stack);
-        $this->assert($assertion->describeFailure(), "<SplStack>[<DateTime>, ['foo', 'bar']] should be TRUE");
+        $this->shouldFail(function () {
+            $this->assert->size(["foo", "bar"], 3);
+        }, "Counted size 2 should be 3");
     }
 
     function somethingIsNull() {
-        $this->tryTo(function () {
-            $this->assert->isNull("not");
-        });
-        $this->assertFailureMessage("'not' should be NULL");
-
         $this->assert->isNull(null);
+
+        $this->shouldFail(function () {
+            $this->assert->isNull("not");
+        }, "'not' should be NULL");
     }
 
-    private function assertFailureMessage($message) {
-        $this->assert->not()->isNull($this->failure);
-        $this->assert($this->failure->getFailureMessage(), $message);
+    function printComplexValues() {
+        $this->shouldFail(function () {
+            /** @noinspection PhpParamsInspection */
+            $this->assert->isTrue(["foo", "bar" => "baz"]);
+        }, "[0 => 'foo', 'bar' => 'baz'] should be TRUE");
+
+        $this->shouldFail(function () {
+            /** @noinspection PhpParamsInspection */
+            $this->assert->isTrue(new \DateTime());
+        }, "<DateTime> should be TRUE");
+
+        $this->shouldFail(function () {
+            $stack = new \SplStack();
+            $stack->push(["foo", "bar"]);
+            $stack->push(new \DateTime());
+            /** @noinspection PhpParamsInspection */
+            $this->assert->isTrue($stack);
+        }, "<SplStack>[<DateTime>, ['foo', 'bar']] should be TRUE");
     }
 
-    private function tryTo(callable $do) {
+    private function shouldFail(callable $do, $message) {
         try {
             $do();
+            $this->fail("Should have failed");
         } catch (AssertionFailedFailure $f) {
-            $this->failure = $f;
+            $this->assert($f->getFailureMessage(), $message);
         }
     }
 }
