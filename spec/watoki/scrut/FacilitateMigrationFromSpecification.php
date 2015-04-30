@@ -1,7 +1,6 @@
 <?php
 namespace watoki\scrut;
 
-use watoki\factory\Factory;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\tests\migration\Fixture;
@@ -20,7 +19,7 @@ class FacilitateMigrationFromSpecification extends StaticTestSuite {
     function callBackgroundHook() {
         FacilitateMigrationFromSpecification_Foo::$backgroundCalled = false;
 
-        $suite = new FacilitateMigrationFromSpecification_Foo(new Factory());
+        $suite = new FacilitateMigrationFromSpecification_Foo();
         $suite->run($this->listener);
 
         $this->assert(FacilitateMigrationFromSpecification_Foo::$backgroundCalled);
@@ -29,14 +28,21 @@ class FacilitateMigrationFromSpecification extends StaticTestSuite {
     function undoStuff() {
         FacilitateMigrationFromSpecification_Undo::$undid = false;
 
-        $suite = new FacilitateMigrationFromSpecification_Undo(new Factory());
+        $suite = new FacilitateMigrationFromSpecification_Undo();
         $suite->run($this->listener);
 
         $this->assert(FacilitateMigrationFromSpecification_Undo::$undid);
     }
 
     function passSpecificationToInjectedDependencies() {
-        $suite = new FacilitateMigrationFromSpecification_Inject(new Factory());
+        $suite = new FacilitateMigrationFromSpecification_Inject();
+        $suite->run($this->listener);
+
+        $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
+    }
+
+    function createNewFactoryForEveryTest() {
+        $suite = new FacilitateMigrationFromSpecification_Factory();
         $suite->run($this->listener);
 
         $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -67,12 +73,23 @@ class FacilitateMigrationFromSpecification_Undo extends Specification {
     }
 }
 
-class FacilitateMigrationFromSpecification_Inject extends Specification {
+class FacilitateMigrationFromSpecification_Factory extends Specification {
 
-    /** @var FacilitateMigrationFromSpecification_Dependency <- */
-    protected $foo;
+    public static $factoryBefore;
 
     function testFoo() {
+        $this->assert(self::$factoryBefore !== $this->factory);
+        self::$factoryBefore = $this->factory;
+    }
+}
+
+/**
+ * @property FacilitateMigrationFromSpecification_Dependency foo
+ */
+class FacilitateMigrationFromSpecification_Inject extends Specification {
+
+    function testFoo() {
+        $this->assert($this->foo);
         $this->assert($this === $this->foo->spec());
     }
 }

@@ -1,7 +1,6 @@
 <?php
 namespace watoki\scrut\tests\plain;
 
-use watoki\factory\Factory;
 use watoki\scrut\Test;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\TestCase;
@@ -15,21 +14,16 @@ class PlainTestSuite extends TestSuite {
     /** @var callable */
     private $methodFilter;
 
-    /** @var Factory */
-    protected $factory;
-
     /**
-     * @param Factory $factory <-
-     * @param object $suite
+     * @param string $suite
      * @param null|TestName $parent
      */
-    function __construct(Factory $factory, $suite, TestName $parent = null) {
+    function __construct($suite, TestName $parent = null) {
         parent::__construct($parent);
-        $this->factory = $factory;
         $this->suite = $suite;
 
         $this->methodFilter = function (\ReflectionMethod $method) {
-            return $method->getDeclaringClass()->getName() == get_class($this->suite)
+            return $method->getDeclaringClass()->getName() == $this->suite
             && substr($method->getName(), 0, 1) != '_'
             && $method->getName() != 'before'
             && $method->getName() != 'after'
@@ -44,7 +38,7 @@ class PlainTestSuite extends TestSuite {
      * @return TestName
      */
     public function getName() {
-        return new TestName(get_class($this->suite));
+        return new TestName($this->suite);
     }
 
     /**
@@ -59,13 +53,6 @@ class PlainTestSuite extends TestSuite {
      */
     public function getMethodFilter() {
         return $this->methodFilter;
-    }
-
-    /**
-     * @return object
-     */
-    public function getSuite() {
-        return $this->suite;
     }
 
     /**
@@ -85,7 +72,7 @@ class PlainTestSuite extends TestSuite {
      * @return TestCase
      */
     protected function createTestCase(\ReflectionMethod $method) {
-        return new PlainTestCase($this->factory, $method, $this->getName());
+        return new PlainTestCase($method, $this->getName());
     }
 
     /**

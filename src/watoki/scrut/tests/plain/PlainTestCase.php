@@ -11,18 +11,13 @@ class PlainTestCase extends TestCase {
     /** @var \ReflectionMethod */
     protected $method;
 
-    /** @var Factory */
-    private $factory;
-
     /**
-     * @param Factory $factory <-
      * @param \ReflectionMethod $method
      * @param TestName $parent
      */
-    function __construct(Factory $factory, \ReflectionMethod $method, TestName $parent = null) {
+    function __construct(\ReflectionMethod $method, TestName $parent = null) {
         parent::__construct($parent);
         $this->method = $method;
-        $this->factory = $factory;
     }
 
     /**
@@ -35,7 +30,9 @@ class PlainTestCase extends TestCase {
     protected function execute(Asserter $assert) {
         $class = $this->method->getDeclaringClass();
 
-        $suite = $this->createInstance($class, $assert);
+        $factory = new Factory();
+        $factory->setSingleton(Asserter::class, $assert);
+        $suite = $factory->getInstance($class->getName());
 
         if (method_exists($suite, 'before')) {
             if (!is_callable([$suite, 'before'])) {
@@ -63,14 +60,5 @@ class PlainTestCase extends TestCase {
      */
     protected function getFailureSourceLocator() {
         return new PlainFailureSourceLocator($this->method);
-    }
-
-    /**
-     * @param \ReflectionClass $class
-     * @return object
-     */
-    protected function createInstance(\ReflectionClass $class, Asserter $asserter) {
-        $this->factory->setSingleton(Asserter::class, $asserter);
-        return $this->factory->getInstance($class->getName());
     }
 }

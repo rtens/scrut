@@ -1,7 +1,6 @@
 <?php
 namespace watoki\scrut\tests\file;
 
-use watoki\factory\Factory;
 use watoki\scrut\Test;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\plain\PlainTestSuite;
@@ -16,17 +15,12 @@ class FileTestSuite extends TestSuite {
     /** @var callable */
     private $classFilter;
 
-    /** @var Factory */
-    private $factory;
-
     /**
-     * @param Factory $factory <-
      * @param string $path Directory of file
      * @param null|TestName $parent
      */
-    function __construct(Factory $factory, $path, TestName $parent = null) {
+    function __construct($path, TestName $parent = null) {
         parent::__construct($parent);
-        $this->factory = $factory;
         $this->path = $path;
         $this->classFilter = function () {
             return true;
@@ -111,13 +105,9 @@ class FileTestSuite extends TestSuite {
 
 
             if (is_subclass_of($class, StaticTestSuite::class)) {
-                $instance = $this->factory->getInstance($class, [
-                    'parent' => $this->getName()
-                ]);
-                yield $instance;
+                yield new $class($this->getName());
             } else {
-                $instance = $this->factory->getInstance($class);
-                yield new PlainTestSuite($this->factory, $instance, $this->getName());
+                yield new PlainTestSuite($class, $this->getName());
             }
         }
     }

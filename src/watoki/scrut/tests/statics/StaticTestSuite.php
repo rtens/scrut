@@ -2,6 +2,8 @@
 namespace watoki\scrut\tests\statics;
 
 use watoki\factory\Factory;
+use watoki\factory\Injector;
+use watoki\factory\providers\DefaultProvider;
 use watoki\scrut\Asserter;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\plain\PlainTestSuite;
@@ -12,11 +14,10 @@ abstract class StaticTestSuite extends PlainTestSuite {
     protected $assert;
 
     /**
-     * @param Factory $factory <-
      * @param TestName $parent
      */
-    function __construct(Factory $factory, TestName $parent = null) {
-        parent::__construct($factory, $this, $parent);
+    function __construct(TestName $parent = null) {
+        parent::__construct(get_class($this), $parent);
     }
 
     protected function before() {
@@ -26,11 +27,14 @@ abstract class StaticTestSuite extends PlainTestSuite {
     }
 
     protected function createTestCase(\ReflectionMethod $method) {
-        return new StaticTestCase($this->factory, $method, $this->getName());
+        return new StaticTestCase($method, $this->getName());
     }
 
     public function execute($method, Asserter $assert) {
         $this->assert = $assert;
+
+        $this->injectProperties();
+
         $this->before();
 
         try {
@@ -60,5 +64,12 @@ abstract class StaticTestSuite extends PlainTestSuite {
 
     protected function markIncomplete($message = "") {
         $this->assert->incomplete($message);
+    }
+
+    protected function injectProperties() {
+        $provider = new DefaultProvider(new Factory());
+        $injector = new Injector(new Factory());
+        $injector->injectPropertyAnnotations($this, $provider->getAnnotationFilter());
+        $injector->injectProperties($this, $provider->getPropertyFilter());
     }
 }

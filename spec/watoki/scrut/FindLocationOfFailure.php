@@ -1,7 +1,6 @@
 <?php
 namespace spec\watoki\scrut;
 
-use watoki\factory\Factory;
 use watoki\scrut\Asserter;
 use watoki\scrut\Failure;
 use watoki\scrut\failures\IncompleteTestFailure;
@@ -10,7 +9,6 @@ use watoki\scrut\TestName;
 use watoki\scrut\tests\FailureSourceLocator;
 use watoki\scrut\tests\generic\GenericTestCase;
 use watoki\scrut\tests\generic\GenericTestSuite;
-use watoki\scrut\tests\plain\PlainTestCase;
 use watoki\scrut\tests\plain\PlainTestSuite;
 use watoki\scrut\tests\statics\StaticTestCase;
 use watoki\scrut\tests\statics\StaticTestSuite;
@@ -19,9 +17,9 @@ class FindLocationOfFailure extends StaticTestSuite {
 
     protected function getTests() {
         return [
-            new FindLocationOfFailure_InGenericTestSuite($this->factory),
-            new FindLocationOfFailure_InStaticTestSuite($this->factory),
-            new FindLocationOfFailure_InPlainTestSuite($this->factory),
+            new FindLocationOfFailure_InGenericTestSuite(),
+            new FindLocationOfFailure_InStaticTestSuite(),
+            new FindLocationOfFailure_InPlainTestSuite(),
         ];
     }
 }
@@ -144,7 +142,7 @@ class FindLocationOfFailure_InStaticTestSuite extends FindLocationOfFailure_Test
 
     protected function before() {
         parent::before();
-        $this->suite = new FindLocationOfFailure_Foo(new Factory());
+        $this->suite = new FindLocationOfFailure_Foo();
     }
 
     function directlyThrownFailure() {
@@ -193,13 +191,13 @@ class FindLocationOfFailure_InStaticTestSuite extends FindLocationOfFailure_Test
     }
 
     function emptyTestSuite() {
-        $this->suite = new FindLocationOfFailure_Empty(new Factory());
+        $this->suite = new FindLocationOfFailure_Empty();
         $this->suite->run($this->listener);
         $this->assertLocationIsAtLineOfSuite(0);
     }
 
     private function executeTestCase($name) {
-        $test = new StaticTestCase(new Factory(), new \ReflectionMethod($this->suite, $name));
+        $test = new StaticTestCase(new \ReflectionMethod($this->suite, $name));
         $test->run($this->listener);
     }
 
@@ -217,11 +215,11 @@ class FindLocationOfFailure_InStaticTestSuite extends FindLocationOfFailure_Test
 class FindLocationOfFailure_InPlainTestSuite extends FindLocationOfFailure_TestSuite {
 
     /** @var PlainTestSuite */
-    private $suite;
+    private $testClass;
 
     protected function before() {
         parent::before();
-        $this->suite = new PlainTestSuite(new Factory(), new FindLocationOfFailure_PlainFoo());
+        $this->testClass = FindLocationOfFailure_PlainFoo::class;
     }
 
     function directlyThrownFailure() {
@@ -265,18 +263,22 @@ class FindLocationOfFailure_InPlainTestSuite extends FindLocationOfFailure_TestS
     }
 
     function emptyTestSuite() {
-        $this->suite = new PlainTestSuite(new Factory(), new FindLocationOfFailure_PlainEmpty());
-        $this->suite->run($this->listener);
+        $this->testClass = FindLocationOfFailure_PlainEmpty::class;
+        $suite = new PlainTestSuite($this->testClass);
+        $suite->run($this->listener);
         $this->assertLocationIsAtLineOfSuite(0);
     }
 
     private function executeTestCase($name) {
-        $test = new PlainTestCase(new Factory(), new \ReflectionMethod($this->suite->getSuite(), $name));
-        $test->run($this->listener);
+        $suite = new PlainTestSuite($this->testClass);
+        $suite->setMethodFilter(function (\ReflectionMethod $method) use ($name) {
+            return $method->getName() == $name;
+        });
+        $suite->run($this->listener);
     }
 
     private function assertLocationIsAtLineOfSuite($line) {
-        $start = (new \ReflectionClass($this->suite->getSuite()))->getStartLine();
+        $start = (new \ReflectionClass($this->testClass))->getStartLine();
         $this->assertLocationIsAtLine($start + $line);
     }
 

@@ -1,6 +1,5 @@
 <?php
 namespace watoki\scrut;
-use watoki\factory\Factory;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\PassedTestResult;
@@ -21,7 +20,7 @@ class FacilitateMigrationFromPhpUnit extends StaticTestSuite {
     }
 
     function callHooks() {
-        $suite = new PhpUnitCompatibility_Foo(new Factory());
+        $suite = new PhpUnitCompatibility_Foo();
         $suite->run($this->listener);
 
         $this->assert(PhpUnitCompatibility_Foo::$calledSetUp, 1);
@@ -29,7 +28,7 @@ class FacilitateMigrationFromPhpUnit extends StaticTestSuite {
     }
 
     function runSuite() {
-        $suite = new PhpUnitCompatibility_Bar(new Factory());
+        $suite = new PhpUnitCompatibility_Bar();
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 4);
