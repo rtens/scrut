@@ -30,7 +30,7 @@ abstract class StaticTestSuite extends PlainTestSuite {
         $this->before();
 
         try {
-            $this->$method();
+            $this->$method($assert);
         } catch (\Exception $e) {
             throw $e;
         } finally {

@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\scrut;
 
+use watoki\scrut\Asserter;
 use watoki\scrut\failures\EmptyTestSuiteFailure;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\IncompleteTestResult;
@@ -102,8 +103,8 @@ class RunStaticTestSuite_Foo extends StaticTestSuite {
         return "";
     }
 
-    public function foo() {
-        $this->pass();
+    public function foo(Asserter $asserter) {
+        $asserter->pass();
     }
 
     /**
