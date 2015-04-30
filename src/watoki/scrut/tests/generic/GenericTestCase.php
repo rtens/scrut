@@ -1,6 +1,7 @@
 <?php
 namespace watoki\scrut\tests\generic;
 
+use watoki\factory\Factory;
 use watoki\scrut\Asserter;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\TestCase;
@@ -20,9 +21,10 @@ class GenericTestCase extends TestCase {
      * @param callable $callback
      * @param string $name
      * @param null|TestName $parent
+     * @param Factory $factory
      */
-    function __construct(callable $callback, $name, TestName $parent = null) {
-        parent::__construct($parent);
+    function __construct(callable $callback, $name, TestName $parent = null, Factory $factory = null) {
+        parent::__construct($parent, $factory);
         $this->callback = $callback;
         $this->name = $name;
         $this->creation = new \Exception();

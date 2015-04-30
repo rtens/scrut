@@ -1,6 +1,7 @@
 <?php
 namespace watoki\scrut\tests\statics;
 
+use watoki\factory\Factory;
 use watoki\scrut\Asserter;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\plain\PlainTestSuite;
@@ -10,8 +11,8 @@ abstract class StaticTestSuite extends PlainTestSuite {
     /** @var Asserter */
     protected $assert;
 
-    function __construct(TestName $parent = null) {
-        parent::__construct($this, $parent);
+    function __construct(TestName $parent = null, Factory $factory = null) {
+        parent::__construct($this, $parent, $factory);
     }
 
     protected function before() {

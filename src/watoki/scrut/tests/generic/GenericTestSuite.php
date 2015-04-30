@@ -1,6 +1,7 @@
 <?php
 namespace watoki\scrut\tests\generic;
 
+use watoki\factory\Factory;
 use watoki\scrut\Test;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\TestSuite;
@@ -19,9 +20,10 @@ class GenericTestSuite extends TestSuite {
     /**
      * @param string $name
      * @param null|TestName $parent
+     * @param Factory $factory
      */
-    function __construct($name, TestName $parent = null) {
-        parent::__construct($parent);
+    function __construct($name, TestName $parent = null, Factory $factory = null) {
+        parent::__construct($parent, $factory);
         $this->name = $name;
         $this->creation = new \Exception();
     }
@@ -49,7 +51,7 @@ class GenericTestSuite extends TestSuite {
      * @return $this
      */
     public function test($name, callable $callback) {
-        return $this->add(new GenericTestCase($callback, $name, $this->getName()));
+        return $this->add(new GenericTestCase($callback, $name, $this->getName(), $this->factory));
     }
 
     /**
@@ -59,7 +61,7 @@ class GenericTestSuite extends TestSuite {
      * @return GenericTestSuite
      */
     public function suite($name, callable $configureSuite = null) {
-        $suite = new GenericTestSuite($name, $this->getName());
+        $suite = new GenericTestSuite($name, $this->getName(), $this->factory);
         if ($configureSuite) {
             $configureSuite($suite);
         }

@@ -1,9 +1,11 @@
 <?php
 namespace spec\watoki\scrut;
 
+use watoki\factory\Factory;
+use watoki\factory\providers\DefaultProvider;
 use watoki\scrut\Asserter;
+use watoki\scrut\Fixture;
 use watoki\scrut\listeners\ArrayListener;
-use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\tests\file\FileTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
@@ -26,15 +28,15 @@ class InjectDependencies {
                     $this->foo = $foo;
                 }
 
-                function foo() {
-                    assert($this->foo);
+                function foo($assert) {
+                    $assert($this->foo);
                 }
             }
         ');
         $suite = new FileTestSuite($this->tmp('inject/InjectConstructor.php'));
         $suite->run($this->listener);
 
-        $assert->not()->isInstanceOf($this->listener->results[0], FailedTestResult::class);
+        $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
     function injectProperties(Asserter $assert) {
@@ -44,15 +46,19 @@ class InjectDependencies {
                 /** @var \StdClass <- */
                 protected $foo;
 
-                function foo() {
-                    assert($this->foo);
+                /** @var \StdClass */
+                protected $bar;
+
+                function foo($assert) {
+                    $assert($this->foo);
+                    $assert(!$this->bar);
                 }
             }
         ');
         $suite = new FileTestSuite($this->tmp('inject/InjectProperties.php'));
         $suite->run($this->listener);
 
-        $assert->not()->isInstanceOf($this->listener->results[0], FailedTestResult::class);
+        $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
     function injectPropertiesIntoStaticTestSuite(Asserter $assert) {
@@ -62,36 +68,43 @@ class InjectDependencies {
                 /** @var \StdClass <- */
                 protected $foo;
 
+                /** @var \StdClass */
+                protected $bar;
+
                 function foo() {
-                    assert($this->foo);
+                    $this->assert($this->foo);
+                    $this->assert(!$this->bar);
                 }
             }
         ');
         $suite = new FileTestSuite($this->tmp('inject/InjectPropertiesIntoStatic.php'));
         $suite->run($this->listener);
 
-        $assert->not()->isInstanceOf($this->listener->results[0], FailedTestResult::class);
+        $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
-    function injectAnnotationsForTestRun(Asserter $assert) {
+    function injectAnnotations(Asserter $assert) {
         $this->fileContent('inject/InjectAnnotations.php', '<?php
-            /** @property \StdClass $foo */
+            /**
+             * @property \StdClass $foo <-
+             * @property \StdClass $bar
+             */
             class InjectDependencies_InjectAnnotations {
-
-                function foo() {
-                    assert($this->foo);
+                function foo($assert) {
+                    $assert($this->foo);
+                    $assert(!isset($this->bar));
                 }
             }
         ');
         $suite = new FileTestSuite($this->tmp('inject/InjectAnnotations.php'));
         $suite->run($this->listener);
 
-        $assert->not()->isInstanceOf($this->listener->results[0], FailedTestResult::class);
+        $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
     function asserterIsPassedToInjectedObject(Asserter $assert) {
         $this->fileContent('inject/InjectAsserter.php', '<?php
-            /** @property ' . Asserter::class . ' $assert */
+            /** @property ' . Asserter::class . ' $assert <- */
             class InjectAsserter {
                 function foo() {
                     $this->assert->pass();
@@ -99,6 +112,32 @@ class InjectDependencies {
             }
         ');
         $suite = new FileTestSuite($this->tmp('inject/InjectAsserter.php'));
+        $suite->run($this->listener);
+
+        $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
+    }
+
+    function configureFactory(Asserter $assert) {
+        $factory = new Factory();
+        $provider = new DefaultProvider($factory);
+        $provider->setAnnotationFilter(function ($annotation) {
+            return strpos($annotation, '@inject');
+        });
+        $factory->setProvider(\StdClass::class, $provider);
+
+        $this->fileContent('inject/OnlyMarkedOnes.php', '<?php
+            /**
+             * @property ' . Fixture::class . ' $fix @inject
+             * @property ' . Fixture::class . ' $not @doNotInject
+             */
+             class OnlyMarkedOnes {
+                function foo($assert) {
+                    $assert($this->fix);
+                    $assert(!isset($this->not));
+                }
+             }
+        ');
+        $suite = new FileTestSuite($this->tmp('inject/OnlyMarkedOnes.php'), null, $factory);
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);

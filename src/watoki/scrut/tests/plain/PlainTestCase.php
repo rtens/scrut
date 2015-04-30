@@ -1,6 +1,7 @@
 <?php
 namespace watoki\scrut\tests\plain;
 
+use watoki\factory\Factory;
 use watoki\scrut\Asserter;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\TestCase;
@@ -10,8 +11,8 @@ class PlainTestCase extends TestCase {
     /** @var \ReflectionMethod */
     protected $method;
 
-    function __construct(\ReflectionMethod $method, TestName $parent = null) {
-        parent::__construct($parent);
+    function __construct(\ReflectionMethod $method, TestName $parent = null, Factory $factory = null) {
+        parent::__construct($parent, $factory);
         $this->method = $method;
     }
 
@@ -60,7 +61,7 @@ class PlainTestCase extends TestCase {
      * @return object
      */
     protected function createInstance(\ReflectionClass $class, Asserter $asserter) {
-        $this->getFactory()->setSingleton(Asserter::class, $asserter);
-        return $this->getFactory()->getInstance($class->getName());
+        $this->factory->setSingleton(Asserter::class, $asserter);
+        return $this->factory->getInstance($class->getName());
     }
 }

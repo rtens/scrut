@@ -1,13 +1,14 @@
 <?php
 namespace watoki\scrut\tests\migration;
 
+use watoki\factory\Factory;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\statics\StaticTestSuite;
 
 class PhpUnitTestSuite extends StaticTestSuite {
 
-    function __construct(TestName $parent = null) {
-        parent::__construct($parent);
+    function __construct(TestName $parent = null, Factory $factory = null) {
+        parent::__construct($parent, $factory);
 
         $this->setMethodFilter(function (\ReflectionMethod $method) {
             return substr(strtolower($method->getName()), 0, 4) == 'test'

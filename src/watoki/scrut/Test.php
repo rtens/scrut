@@ -2,20 +2,18 @@
 namespace watoki\scrut;
 
 use watoki\factory\Factory;
-use watoki\factory\providers\DefaultProvider;
 
 abstract class Test {
 
-    /**
-     * @var null|TestName
-     */
+    /** @var null|TestName */
     private $parent;
 
     /** @var Factory */
-    private $factory;
+    protected $factory;
 
-    public function __construct(TestName $parent = null) {
+    public function __construct(TestName $parent = null, Factory $factory = null) {
         $this->parent = $parent ?: new TestName([]);
+        $this->factory = $factory ?: new Factory();
     }
 
     /**
@@ -34,29 +32,5 @@ abstract class Test {
      */
     public function getName() {
         return $this->parent;
-    }
-
-    /**
-     * @param Factory $factory
-     * @return $this
-     */
-    protected function setFactory($factory) {
-        $this->factory = $factory;
-        return $this;
-    }
-
-    /**
-     * @return \watoki\factory\Factory
-     */
-    protected function getFactory() {
-        if (!$this->factory) {
-            $this->factory = new Factory();
-            $provider = new DefaultProvider($this->factory);
-            $provider->setAnnotationFilter(function () {
-                return true;
-            });
-            $this->factory->setProvider(\StdClass::class, $provider);
-        }
-        return $this->factory;
     }
 }
