@@ -18,12 +18,12 @@ class GenericTestSuite extends TestSuite {
     private $name;
 
     /**
+     * @param Factory $factory <-
      * @param string $name
      * @param null|TestName $parent
-     * @param Factory $factory
      */
-    function __construct($name, TestName $parent = null, Factory $factory = null) {
-        parent::__construct($parent, $factory);
+    function __construct(Factory $factory, $name, TestName $parent = null) {
+        parent::__construct($factory, $parent);
         $this->name = $name;
         $this->creation = new \Exception();
     }
@@ -51,7 +51,7 @@ class GenericTestSuite extends TestSuite {
      * @return $this
      */
     public function test($name, callable $callback) {
-        return $this->add(new GenericTestCase($callback, $name, $this->getName(), $this->factory));
+        return $this->add(new GenericTestCase($this->factory, $callback, $name, $this->getName()));
     }
 
     /**
@@ -61,7 +61,7 @@ class GenericTestSuite extends TestSuite {
      * @return GenericTestSuite
      */
     public function suite($name, callable $configureSuite = null) {
-        $suite = new GenericTestSuite($name, $this->getName(), $this->factory);
+        $suite = new GenericTestSuite($this->factory, $name, $this->getName());
         if ($configureSuite) {
             $configureSuite($suite);
         }

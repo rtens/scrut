@@ -11,8 +11,8 @@ class PlainTestCase extends TestCase {
     /** @var \ReflectionMethod */
     protected $method;
 
-    function __construct(\ReflectionMethod $method, TestName $parent = null, Factory $factory = null) {
-        parent::__construct($parent, $factory);
+    function __construct(Factory $factory, \ReflectionMethod $method, TestName $parent = null) {
+        parent::__construct($factory, $parent);
         $this->method = $method;
     }
 

@@ -39,7 +39,7 @@ class ConfiguredTestRunner extends DefaultTestRunner {
      */
     private function buildSuite($config) {
         if (array_key_exists('file', $config)) {
-            $suite = new FileTestSuite($this->cwd($config['file']), null, $this->factory);
+            $suite = new FileTestSuite($this->factory, $this->cwd($config['file']), null);
 
             if (array_key_exists('filter', $config)) {
                 $suite->setClassFilter(function (\ReflectionClass $class) use ($config) {

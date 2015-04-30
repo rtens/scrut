@@ -44,7 +44,7 @@ class DefaultTestRunner implements TestRunner, TestRunListener {
     }
 
     protected function getTest() {
-        $suite = new GenericTestSuite($this->getName(), null, $this->factory);
+        $suite = new GenericTestSuite($this->factory, $this->getName(), null);
         foreach ($this->getTests($suite) as $test) {
             $suite->add($test);
         }
@@ -70,7 +70,7 @@ class DefaultTestRunner implements TestRunner, TestRunListener {
             $dir = $this->cwd($dir);
 
             if (file_exists($dir)) {
-                $tests[] = new FileTestSuite($dir, $parent->getName(), $this->factory);
+                $tests[] = new FileTestSuite($this->factory, $dir, $parent->getName());
             }
         }
 

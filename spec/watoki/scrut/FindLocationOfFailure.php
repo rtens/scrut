@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\scrut;
 
+use watoki\factory\Factory;
 use watoki\scrut\Asserter;
 use watoki\scrut\Failure;
 use watoki\scrut\failures\IncompleteTestFailure;
@@ -18,9 +19,9 @@ class FindLocationOfFailure extends StaticTestSuite {
 
     protected function getTests() {
         return [
-            new FindLocationOfFailure_InGenericTestSuite(),
-            new FindLocationOfFailure_InStaticTestSuite(),
-            new FindLocationOfFailure_InPlainTestSuite(),
+            new FindLocationOfFailure_InGenericTestSuite($this->factory),
+            new FindLocationOfFailure_InStaticTestSuite($this->factory),
+            new FindLocationOfFailure_InPlainTestSuite($this->factory),
         ];
     }
 }
@@ -61,7 +62,7 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
 
     protected function before() {
         parent::before();
-        $this->suite = new GenericTestSuite("Foo");
+        $this->suite = new GenericTestSuite(new Factory(), "Foo");
     }
 
     function directlyThrownFailure() {
@@ -100,7 +101,7 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
     }
 
     function emptyTestCase() {
-        $this->suite->add(new GenericTestCase(function () {
+        $this->suite->add(new GenericTestCase(new Factory(), function () {
         }, 'bar'));
         $this->suite->run($this->listener);
 
@@ -108,7 +109,7 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
     }
 
     function emptyTestSuite() {
-        $suite = new GenericTestSuite("Foo");
+        $suite = new GenericTestSuite(new Factory(), "Foo");
         $suite->run($this->listener);
 
         $this->assertLocationIsAtLine(__LINE__ - 3);
@@ -126,7 +127,7 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
     }
 
     private function runGenericTestCase($callback) {
-        $this->suite->add(new GenericTestCase($callback, 'bar'));
+        $this->suite->add(new GenericTestCase(new Factory(), $callback, 'bar'));
         $this->suite->run($this->listener);
     }
 
@@ -143,7 +144,7 @@ class FindLocationOfFailure_InStaticTestSuite extends FindLocationOfFailure_Test
 
     protected function before() {
         parent::before();
-        $this->suite = new FindLocationOfFailure_Foo();
+        $this->suite = new FindLocationOfFailure_Foo(new Factory());
     }
 
     function directlyThrownFailure() {
@@ -192,13 +193,13 @@ class FindLocationOfFailure_InStaticTestSuite extends FindLocationOfFailure_Test
     }
 
     function emptyTestSuite() {
-        $this->suite = new FindLocationOfFailure_Empty();
+        $this->suite = new FindLocationOfFailure_Empty(new Factory());
         $this->suite->run($this->listener);
         $this->assertLocationIsAtLineOfSuite(0);
     }
 
     private function executeTestCase($name) {
-        $test = new StaticTestCase(new \ReflectionMethod($this->suite, $name));
+        $test = new StaticTestCase(new Factory(), new \ReflectionMethod($this->suite, $name));
         $test->run($this->listener);
     }
 
@@ -220,7 +221,7 @@ class FindLocationOfFailure_InPlainTestSuite extends FindLocationOfFailure_TestS
 
     protected function before() {
         parent::before();
-        $this->suite = new PlainTestSuite(new FindLocationOfFailure_PlainFoo());
+        $this->suite = new PlainTestSuite(new Factory(), new FindLocationOfFailure_PlainFoo());
     }
 
     function directlyThrownFailure() {
@@ -264,13 +265,13 @@ class FindLocationOfFailure_InPlainTestSuite extends FindLocationOfFailure_TestS
     }
 
     function emptyTestSuite() {
-        $this->suite = new PlainTestSuite(new FindLocationOfFailure_PlainEmpty());
+        $this->suite = new PlainTestSuite(new Factory(), new FindLocationOfFailure_PlainEmpty());
         $this->suite->run($this->listener);
         $this->assertLocationIsAtLineOfSuite(0);
     }
 
     private function executeTestCase($name) {
-        $test = new PlainTestCase(new \ReflectionMethod($this->suite->getSuite(), $name));
+        $test = new PlainTestCase(new Factory(), new \ReflectionMethod($this->suite->getSuite(), $name));
         $test->run($this->listener);
     }
 

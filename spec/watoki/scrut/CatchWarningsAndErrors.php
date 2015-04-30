@@ -1,6 +1,7 @@
 <?php
 namespace watoki\scrut;
 
+use watoki\factory\Factory;
 use watoki\scrut\failures\CaughtErrorFailure;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\FailedTestResult;
@@ -16,7 +17,7 @@ class CatchWarningsAndErrors extends StaticTestSuite {
     }
 
     function catchWarning() {
-        $test = new GenericTestCase(function () {
+        $test = new GenericTestCase(new Factory(), function () {
             /** @noinspection PhpParamsInspection */
             $this->foo();
         }, 'foo');
@@ -26,7 +27,7 @@ class CatchWarningsAndErrors extends StaticTestSuite {
     }
 
     function catchError() {
-        $test = new GenericTestCase(function () {
+        $test = new GenericTestCase(new Factory(), function () {
             $this->bar("foo");
         }, 'foo');
         $test->run($this->listener);

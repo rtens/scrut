@@ -18,13 +18,13 @@ class GenericTestCase extends TestCase {
     private $callback;
 
     /**
+     * @param Factory $factory <-
      * @param callable $callback
      * @param string $name
      * @param null|TestName $parent
-     * @param Factory $factory
      */
-    function __construct(callable $callback, $name, TestName $parent = null, Factory $factory = null) {
-        parent::__construct($parent, $factory);
+    function __construct(Factory $factory, callable $callback, $name, TestName $parent = null) {
+        parent::__construct($factory, $parent);
         $this->callback = $callback;
         $this->name = $name;
         $this->creation = new \Exception();

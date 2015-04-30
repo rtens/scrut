@@ -11,8 +11,12 @@ abstract class StaticTestSuite extends PlainTestSuite {
     /** @var Asserter */
     protected $assert;
 
-    function __construct(TestName $parent = null, Factory $factory = null) {
-        parent::__construct($this, $parent, $factory);
+    /**
+     * @param Factory $factory <-
+     * @param TestName $parent
+     */
+    function __construct(Factory $factory, TestName $parent = null) {
+        parent::__construct($factory, $this, $parent);
     }
 
     protected function before() {
@@ -22,7 +26,7 @@ abstract class StaticTestSuite extends PlainTestSuite {
     }
 
     protected function createTestCase(\ReflectionMethod $method) {
-        return new StaticTestCase($method, $this->getName(), $this->factory);
+        return new StaticTestCase($this->factory, $method, $this->getName());
     }
 
     public function execute($method, Asserter $assert) {

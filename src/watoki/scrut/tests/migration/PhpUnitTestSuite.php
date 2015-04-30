@@ -7,8 +7,13 @@ use watoki\scrut\tests\statics\StaticTestSuite;
 
 class PhpUnitTestSuite extends StaticTestSuite {
 
-    function __construct(TestName $parent = null, Factory $factory = null) {
-        parent::__construct($parent, $factory);
+    /**
+     * @param Factory $factory <-
+     * @param TestName $parent
+     * @throws \Exception
+     */
+    function __construct(Factory $factory, TestName $parent = null) {
+        parent::__construct($factory, $parent);
 
         $this->setMethodFilter(function (\ReflectionMethod $method) {
             return substr(strtolower($method->getName()), 0, 4) == 'test'

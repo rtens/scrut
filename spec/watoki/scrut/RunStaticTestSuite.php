@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\scrut;
 
+use watoki\factory\Factory;
 use watoki\scrut\Asserter;
 use watoki\scrut\failures\EmptyTestSuiteFailure;
 use watoki\scrut\listeners\ArrayListener;
@@ -19,7 +20,7 @@ class RunStaticTestSuite extends StaticTestSuite {
     }
 
     function emptySuite() {
-        $suite = new RunStaticTestSuite_Empty();
+        $suite = new RunStaticTestSuite_Empty(new Factory());
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 1);
@@ -44,7 +45,7 @@ class RunStaticTestSuite extends StaticTestSuite {
     }
 
     function runPublicMethods() {
-        $suite = new RunStaticTestSuite_Bar();
+        $suite = new RunStaticTestSuite_Bar(new Factory());
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 1);
@@ -71,7 +72,7 @@ class RunStaticTestSuite extends StaticTestSuite {
     }
 
     function callBeforeAndAfter() {
-        $suite = new RunStaticTestSuite_BeforeAndAfter();
+        $suite = new RunStaticTestSuite_BeforeAndAfter(new Factory());
         $suite->run($this->listener);
 
         $this->assert(RunStaticTestSuite_BeforeAndAfter::$calledBefore, 2);
@@ -79,7 +80,7 @@ class RunStaticTestSuite extends StaticTestSuite {
     }
 
     function discardParentName() {
-        $suite = new RunStaticTestSuite_Empty(new TestName("Foo"));
+        $suite = new RunStaticTestSuite_Empty(new Factory(), new TestName("Foo"));
         $suite->run($this->listener);
 
         $this->assert($this->listener->started[0]->toString(), RunStaticTestSuite_Empty::class);
@@ -95,7 +96,7 @@ class RunStaticTestSuite_Foo extends StaticTestSuite {
     public static $constructed = 0;
 
     function __construct() {
-        parent::__construct();
+        parent::__construct(new Factory());
         self::$constructed++;
     }
 

@@ -17,12 +17,12 @@ class FileTestSuite extends TestSuite {
     private $classFilter;
 
     /**
+     * @param Factory $factory <-
      * @param string $path Directory of file
      * @param null|TestName $parent
-     * @param Factory $factory
      */
-    function __construct($path, TestName $parent = null, Factory $factory = null) {
-        parent::__construct($parent, $factory);
+    function __construct(Factory $factory, $path, TestName $parent = null) {
+        parent::__construct($factory, $parent);
         $this->path = $path;
         $this->classFilter = function () {
             return true;
@@ -107,11 +107,11 @@ class FileTestSuite extends TestSuite {
 
 
             if (is_subclass_of($class, StaticTestSuite::class)) {
-                $instance = $this->factory->getInstance($class, [$this->getName(), $this->factory]);
+                $instance = $this->factory->getInstance($class, ['parent' => $this->getName()]);
                 yield $instance;
             } else {
                 $instance = $this->factory->getInstance($class);
-                yield new PlainTestSuite($instance, $this->getName(), $this->factory);
+                yield new PlainTestSuite($this->factory, $instance, $this->getName());
             }
         }
     }

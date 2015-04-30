@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\scrut;
 
+use watoki\factory\Factory;
 use watoki\scrut\Asserter;
 use watoki\scrut\failures\AssertionFailedFailure;
 use watoki\scrut\failures\CaughtExceptionFailure;
@@ -22,7 +23,7 @@ class RunGenericTestSuite extends StaticTestSuite {
 
     protected function before() {
         $this->listener = new ArrayListener();
-        $this->suite = new GenericTestSuite("Foo");
+        $this->suite = new GenericTestSuite(new Factory(), "Foo");
     }
 
     function emptySuite() {

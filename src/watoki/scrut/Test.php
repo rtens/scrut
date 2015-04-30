@@ -11,9 +11,13 @@ abstract class Test {
     /** @var Factory */
     protected $factory;
 
-    public function __construct(TestName $parent = null, Factory $factory = null) {
+    /**
+     * @param Factory $factory <-
+     * @param TestName $parent
+     */
+    public function __construct(Factory $factory, TestName $parent = null) {
+        $this->factory = $factory;
         $this->parent = $parent ?: new TestName([]);
-        $this->factory = $factory ?: new Factory();
     }
 
     /**

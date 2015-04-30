@@ -33,7 +33,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite($this->tmp('inject/InjectConstructor.php'));
+        $suite = new FileTestSuite(new Factory(), $this->tmp('inject/InjectConstructor.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -55,7 +55,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite($this->tmp('inject/InjectProperties.php'));
+        $suite = new FileTestSuite(new Factory(), $this->tmp('inject/InjectProperties.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -77,7 +77,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite($this->tmp('inject/InjectPropertiesIntoStatic.php'));
+        $suite = new FileTestSuite(new Factory(), $this->tmp('inject/InjectPropertiesIntoStatic.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -96,7 +96,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite($this->tmp('inject/InjectAnnotations.php'));
+        $suite = new FileTestSuite(new Factory(), $this->tmp('inject/InjectAnnotations.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -111,7 +111,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite($this->tmp('inject/InjectAsserter.php'));
+        $suite = new FileTestSuite(new Factory(), $this->tmp('inject/InjectAsserter.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -148,7 +148,7 @@ class InjectDependencies {
                 }
              }
         ');
-        $suite = new FileTestSuite($this->tmp('inject/OnlyMarkedOnes.php'), null, $factory);
+        $suite = new FileTestSuite($factory, $this->tmp('inject/OnlyMarkedOnes.php'), null);
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);

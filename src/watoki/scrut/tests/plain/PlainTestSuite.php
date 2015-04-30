@@ -16,12 +16,12 @@ class PlainTestSuite extends TestSuite {
     private $methodFilter;
 
     /**
+     * @param Factory $factory
      * @param object $suite
      * @param null|TestName $parent
-     * @param Factory $factory
      */
-    function __construct($suite, TestName $parent = null, Factory $factory = null) {
-        parent::__construct($parent, $factory);
+    function __construct(Factory $factory, $suite, TestName $parent = null) {
+        parent::__construct($factory, $parent);
         $this->suite = $suite;
 
         $this->methodFilter = function (\ReflectionMethod $method) {
@@ -81,7 +81,7 @@ class PlainTestSuite extends TestSuite {
      * @return TestCase
      */
     protected function createTestCase(\ReflectionMethod $method) {
-        return new PlainTestCase($method, $this->getName(), $this->factory);
+        return new PlainTestCase($this->factory, $method, $this->getName());
     }
 
     /**
