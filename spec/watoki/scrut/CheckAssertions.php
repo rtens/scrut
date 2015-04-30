@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\scrut;
 
+use watoki\scrut\Asserter;
 use watoki\scrut\assertions\ContainsAssertion;
 use watoki\scrut\assertions\IsEqualAssertion;
 use watoki\scrut\assertions\IsInstanceOfAssertion;
@@ -14,6 +15,24 @@ class CheckAssertions extends StaticTestSuite {
 
     /** @var null|AssertionFailedFailure */
     private $failure;
+
+    function assertSomething() {
+        $assert = new Asserter();
+        $assert(true);
+        $assert("foo");
+
+        try {
+            $assert("");
+            $this->fail("Should have failed");
+        } catch (AssertionFailedFailure $f) {
+        }
+
+        try {
+            $assert(null);
+            $this->fail("Should have failed");
+        } catch (AssertionFailedFailure $f) {
+        }
+    }
 
     function assertingTheOpposite() {
         $this->assert->not()->isTrue(false);

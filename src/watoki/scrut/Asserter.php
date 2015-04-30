@@ -44,11 +44,7 @@ class Asserter {
      * @param bool|mixed $equals
      */
     function __invoke($value, $equals = true) {
-        if ($equals === true) {
-            $this->isTrue($value);
-        } else {
-            $this->equals($value, $equals);
-        }
+        $this->equals($value, $equals);
     }
 
     /**
