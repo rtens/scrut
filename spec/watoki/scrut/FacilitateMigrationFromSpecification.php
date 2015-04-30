@@ -4,6 +4,7 @@ namespace watoki\scrut;
 use watoki\factory\Factory;
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\PassedTestResult;
+use watoki\scrut\tests\migration\Fixture;
 use watoki\scrut\tests\migration\Specification;
 use watoki\scrut\tests\statics\StaticTestSuite;
 
@@ -76,7 +77,7 @@ class FacilitateMigrationFromSpecification_Inject extends Specification {
     }
 }
 
-class FacilitateMigrationFromSpecification_Dependency extends \watoki\scrut\tests\migration\Fixture {
+class FacilitateMigrationFromSpecification_Dependency extends Fixture {
 
     function spec() {
         return $this->spec;

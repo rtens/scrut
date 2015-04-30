@@ -15,13 +15,17 @@ class PlainTestSuite extends TestSuite {
     /** @var callable */
     private $methodFilter;
 
+    /** @var Factory */
+    protected $factory;
+
     /**
-     * @param Factory $factory
+     * @param Factory $factory <-
      * @param object $suite
      * @param null|TestName $parent
      */
     function __construct(Factory $factory, $suite, TestName $parent = null) {
-        parent::__construct($factory, $parent);
+        parent::__construct($parent);
+        $this->factory = $factory;
         $this->suite = $suite;
 
         $this->methodFilter = function (\ReflectionMethod $method) {

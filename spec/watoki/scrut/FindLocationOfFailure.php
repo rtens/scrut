@@ -62,7 +62,7 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
 
     protected function before() {
         parent::before();
-        $this->suite = new GenericTestSuite(new Factory(), "Foo");
+        $this->suite = new GenericTestSuite("Foo");
     }
 
     function directlyThrownFailure() {
@@ -101,7 +101,7 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
     }
 
     function emptyTestCase() {
-        $this->suite->add(new GenericTestCase(new Factory(), function () {
+        $this->suite->add(new GenericTestCase(function () {
         }, 'bar'));
         $this->suite->run($this->listener);
 
@@ -109,7 +109,7 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
     }
 
     function emptyTestSuite() {
-        $suite = new GenericTestSuite(new Factory(), "Foo");
+        $suite = new GenericTestSuite("Foo");
         $suite->run($this->listener);
 
         $this->assertLocationIsAtLine(__LINE__ - 3);
@@ -127,7 +127,7 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
     }
 
     private function runGenericTestCase($callback) {
-        $this->suite->add(new GenericTestCase(new Factory(), $callback, 'bar'));
+        $this->suite->add(new GenericTestCase($callback, 'bar'));
         $this->suite->run($this->listener);
     }
 

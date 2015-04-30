@@ -1,22 +1,15 @@
 <?php
 namespace watoki\scrut;
 
-use watoki\factory\Factory;
-
 abstract class Test {
 
     /** @var null|TestName */
     private $parent;
 
-    /** @var Factory */
-    protected $factory;
-
     /**
-     * @param Factory $factory <-
      * @param TestName $parent
      */
-    public function __construct(Factory $factory, TestName $parent = null) {
-        $this->factory = $factory;
+    public function __construct(TestName $parent = null) {
         $this->parent = $parent ?: new TestName([]);
     }
 

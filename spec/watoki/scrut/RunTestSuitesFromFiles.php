@@ -84,7 +84,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     function loadGenericTestSuite() {
         $this->fileContent('foo/GenericFoo.php', '<?php
             class IgnoreThisOne {}
-            return new ' . GenericTestSuite::class . '(new ' . Factory::class . '(), "Generic foo");');
+            return new ' . GenericTestSuite::class . '("Generic foo");');
 
         $suite = new FileTestSuite(new Factory(), $this->tmp('foo/GenericFoo.php'));
         $suite->run($this->listener);

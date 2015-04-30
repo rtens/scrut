@@ -152,6 +152,7 @@ class InjectDependencies {
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
+        $assert->isInstanceOf($this->listener->results[1], PassedTestResult::class);
     }
 
     private function fileContent($fileName, $content) {
