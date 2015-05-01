@@ -1,5 +1,8 @@
 <?php
-namespace watoki\scrut;
+namespace spec\watoki\scrut;
+
+use watoki\scrut\Asserter;
+use watoki\scrut\TestName;
 
 class ComposeTestNames {
 

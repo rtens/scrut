@@ -1,5 +1,5 @@
 <?php
-namespace watoki\scrut;
+namespace spec\watoki\scrut;
 
 use watoki\scrut\failures\CaughtErrorFailure;
 use watoki\scrut\listeners\ArrayListener;

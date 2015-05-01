@@ -1,5 +1,5 @@
 <?php
-namespace watoki\scrut;
+namespace spec\watoki\scrut;
 
 use watoki\scrut\fixtures\ExceptionFixture;
 use watoki\scrut\tests\statics\StaticTestSuite;
