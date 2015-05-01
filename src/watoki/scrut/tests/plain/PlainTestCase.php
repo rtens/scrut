@@ -2,11 +2,20 @@
 namespace watoki\scrut\tests\plain;
 
 use watoki\factory\Factory;
+use watoki\factory\Injector;
+use watoki\factory\providers\CallbackProvider;
 use watoki\scrut\Asserter;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\TestCase;
 
 class PlainTestCase extends TestCase {
+
+    const BEFORE_METHOD = 'before';
+    const AFTER_METHOD = 'after';
+
+    private static $ASSERTER_ARGUMENTS = ['assert', 'asserter'];
+
+    private $asserterProvided = false;
 
     /** @var \ReflectionMethod */
     protected $method;
@@ -30,28 +39,21 @@ class PlainTestCase extends TestCase {
     protected function execute(Asserter $assert) {
         $class = $this->method->getDeclaringClass();
 
-        $factory = new Factory();
-        $factory->setSingleton(Asserter::class, $assert);
+        $factory = $this->createFactory($assert);
         $suite = $factory->getInstance($class->getName());
+        $args = $this->injectArguments($assert, $factory);
 
-        if (method_exists($suite, 'before')) {
-            if (!is_callable([$suite, 'before'])) {
-                throw new \ReflectionException("Method [" . $class->getName() . '::before] must be public');
-            }
-            $suite->before();
-        }
-
+        $this->callHook($suite, self::BEFORE_METHOD);
         try {
-            $this->method->invoke($suite, $assert);
+            $this->method->invokeArgs($suite, $args);
+
+            if (!$this->asserterProvided) {
+                $assert->pass();
+            }
         } catch (\Exception $e) {
             throw $e;
         } finally {
-            if (method_exists($suite, 'after')) {
-                if (!is_callable([$suite, 'after'])) {
-                    throw new \ReflectionException("Method [" . $class->getName() . '::after] must be public');
-                }
-                $suite->after();
-            }
+            $this->callHook($suite, self::AFTER_METHOD);
         }
     }
 
@@ -60,5 +62,42 @@ class PlainTestCase extends TestCase {
      */
     protected function getFailureSourceLocator() {
         return new PlainFailureSourceLocator($this->method);
+    }
+
+    private function callHook($suite, $methodName) {
+        if (method_exists($suite, $methodName)) {
+            if (!is_callable([$suite, $methodName])) {
+                $name = get_class($suite) . '::' . $methodName;
+                throw new \ReflectionException("Method [" . $name . '] must be public');
+            }
+            $suite->$methodName();
+        }
+    }
+
+    private function createFactory(Asserter $assert) {
+        $factory = new Factory();
+        $factory->setProvider(Asserter::class, new CallbackProvider(function () use ($assert) {
+            $this->asserterProvided = true;
+            return $assert;
+        }));
+        return $factory;
+    }
+
+    private function injectArguments(Asserter $assert, Factory $factory) {
+        $args = [];
+
+        foreach ($this->method->getParameters() as $parameter) {
+            if (in_array($parameter->getName(), self::$ASSERTER_ARGUMENTS)) {
+                $this->asserterProvided = true;
+                $args[$parameter->getName()] = $assert;
+            }
+        }
+
+        $injector = new Injector($factory);
+        $args = $injector->injectMethodArguments($this->method, $args, function () {
+            return true;
+        });
+
+        return $args;
     }
 }

@@ -3,6 +3,7 @@ namespace watoki\scrut;
 
 use watoki\scrut\listeners\ArrayListener;
 use watoki\scrut\results\IncompleteTestResult;
+use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\tests\plain\PlainTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
 
@@ -16,8 +17,7 @@ class RunPlainTestSuites extends StaticTestSuite {
     }
 
     function emptySuite() {
-        $suite = new PlainTestSuite(RunPlainTestSuites_Empty::class);
-        $suite->run($this->listener);
+        $this->runTestSuite(RunPlainTestSuites_Empty::class);
 
         $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
@@ -30,6 +30,21 @@ class RunPlainTestSuites extends StaticTestSuite {
         $this->assert->size($this->listener->results, 2);
         $this->assert($this->listener->started[1]->last(), 'foo');
         $this->assert($this->listener->started[2]->last(), 'bar');
+    }
+
+    function markMethodsWithoutAssertionsAsIncomplete() {
+        $suite = new PlainTestSuite(RunPlainTestSuites_Incomplete::class);
+        $suite->run($this->listener);
+
+        $this->assert->size($this->listener->results, 2);
+        $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
+        $this->assert->isInstanceOf($this->listener->results[1], PassedTestResult::class);
+    }
+
+    function injectMethodsArguments() {
+        $this->runTestSuite(RunPlainTestSuites_Inject::class);
+
+        $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
     function callBeforeAndAfter() {
@@ -68,6 +83,14 @@ class RunPlainTestSuites extends StaticTestSuite {
 
         $this->assert($this->listener->started[0]->toString(), RunPlainTestSuites_Empty::class);
     }
+
+    /**
+     * @param $class
+     */
+    private function runTestSuite($class) {
+        $suite = new PlainTestSuite($class);
+        $suite->run($this->listener);
+    }
 }
 
 class RunPlainTestSuites_Empty {
@@ -82,6 +105,22 @@ class RunPlainTestSuites_Foo {
 
     function bar(Asserter $assert) {
         $assert(false);
+    }
+}
+
+class RunPlainTestSuites_Incomplete {
+
+    function foo(Asserter $that) {
+    }
+
+    function bar() {
+    }
+}
+
+class RunPlainTestSuites_Inject {
+
+    function foo(RunPlainTestSuites_Empty $foo) {
+        assert($foo instanceof RunPlainTestSuites_Empty);
     }
 }
 
