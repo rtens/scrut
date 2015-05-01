@@ -1,7 +1,7 @@
 <?php
 namespace watoki\scrut\cli;
 
-use watoki\scrut\listeners\ConsoleListener;
+use watoki\scrut\listeners\CompactConsoleListener;
 use watoki\scrut\listeners\MultiListener;
 use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\Test;
@@ -34,7 +34,7 @@ class DefaultTestRunner implements TestRunner, TestRunListener {
     }
 
     protected function getListener() {
-        return new ConsoleListener();
+        return new CompactConsoleListener();
     }
 
     protected function cwd($path) {
