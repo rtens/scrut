@@ -41,4 +41,8 @@ class PhpUnitTestSuite extends StaticTestSuite {
     function __call($name, $arguments) {
         call_user_func_array(array(\PHPUnit_Framework_Assert::class, $name), $arguments);
     }
+
+    public function fail($message = "") {
+        parent::fail($message);
+    }
 }

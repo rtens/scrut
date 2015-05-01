@@ -10,11 +10,10 @@ class Specification extends PhpUnitTestSuite {
     public $undos = [];
 
     /** @var Factory <- */
-    protected $factory;
+    public $factory;
 
     protected function before() {
         parent::before();
-        $this->factory = new Factory();
         $this->background();
     }
 
@@ -29,13 +28,20 @@ class Specification extends PhpUnitTestSuite {
     }
 
     protected function injectProperties() {
+        $this->factory = new Factory();
+
         $factory = new Factory();
-        $factory->setProvider(Fixture::class, new FixtureProvider($this, $factory));
+        $provider = new FixtureProvider($this, $factory);
+        $factory->setProvider(Fixture::class, $provider);
 
         $injector = new Injector($factory);
         $injector->injectPropertyAnnotations($this, function () {
             return true;
         });
+
+        foreach ($provider->getProvidedFixtures() as $fixture) {
+            $fixture->setUp();
+        }
     }
 
 }
