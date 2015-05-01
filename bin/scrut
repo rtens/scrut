@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use watoki\scrut\cli\ConfiguredTestRunner;
+use rtens\scrut\cli\ConfiguredTestRunner;
 
 $requireAutoload = function ($autoloaders) {
     foreach ($autoloaders as $file) {

@@ -1,8 +1,8 @@
 {
-    "name": "watoki/scrut",
+    "name": "rtens/scrut",
     "description": "Light-weight test runner for PHP",
-    "keywords": ["test", "test runner", "tdd", "watoki"],
-    "homepage": "http://github.com/watoki/scrut",
+    "keywords": ["test", "test runner", "tdd", "bdd"],
+    "homepage": "http://github.com/rtens/scrut",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -16,14 +16,11 @@
         "php": ">=5.5",
         "watoki/factory": ">=0.4"
     },
-    "require-dev": {
-        "phpunit/phpunit": "~4.5"
-    },
     "bin": ["bin/scrut"],
     "autoload": {
         "psr-0": {
-            "watoki\\scrut": "src/",
-            "spec\\watoki\\scrut": ""
+            "rtens\\scrut": "src/",
+            "spec\\rtens\\scrut": ""
         }
     },
     "minimum-stability": "dev"
