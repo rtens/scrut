@@ -14,18 +14,18 @@ use watoki\scrut\tests\plain\PlainTestSuite;
 use watoki\scrut\tests\statics\StaticTestCase;
 use watoki\scrut\tests\statics\StaticTestSuite;
 
-class FindLocationOfFailure extends StaticTestSuite {
+class FindFailureSource extends StaticTestSuite {
 
     protected function getTests() {
         return [
-            new FindLocationOfFailure_InGenericTestSuite(),
-            new FindLocationOfFailure_InStaticTestSuite(),
-            new FindLocationOfFailure_InPlainTestSuite(),
+            new FindFailureSource_InGenericTestSuite(),
+            new FindFailureSource_InStaticTestSuite(),
+            new FindFailureSource_InPlainTestSuite(),
         ];
     }
 }
 
-class FindLocationOfFailure_TestSuite extends StaticTestSuite {
+class FindFailureSource_TestSuite extends StaticTestSuite {
 
     /** @var ArrayListener */
     protected $listener;
@@ -35,8 +35,8 @@ class FindLocationOfFailure_TestSuite extends StaticTestSuite {
     }
 
     public function getName() {
-        return (new TestName(FindLocationOfFailure::class))
-            ->with(substr(get_class($this), strlen(FindLocationOfFailure::class) + 1, -9));
+        return (new TestName(FindFailureSource::class))
+            ->with(substr(get_class($this), strlen(FindFailureSource::class) + 1, -9));
     }
 
 
@@ -51,7 +51,7 @@ class FindLocationOfFailure_TestSuite extends StaticTestSuite {
 
 }
 
-class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_TestSuite {
+class FindFailureSource_InGenericTestSuite extends FindFailureSource_TestSuite {
 
     /** @var GenericTestSuite */
     private $suite;
@@ -123,6 +123,13 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
         $this->assertLocationIsAtLine(__LINE__ - 2);
     }
 
+    function caughtNotice() {
+        $this->runGenericTestCase(function () {
+            assert(false);
+        });
+        $this->assertLocationIsAtLine(__LINE__ - 2);
+    }
+
     private function throwException() {
         throw new \InvalidArgumentException();
     }
@@ -138,14 +145,14 @@ class FindLocationOfFailure_InGenericTestSuite extends FindLocationOfFailure_Tes
     }
 }
 
-class FindLocationOfFailure_InStaticTestSuite extends FindLocationOfFailure_TestSuite {
+class FindFailureSource_InStaticTestSuite extends FindFailureSource_TestSuite {
 
     /** @var StaticTestSuite */
     private $suite;
 
     protected function before() {
         parent::before();
-        $this->suite = new FindLocationOfFailure_Foo();
+        $this->suite = new FindFailureSource_StaticFoo();
     }
 
     function directlyThrownFailure() {
@@ -156,6 +163,11 @@ class FindLocationOfFailure_InStaticTestSuite extends FindLocationOfFailure_Test
     function caughtError() {
         $this->executeTestCase('raiseAWarning');
         $this->assertLocationIsAtLineOfSuite(34);
+    }
+
+    function caughtNotice() {
+        $this->executeTestCase('raiseNotice');
+        $this->assertLocationIsAtLineOfSuite(38);
     }
 
     function failedAssertion() {
@@ -194,7 +206,7 @@ class FindLocationOfFailure_InStaticTestSuite extends FindLocationOfFailure_Test
     }
 
     function emptyTestSuite() {
-        $this->suite = new FindLocationOfFailure_Empty();
+        $this->suite = new FindFailureSource_Empty();
         $this->suite->run($this->listener);
         $this->assertLocationIsAtLineOfSuite(0);
     }
@@ -215,14 +227,14 @@ class FindLocationOfFailure_InStaticTestSuite extends FindLocationOfFailure_Test
 
 }
 
-class FindLocationOfFailure_InPlainTestSuite extends FindLocationOfFailure_TestSuite {
+class FindFailureSource_InPlainTestSuite extends FindFailureSource_TestSuite {
 
     /** @var PlainTestSuite */
     private $testClass;
 
     protected function before() {
         parent::before();
-        $this->testClass = FindLocationOfFailure_PlainFoo::class;
+        $this->testClass = FindFailureSource_PlainFoo::class;
     }
 
     function directlyThrownFailure() {
@@ -233,6 +245,11 @@ class FindLocationOfFailure_InPlainTestSuite extends FindLocationOfFailure_TestS
     function caughtError() {
         $this->executeTestCase('raiseAWarning');
         $this->assertLocationIsAtLineOfSuite(30);
+    }
+
+    function caughtNotice() {
+        $this->executeTestCase('raiseNotice');
+        $this->assertLocationIsAtLineOfSuite(34);
     }
 
     function failedAssertion() {
@@ -266,7 +283,7 @@ class FindLocationOfFailure_InPlainTestSuite extends FindLocationOfFailure_TestS
     }
 
     function emptyTestSuite() {
-        $this->testClass = FindLocationOfFailure_PlainEmpty::class;
+        $this->testClass = FindFailureSource_PlainEmpty::class;
         $suite = new PlainTestSuite($this->testClass);
         $suite->run($this->listener);
         $this->assertLocationIsAtLineOfSuite(0);
@@ -287,11 +304,11 @@ class FindLocationOfFailure_InPlainTestSuite extends FindLocationOfFailure_TestS
 
 }
 
-class FindLocationOfFailure_Empty extends StaticTestSuite {
+class FindFailureSource_Empty extends StaticTestSuite {
 
 }
 
-class FindLocationOfFailure_Foo extends StaticTestSuite {
+class FindFailureSource_StaticFoo extends StaticTestSuite {
 
     function throwFailure() {
         throw new Failure();
@@ -310,7 +327,7 @@ class FindLocationOfFailure_Foo extends StaticTestSuite {
     }
 
     function indirectlyThrowException() {
-        FindLocationOfFailure_InStaticTestSuite::throwException();
+        FindFailureSource_InStaticTestSuite::throwException();
     }
 
     function indirectAssertion() {
@@ -328,16 +345,20 @@ class FindLocationOfFailure_Foo extends StaticTestSuite {
         $this->beBad();
     }
 
+    function raiseNotice() {
+        assert(false);
+    }
+
     private function beBad() {
         /** @noinspection PhpParamsInspection */
         $this->assert();
     }
 }
 
-class FindLocationOfFailure_PlainEmpty {
+class FindFailureSource_PlainEmpty {
 }
 
-class FindLocationOfFailure_PlainFoo {
+class FindFailureSource_PlainFoo {
 
     function throwFailure() {
         throw new Failure();
@@ -356,7 +377,7 @@ class FindLocationOfFailure_PlainFoo {
     }
 
     function indirectlyThrowException() {
-        FindLocationOfFailure_InStaticTestSuite::throwException();
+        FindFailureSource_InStaticTestSuite::throwException();
     }
 
     function indirectAssertion(Asserter $assert) {
@@ -368,6 +389,10 @@ class FindLocationOfFailure_PlainFoo {
 
     function raiseAWarning() {
         $this->beBad();
+    }
+
+    function raiseNotice() {
+        assert(false);
     }
 
     private function beBad() {

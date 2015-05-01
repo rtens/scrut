@@ -17,11 +17,13 @@ class GenericFailureSourceLocator extends FailureSourceLocator {
     }
 
     protected function getExceptionSourceFromTrace($trace) {
+        $candidate = [];
         foreach ($trace as $i => $step) {
-            if (!isset($step['file'])) {
-                return $this->formatStep($trace[$i - 1]);
-            } else if (isset($step['class']) && $step['class'] == GenericTestCase::class && $step['function'] == 'execute') {
-                return $this->formatStep($trace[$i - 2]);
+            if (isset($step['class']) && $step['class'] == GenericTestCase::class && $step['function'] == 'execute') {
+                return $this->formatStep($candidate);
+            }
+            if ($i > 0 && isset($trace[$i - 1]['file'])) {
+                $candidate = $trace[$i - 1];
             }
         }
 
