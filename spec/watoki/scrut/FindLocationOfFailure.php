@@ -5,6 +5,7 @@ use watoki\scrut\Asserter;
 use watoki\scrut\Failure;
 use watoki\scrut\failures\IncompleteTestFailure;
 use watoki\scrut\listeners\ArrayListener;
+use watoki\scrut\results\NotPassedTestResult;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\FailureSourceLocator;
 use watoki\scrut\tests\generic\GenericTestCase;
@@ -42,6 +43,8 @@ class FindLocationOfFailure_TestSuite extends StaticTestSuite {
     protected function assertLocationIsAtLine($line) {
         /** @var \watoki\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
+        $this->assert->isInstanceOf($result, NotPassedTestResult::class);
+
         $expected = FailureSourceLocator::formatFileAndLine(__FILE__, $line);
         $this->assert($result->getFailure()->getFailureSource(), $expected);
     }
@@ -360,7 +363,7 @@ class FindLocationOfFailure_PlainFoo {
         $this->failAssertion($assert);
     }
 
-    function noAssertions() {
+    function noAssertions(Asserter $asserter) {
     }
 
     function raiseAWarning() {
