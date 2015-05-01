@@ -36,7 +36,7 @@ foreach (['scrut.json', 'scrut.json.dist'] as $file) {
 }
 
 if (count($argv) > 1) {
-    $config['suite']['directory'] = $argv[1];
+    $config['suite']['file'] = $argv[1];
 }
 
 $runner = new ConfiguredTestRunner(getcwd(), $config);
