@@ -21,7 +21,7 @@ class VerboseConsoleListener extends CompactConsoleListener {
     public function onResult(TestName $test, TestResult $result) {
         ConsoleListener::onResult($test, $result);
 
-        $this->print_(' -> ' . substr(get_class($result), 21, -10));
+        $this->print_(' -> ' . substr(get_class($result), 20, -10));
     }
 
     public function onFinished(TestName $test) {

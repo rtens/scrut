@@ -31,7 +31,7 @@ class CompactConsoleListener extends ConsoleListener {
         $counts = [];
 
         foreach (self::$RESULT_CLASSES as $level => $resultClass) {
-            $name = substr($resultClass, 21, -10);
+            $name = substr($resultClass, 20, -10);
             $results = $this->getResults($resultClass);
 
             if (!$results) {
