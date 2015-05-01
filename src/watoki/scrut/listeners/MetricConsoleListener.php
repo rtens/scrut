@@ -16,7 +16,7 @@ abstract class MetricConsoleListener extends ConsoleListener {
     private $started = [];
 
     /** @var array|float[] */
-    private $values;
+    private $values = [];
 
     /**
      * @return float Minimum total value to show the top values
@@ -77,6 +77,7 @@ abstract class MetricConsoleListener extends ConsoleListener {
         if ($total > $this->getThreshold()) {
             $this->printLine();
             $this->printLine("Top tests:");
+
             arsort($this->values);
             foreach (array_slice($this->values, 0, 5) as $test => $time) {
                 $this->printLine($this->format($time, 5) . ' ' . $test);
@@ -85,8 +86,8 @@ abstract class MetricConsoleListener extends ConsoleListener {
     }
     private function format($memory, $width = 0) {
         foreach ($this->getUnits() as $unit => $size) {
-            if ($memory > $size) {
-                return sprintf('%' . $width. '.0f ' . $unit, $memory / $size);
+            if ($memory >= $size) {
+                return sprintf('%' . $width. '.1f ' . $unit, $memory / $size);
             }
         }
         return 0;
