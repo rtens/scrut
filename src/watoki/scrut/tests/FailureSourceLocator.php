@@ -12,12 +12,7 @@ abstract class FailureSourceLocator {
     /**
      * @return string
      */
-    abstract public function locateEmptyTestSuiteFailureSource();
-
-    /**
-     * @return string
-     */
-    abstract public function locatorNoAssertionsFailureSource();
+    abstract public function locateEmptyTestFailureSource();
 
     /**
      * @param \Exception $exception

@@ -11,7 +11,7 @@ class FileFailureSourceLocator extends FailureSourceLocator {
         $this->path = $path;
     }
 
-    public function locateEmptyTestSuiteFailureSource() {
+    public function locateEmptyTestFailureSource() {
         return $this->path;
     }
 
@@ -20,13 +20,6 @@ class FileFailureSourceLocator extends FailureSourceLocator {
      * @return string
      */
     protected function getExceptionSourceFromTrace($trace) {
-        return $this->unknownSource();
-    }
-
-    /**
-     * @return string
-     */
-    public function locatorNoAssertionsFailureSource() {
         return $this->unknownSource();
     }
 }

@@ -12,11 +12,7 @@ class PlainFailureSourceLocator extends FailureSourceLocator {
         $this->reflection = $reflection;
     }
 
-    public function locateEmptyTestSuiteFailureSource() {
-        return $this->reflection->getFileName() . ':' . $this->reflection->getStartLine();
-    }
-
-    public function locatorNoAssertionsFailureSource() {
+    public function locateEmptyTestFailureSource() {
         return FailureSourceLocator::formatFileAndLine($this->reflection->getFileName(), $this->reflection->getStartLine());
     }
 

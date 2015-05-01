@@ -11,6 +11,6 @@ class NoAssertionsFailure extends IncompleteTestFailure {
     }
 
     protected function getFailureSourceFromLocator(FailureSourceLocator $locator) {
-        return $locator->locatorNoAssertionsFailureSource();
+        return $locator->locateEmptyTestFailureSource();
     }
 }

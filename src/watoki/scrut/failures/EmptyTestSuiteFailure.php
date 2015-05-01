@@ -11,6 +11,6 @@ class EmptyTestSuiteFailure extends IncompleteTestFailure {
     }
 
     protected function getFailureSourceFromLocator(FailureSourceLocator $locator) {
-        return $locator->locateEmptyTestSuiteFailureSource();
+        return $locator->locateEmptyTestFailureSource();
     }
 }
