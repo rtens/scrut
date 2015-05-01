@@ -1,6 +1,3 @@
 /vendor
-/notes
-/.idea*
-/build
-/phpunit.xml
+/.idea
 /composer.lock
