@@ -3,6 +3,7 @@ namespace spec\watoki\scrut;
 
 use watoki\scrut\Asserter;
 use watoki\scrut\listeners\ArrayListener;
+use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\tests\file\FileTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
@@ -103,6 +104,31 @@ class InjectDependencies {
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
+    }
+
+    function asserterIsPassedToInjectedObject(Asserter $assert) {
+        $this->fileContent('inject/InjectAsserter.php', '<?php
+            /** @property InjectedThing $that <- */
+            class InjectAsserter {
+                function foo() {
+                    $this->that->assert->pass();
+                }
+
+                function bar() {
+                }
+            }
+
+            /** @property ' . Asserter::class . ' $assert <- */
+            class InjectedThing {}
+        ');
+        $suite = new FileTestSuite($this->tmp('inject/InjectAsserter.php'));
+        $suite->setClassFilter(function (\ReflectionClass $class) {
+            return $class->getName() == 'InjectAsserter';
+        });
+        $suite->run($this->listener);
+
+        $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
+        $assert->isInstanceOf($this->listener->results[1], IncompleteTestResult::class);
     }
 
     private function fileContent($fileName, $content) {
