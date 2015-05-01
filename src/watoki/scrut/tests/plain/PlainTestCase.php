@@ -37,13 +37,13 @@ class PlainTestCase extends TestCase {
     }
 
     protected function execute(Asserter $assert) {
-        $class = $this->method->getDeclaringClass();
-
         $factory = $this->createFactory($assert);
-        $suite = $factory->getInstance($class->getName());
-        $args = $this->injectArguments($assert, $factory);
 
-        $this->callHook($suite, self::BEFORE_METHOD);
+        $suite = $factory->getInstance($this->method->getDeclaringClass()->getName());
+
+        $this->callHook($factory, $suite, self::BEFORE_METHOD);
+
+        $args = $this->injectArguments($this->method, $factory, $this->injectAsserter($this->method, $assert));
         try {
             $this->method->invokeArgs($suite, $args);
 
@@ -53,7 +53,7 @@ class PlainTestCase extends TestCase {
         } catch (\Exception $e) {
             throw $e;
         } finally {
-            $this->callHook($suite, self::AFTER_METHOD);
+            $this->callHook($factory, $suite, self::AFTER_METHOD);
         }
     }
 
@@ -64,13 +64,15 @@ class PlainTestCase extends TestCase {
         return new PlainFailureSourceLocator($this->method);
     }
 
-    private function callHook($suite, $methodName) {
+    private function callHook(Factory $factory, $suite, $methodName) {
         if (method_exists($suite, $methodName)) {
             if (!is_callable([$suite, $methodName])) {
                 $name = get_class($suite) . '::' . $methodName;
                 throw new \ReflectionException("Method [" . $name . '] must be public');
             }
-            $suite->$methodName();
+
+            $method = new \ReflectionMethod($suite, $methodName);
+            $method->invokeArgs($suite, $this->injectArguments($method, $factory));
         }
     }
 
@@ -83,21 +85,21 @@ class PlainTestCase extends TestCase {
         return $factory;
     }
 
-    private function injectArguments(Asserter $assert, Factory $factory) {
-        $args = [];
+    private function injectArguments(\ReflectionMethod $method, Factory $factory, array $args = []) {
+        $injector = new Injector($factory);
+        return $injector->injectMethodArguments($method, $args, function () {
+            return true;
+        });
+    }
 
-        foreach ($this->method->getParameters() as $parameter) {
+    private function injectAsserter(\ReflectionMethod $method, Asserter $assert) {
+        $args = [];
+        foreach ($method->getParameters() as $parameter) {
             if (in_array($parameter->getName(), self::$ASSERTER_ARGUMENTS)) {
                 $this->asserterProvided = true;
                 $args[$parameter->getName()] = $assert;
             }
         }
-
-        $injector = new Injector($factory);
-        $args = $injector->injectMethodArguments($this->method, $args, function () {
-            return true;
-        });
-
         return $args;
     }
 }

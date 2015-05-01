@@ -1,6 +1,7 @@
 <?php
 namespace spec\watoki\scrut;
 
+use watoki\factory\Factory;
 use watoki\scrut\Asserter;
 use watoki\scrut\Failure;
 use watoki\scrut\listeners\ArrayListener;
@@ -122,8 +123,17 @@ class RunPlainTestSuites_Incomplete {
 
 class RunPlainTestSuites_Inject {
 
-    function foo(RunPlainTestSuites_Empty $foo) {
+    function before(Factory $factory) {
+        $factory->setSingleton(\DateTime::class, new \DateTime('yesterday'));
+    }
+
+    function foo(RunPlainTestSuites_Empty $foo, \DateTime $time) {
         assert($foo instanceof RunPlainTestSuites_Empty);
+        assert($time == new \DateTime('yesterday'));
+    }
+
+    function after(Factory $factory) {
+        assert($factory->getSingleton(\DateTime::class) == new \DateTime('yesterday'));
     }
 }
 
