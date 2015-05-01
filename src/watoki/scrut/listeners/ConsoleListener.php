@@ -10,4 +10,11 @@ abstract class ConsoleListener extends CollectingListener {
     protected function print_($text = "") {
         echo $text;
     }
+
+    protected function printNotEmptyLine($string) {
+        if (!trim($string)) {
+            return;
+        }
+        $this->printLine($string);
+    }
 }

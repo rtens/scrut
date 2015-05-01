@@ -69,11 +69,4 @@ class CompactConsoleListener extends ConsoleListener {
         $this->printLine($results[$maxLevel] . ' ' . implode(', ', $counts));
     }
 
-    private function printNotEmptyLine($string) {
-        if (!trim($string)) {
-            return;
-        }
-        $this->printLine($string);
-    }
-
 }
