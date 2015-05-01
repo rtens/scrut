@@ -10,6 +10,7 @@ use watoki\scrut\TestResult;
 use watoki\scrut\TestRunListener;
 use watoki\scrut\tests\file\FileTestSuite;
 use watoki\scrut\tests\generic\GenericTestSuite;
+use watoki\scrut\tests\TestFilter;
 
 class DefaultTestRunner implements TestRunner, TestRunListener {
 
@@ -55,7 +56,7 @@ class DefaultTestRunner implements TestRunner, TestRunListener {
             $dir = $this->cwd($dir);
 
             if (file_exists($dir)) {
-                $tests[] = new FileTestSuite($dir, $parent->getName());
+                $tests[] = new FileTestSuite($this->createFilter(), $dir, $parent->getName());
             }
         }
 
@@ -70,5 +71,12 @@ class DefaultTestRunner implements TestRunner, TestRunListener {
     }
 
     public function onFinished(TestName $test) {
+    }
+
+    /**
+     * @return TestFilter
+     */
+    protected function createFilter() {
+        return new TestFilter();
     }
 }

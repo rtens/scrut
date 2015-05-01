@@ -7,6 +7,7 @@ use watoki\factory\providers\DefaultProvider;
 use watoki\scrut\Asserter;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\plain\PlainTestSuite;
+use watoki\scrut\tests\TestFilter;
 
 abstract class StaticTestSuite extends PlainTestSuite {
 
@@ -14,10 +15,11 @@ abstract class StaticTestSuite extends PlainTestSuite {
     protected $assert;
 
     /**
+     * @param TestFilter $filter
      * @param TestName $parent
      */
-    function __construct(TestName $parent = null) {
-        parent::__construct(get_class($this), $parent);
+    function __construct(TestFilter $filter, TestName $parent = null) {
+        parent::__construct($filter, get_class($this), $parent);
     }
 
     protected function before() {

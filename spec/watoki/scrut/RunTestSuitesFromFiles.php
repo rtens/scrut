@@ -7,6 +7,7 @@ use watoki\scrut\TestName;
 use watoki\scrut\tests\file\FileTestSuite;
 use watoki\scrut\tests\generic\GenericTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
+use watoki\scrut\tests\TestFilter;
 
 class RunTestSuitesFromFiles extends StaticTestSuite {
 
@@ -19,7 +20,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     }
 
     function noExistingFolder() {
-        $suite = new FileTestSuite($this->tmp('some/foo'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('some/foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 1);
@@ -29,7 +30,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     function emptyFolder() {
         $this->createFolder('some/foo');
 
-        $suite = new FileTestSuite($this->tmp('some/foo'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('some/foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 1);
@@ -43,7 +44,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->fileContent('foo/SingleFile.php', '<?php
             class SingleFoo {}');
 
-        $suite = new FileTestSuite($this->tmp('foo/SingleFile.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('foo/SingleFile.php'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
@@ -55,7 +56,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->fileContent('foo/AnEmptyFoo.php', '<?php
             class EmptyFoo {}');
 
-        $suite = new FileTestSuite($this->tmp('foo'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
@@ -72,7 +73,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
                 function baz() {}
             }');
 
-        $suite = new FileTestSuite($this->tmp('foo'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 4);
@@ -85,7 +86,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class IgnoreThisOne {}
             return new ' . GenericTestSuite::class . '("Generic foo");');
 
-        $suite = new FileTestSuite($this->tmp('foo/GenericFoo.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('foo/GenericFoo.php'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
@@ -101,7 +102,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class Two {}
         ');
 
-        $suite = new FileTestSuite($this->tmp('foo'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('foo'));
         $suite->run($this->listener);
 
         $names = array_map(function (TestName $test) {
@@ -123,7 +124,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class TwoOne {}
         ');
 
-        $suite = new FileTestSuite($this->tmp('foo'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 4);
@@ -144,17 +145,36 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class NotThisOne {}
         ');
 
-        $suite = new FileTestSuite($this->tmp('foo'));
-        $suite->setClassFilter(function (\ReflectionClass $class) {
-            return $class->getShortName() == 'ThisOne';
-        });
+        $suite = new FileTestSuite((new TestFilter())
+            ->filterClass(function (\ReflectionClass $class) {
+                return $class->getName() == 'ThisOne';
+            }), $this->tmp('foo'));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
+        $this->assert($this->listener->started[1]->last(), 'ThisOne');
+    }
+
+    function filterFiles() {
+        $this->fileContent('foo/ThisYes.php', '<?php
+            class ThisOneYes {}
+        ');
+        $this->fileContent('foo/ThisNot.php', '<?php
+            class ThisOneNot {}
+        ');
+
+        $suite = new FileTestSuite((new TestFilter())
+            ->filterFile(function ($file) {
+                return strpos($file, 'Yes.php');
+            }), $this->tmp('foo'));
+        $suite->run($this->listener);
+
+        $this->assert->size($this->listener->started, 2);
+        $this->assert($this->listener->started[1]->last(), 'ThisOneYes');
     }
 
     function discardParentName() {
-        $suite = new FileTestSuite('some/foo', new TestName("Foo"));
+        $suite = new FileTestSuite(new TestFilter(), 'some/foo', new TestName("Foo"));
         $suite->run($this->listener);
 
         $this->assert($this->listener->started[0]->toString(), 'some/foo');

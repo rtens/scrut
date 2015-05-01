@@ -1,6 +1,6 @@
 {
-    "suite": {
-        "file": "spec",
-        "filter": "/^[^_]+$/"
-    }
+  "filter": "/^[^_]+$/",
+  "suite": {
+    "file": "spec"
+  }
 }

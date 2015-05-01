@@ -39,17 +39,21 @@ class ConfiguredTestRunner extends DefaultTestRunner {
      */
     private function buildSuite($config) {
         if (array_key_exists('file', $config)) {
-            $suite = new FileTestSuite($this->cwd($config['file']), null);
-
-            if (array_key_exists('filter', $config)) {
-                $suite->setClassFilter(function (\ReflectionClass $class) use ($config) {
-                    return preg_match($config['filter'], $class->getShortName());
-                });
-            }
-
-            return $suite;
+            return new FileTestSuite($this->createFilter(), $this->cwd($config['file']), null);
         }
         throw new \Exception("Could not build test suite from " . json_encode($config));
+    }
+
+    protected function createFilter() {
+        $filter = parent::createFilter();
+
+        if (array_key_exists('filter', $this->config)) {
+            $filter->filterClass(function (\ReflectionClass $class) {
+                return preg_match($this->config['filter'], $class->getShortName());
+            });
+        }
+
+        return $filter;
     }
 
 } 

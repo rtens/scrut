@@ -3,6 +3,7 @@ namespace watoki\scrut\tests\statics;
 
 use watoki\scrut\Asserter;
 use watoki\scrut\tests\plain\PlainTestCase;
+use watoki\scrut\tests\TestFilter;
 
 class StaticTestCase extends PlainTestCase {
 
@@ -13,7 +14,7 @@ class StaticTestCase extends PlainTestCase {
         }
 
         /** @var StaticTestSuite $suite */
-        $suite = $class->newInstance();
+        $suite = $class->newInstance(new TestFilter());
         $suite->execute($this->method->getName(), $assert);
     }
 

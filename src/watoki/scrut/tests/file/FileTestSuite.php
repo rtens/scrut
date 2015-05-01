@@ -5,6 +5,7 @@ use watoki\scrut\Test;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\plain\PlainTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
+use watoki\scrut\tests\TestFilter;
 use watoki\scrut\tests\TestSuite;
 
 class FileTestSuite extends TestSuite {
@@ -12,19 +13,18 @@ class FileTestSuite extends TestSuite {
     /** @var string */
     private $path;
 
-    /** @var callable */
-    private $classFilter;
+    /** @var TestFilter */
+    private $filter;
 
     /**
+     * @param TestFilter $filter
      * @param string $path Directory of file
      * @param null|TestName $parent
      */
-    function __construct($path, TestName $parent = null) {
+    function __construct(TestFilter $filter, $path, TestName $parent = null) {
         parent::__construct($parent);
         $this->path = $path;
-        $this->classFilter = function () {
-            return true;
-        };
+        $this->filter = $filter;
     }
 
     /**
@@ -32,22 +32,6 @@ class FileTestSuite extends TestSuite {
      */
     public function getName() {
         return new TestName($this->path);
-    }
-
-    /**
-     * @param callable $filter Is invoked with \ReflectionClass
-     * @return $this
-     */
-    public function setClassFilter(callable $filter) {
-        $this->classFilter = $filter;
-        return $this;
-    }
-
-    /**
-     * @return callable
-     */
-    public function getClassFilter() {
-        return $this->classFilter;
     }
 
     /**
@@ -103,20 +87,19 @@ class FileTestSuite extends TestSuite {
                 continue;
             }
 
-
             if (is_subclass_of($class, StaticTestSuite::class)) {
-                yield new $class($this->getName());
+                yield new $class($this->filter, $this->getName());
             } else {
-                yield new PlainTestSuite($class, $this->getName());
+                yield new PlainTestSuite($this->filter, $class, $this->getName());
             }
         }
     }
 
     private function isAcceptable($class, $path) {
         $reflection = new \ReflectionClass($class);
-
         return $reflection->getFileName() == $path
-            && call_user_func($this->classFilter, $reflection);
+        && $this->filter->acceptsFile($path)
+        && $this->filter->acceptsClass($reflection);
     }
 
     /**

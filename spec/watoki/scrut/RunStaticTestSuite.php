@@ -8,6 +8,7 @@ use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\statics\StaticTestSuite;
+use watoki\scrut\tests\TestFilter;
 
 class RunStaticTestSuite extends StaticTestSuite {
 
@@ -19,7 +20,7 @@ class RunStaticTestSuite extends StaticTestSuite {
     }
 
     function emptySuite() {
-        $suite = new RunStaticTestSuite_Empty();
+        $suite = new RunStaticTestSuite_Empty(new TestFilter());
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 1);
@@ -44,7 +45,7 @@ class RunStaticTestSuite extends StaticTestSuite {
     }
 
     function runPublicMethods() {
-        $suite = new RunStaticTestSuite_Bar();
+        $suite = new RunStaticTestSuite_Bar(new TestFilter());
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 1);
@@ -52,10 +53,10 @@ class RunStaticTestSuite extends StaticTestSuite {
     }
 
     function filterMethods() {
-        $suite = new RunStaticTestSuite_Foo();
-        $suite->setMethodFilter(function (\ReflectionMethod $method) {
-            return strpos($method->getDocComment(), '@test');
-        });
+        $suite = new RunStaticTestSuite_Foo((new TestFilter())
+            ->filterMethod(function (\ReflectionMethod $method) {
+                return strpos($method->getDocComment(), '@test');
+            }));
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 2);
@@ -71,7 +72,7 @@ class RunStaticTestSuite extends StaticTestSuite {
     }
 
     function callBeforeAndAfter() {
-        $suite = new RunStaticTestSuite_BeforeAndAfter();
+        $suite = new RunStaticTestSuite_BeforeAndAfter(new TestFilter());
         $suite->run($this->listener);
 
         $this->assert(RunStaticTestSuite_BeforeAndAfter::$calledBefore, 2);
@@ -79,7 +80,7 @@ class RunStaticTestSuite extends StaticTestSuite {
     }
 
     function discardParentName() {
-        $suite = new RunStaticTestSuite_Empty(new TestName("Foo"));
+        $suite = new RunStaticTestSuite_Empty(new TestFilter(), new TestName("Foo"));
         $suite->run($this->listener);
 
         $this->assert($this->listener->started[0]->toString(), RunStaticTestSuite_Empty::class);
@@ -94,8 +95,8 @@ class RunStaticTestSuite_Foo extends StaticTestSuite {
 
     public static $constructed = 0;
 
-    function __construct() {
-        parent::__construct();
+    function __construct(TestFilter $filter = null) {
+        parent::__construct($filter ?: new TestFilter());
         self::$constructed++;
     }
 
@@ -129,13 +130,6 @@ class RunStaticTestSuite_Bar extends StaticTestSuite {
     }
 
     public static function staticFoo() {
-    }
-
-    /**
-     * @internal
-     */
-    public function internal() {
-
     }
 
 }

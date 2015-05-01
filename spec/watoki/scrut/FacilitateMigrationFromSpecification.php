@@ -6,6 +6,7 @@ use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\tests\migration\Fixture;
 use watoki\scrut\tests\migration\Specification;
 use watoki\scrut\tests\statics\StaticTestSuite;
+use watoki\scrut\tests\TestFilter;
 
 class FacilitateMigrationFromSpecification extends StaticTestSuite {
 
@@ -19,7 +20,7 @@ class FacilitateMigrationFromSpecification extends StaticTestSuite {
     function callBackgroundHook() {
         FacilitateMigrationFromSpecification_Foo::$backgroundCalled = false;
 
-        $suite = new FacilitateMigrationFromSpecification_Foo();
+        $suite = new FacilitateMigrationFromSpecification_Foo(new TestFilter());
         $suite->run($this->listener);
 
         $this->assert(FacilitateMigrationFromSpecification_Foo::$backgroundCalled);
@@ -28,21 +29,21 @@ class FacilitateMigrationFromSpecification extends StaticTestSuite {
     function undoStuff() {
         FacilitateMigrationFromSpecification_Undo::$undid = false;
 
-        $suite = new FacilitateMigrationFromSpecification_Undo();
+        $suite = new FacilitateMigrationFromSpecification_Undo(new TestFilter());
         $suite->run($this->listener);
 
         $this->assert(FacilitateMigrationFromSpecification_Undo::$undid);
     }
 
     function passSpecificationToInjectedDependencies() {
-        $suite = new FacilitateMigrationFromSpecification_Inject();
+        $suite = new FacilitateMigrationFromSpecification_Inject(new TestFilter());
         $suite->run($this->listener);
 
         $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
     function createNewFactoryForEveryTest() {
-        $suite = new FacilitateMigrationFromSpecification_Factory();
+        $suite = new FacilitateMigrationFromSpecification_Factory(new TestFilter());
         $suite->run($this->listener);
 
         $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);

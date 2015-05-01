@@ -7,6 +7,7 @@ use watoki\scrut\results\IncompleteTestResult;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\tests\file\FileTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
+use watoki\scrut\tests\TestFilter;
 
 class InjectDependencies {
 
@@ -31,7 +32,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite($this->tmp('inject/InjectConstructor.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('inject/InjectConstructor.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -53,7 +54,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite($this->tmp('inject/InjectProperties.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('inject/InjectProperties.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -72,7 +73,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite($this->tmp('inject/InjectAnnotations.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('inject/InjectAnnotations.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -100,7 +101,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite($this->tmp('inject/InjectPropertiesIntoStatic.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('inject/InjectPropertiesIntoStatic.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
@@ -121,10 +122,7 @@ class InjectDependencies {
             /** @property ' . Asserter::class . ' $assert <- */
             class InjectedThing {}
         ');
-        $suite = new FileTestSuite($this->tmp('inject/InjectAsserter.php'));
-        $suite->setClassFilter(function (\ReflectionClass $class) {
-            return $class->getName() == 'InjectAsserter';
-        });
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('inject/InjectAsserter.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);

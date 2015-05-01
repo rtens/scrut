@@ -10,6 +10,7 @@ use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\TestName;
 use watoki\scrut\tests\plain\PlainTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
+use watoki\scrut\tests\TestFilter;
 
 class RunPlainTestSuites extends StaticTestSuite {
 
@@ -28,7 +29,7 @@ class RunPlainTestSuites extends StaticTestSuite {
     }
 
     function executeMethods() {
-        $suite = new PlainTestSuite(RunPlainTestSuites_Foo::class);
+        $suite = new PlainTestSuite(new TestFilter(), RunPlainTestSuites_Foo::class);
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 2);
@@ -37,7 +38,7 @@ class RunPlainTestSuites extends StaticTestSuite {
     }
 
     function markMethodsWithoutAssertionsAsIncomplete() {
-        $suite = new PlainTestSuite(RunPlainTestSuites_Incomplete::class);
+        $suite = new PlainTestSuite(new TestFilter(), RunPlainTestSuites_Incomplete::class);
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 2);
@@ -52,7 +53,7 @@ class RunPlainTestSuites extends StaticTestSuite {
     }
 
     function callBeforeAndAfter() {
-        $suite = new PlainTestSuite(RunPlainTestSuites_Bar::class);
+        $suite = new PlainTestSuite(new TestFilter(), RunPlainTestSuites_Bar::class);
         RunPlainTestSuites_Bar::reset();
         $suite->run($this->listener);
 
@@ -62,7 +63,7 @@ class RunPlainTestSuites extends StaticTestSuite {
     }
 
     function beforeMethodMustBePublic() {
-        $suite = new PlainTestSuite(RunPlainTestSuites_ProtectedBefore::class);
+        $suite = new PlainTestSuite(new TestFilter(), RunPlainTestSuites_ProtectedBefore::class);
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 1);
@@ -72,7 +73,7 @@ class RunPlainTestSuites extends StaticTestSuite {
     }
 
     function afterMethodMustBePublic() {
-        $suite = new PlainTestSuite(RunPlainTestSuites_ProtectedAfter::class);
+        $suite = new PlainTestSuite(new TestFilter(), RunPlainTestSuites_ProtectedAfter::class);
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->results, 1);
@@ -82,7 +83,7 @@ class RunPlainTestSuites extends StaticTestSuite {
     }
 
     function discardParentName() {
-        $suite = new PlainTestSuite(RunPlainTestSuites_Empty::class, new TestName("Foo"));
+        $suite = new PlainTestSuite(new TestFilter(), RunPlainTestSuites_Empty::class, new TestName("Foo"));
         $suite->run($this->listener);
 
         $this->assert($this->listener->started[0]->toString(), RunPlainTestSuites_Empty::class);
@@ -92,7 +93,7 @@ class RunPlainTestSuites extends StaticTestSuite {
      * @param $class
      */
     private function runTestSuite($class) {
-        $suite = new PlainTestSuite($class);
+        $suite = new PlainTestSuite(new TestFilter(), $class);
         $suite->run($this->listener);
     }
 }

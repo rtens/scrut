@@ -5,6 +5,7 @@ use watoki\scrut\results\FailedTestResult;
 use watoki\scrut\results\PassedTestResult;
 use watoki\scrut\tests\migration\PhpUnitTestSuite;
 use watoki\scrut\tests\statics\StaticTestSuite;
+use watoki\scrut\tests\TestFilter;
 
 /**
  * In order to facilitate migration, there should be a subclass of StaticTestSuite that
@@ -20,7 +21,7 @@ class FacilitateMigrationFromPhpUnit extends StaticTestSuite {
     }
 
     function callHooks() {
-        $suite = new PhpUnitCompatibility_Foo();
+        $suite = new PhpUnitCompatibility_Foo(new TestFilter());
         $suite->run($this->listener);
 
         $this->assert(PhpUnitCompatibility_Foo::$calledSetUp, 1);
@@ -28,7 +29,7 @@ class FacilitateMigrationFromPhpUnit extends StaticTestSuite {
     }
 
     function runSuite() {
-        $suite = new PhpUnitCompatibility_Bar();
+        $suite = new PhpUnitCompatibility_Bar(new TestFilter());
         $suite->run($this->listener);
 
         $this->assert->size($this->listener->started, 4);

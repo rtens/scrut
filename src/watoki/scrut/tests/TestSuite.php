@@ -9,6 +9,11 @@ use watoki\scrut\TestRunListener;
 abstract class TestSuite extends Test {
 
     /**
+     * @return Test[]
+     */
+    abstract protected function getTests();
+
+    /**
      * @param TestRunListener $listener
      */
     public function run(TestRunListener $listener) {
@@ -30,9 +35,4 @@ abstract class TestSuite extends Test {
 
         $listener->onFinished($name);
     }
-
-    /**
-     * @return Test[]
-     */
-    abstract protected function getTests();
 }

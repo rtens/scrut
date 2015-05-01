@@ -13,14 +13,15 @@ use watoki\scrut\tests\generic\GenericTestSuite;
 use watoki\scrut\tests\plain\PlainTestSuite;
 use watoki\scrut\tests\statics\StaticTestCase;
 use watoki\scrut\tests\statics\StaticTestSuite;
+use watoki\scrut\tests\TestFilter;
 
 class FindFailureSource extends StaticTestSuite {
 
     protected function getTests() {
         return [
-            new FindFailureSource_InGenericTestSuite(),
-            new FindFailureSource_InStaticTestSuite(),
-            new FindFailureSource_InPlainTestSuite(),
+            new FindFailureSource_InGenericTestSuite(new TestFilter()),
+            new FindFailureSource_InStaticTestSuite(new TestFilter()),
+            new FindFailureSource_InPlainTestSuite(new TestFilter()),
         ];
     }
 }
@@ -38,7 +39,6 @@ class FindFailureSource_TestSuite extends StaticTestSuite {
         return (new TestName(FindFailureSource::class))
             ->with(substr(get_class($this), strlen(FindFailureSource::class) + 1, -9));
     }
-
 
     protected function assertLocationIsAtLine($line) {
         /** @var \watoki\scrut\results\FailedTestResult $result */
@@ -152,7 +152,7 @@ class FindFailureSource_InStaticTestSuite extends FindFailureSource_TestSuite {
 
     protected function before() {
         parent::before();
-        $this->suite = new FindFailureSource_StaticFoo();
+        $this->suite = new FindFailureSource_StaticFoo(new TestFilter());
     }
 
     function directlyThrownFailure() {
@@ -206,7 +206,7 @@ class FindFailureSource_InStaticTestSuite extends FindFailureSource_TestSuite {
     }
 
     function emptyTestSuite() {
-        $this->suite = new FindFailureSource_Empty();
+        $this->suite = new FindFailureSource_Empty(new TestFilter());
         $this->suite->run($this->listener);
         $this->assertLocationIsAtLineOfSuite(0);
     }
@@ -284,16 +284,16 @@ class FindFailureSource_InPlainTestSuite extends FindFailureSource_TestSuite {
 
     function emptyTestSuite() {
         $this->testClass = FindFailureSource_PlainEmpty::class;
-        $suite = new PlainTestSuite($this->testClass);
+        $suite = new PlainTestSuite(new TestFilter(), $this->testClass);
         $suite->run($this->listener);
         $this->assertLocationIsAtLineOfSuite(0);
     }
 
     private function executeTestCase($name) {
-        $suite = new PlainTestSuite($this->testClass);
-        $suite->setMethodFilter(function (\ReflectionMethod $method) use ($name) {
-            return $method->getName() == $name;
-        });
+        $suite = new PlainTestSuite((new TestFilter())
+            ->filterMethod(function (\ReflectionMethod $method) use ($name) {
+                return $method->getName() == $name;
+            }), $this->testClass);
         $suite->run($this->listener);
     }
 

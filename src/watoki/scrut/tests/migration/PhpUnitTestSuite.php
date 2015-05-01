@@ -3,20 +3,20 @@ namespace watoki\scrut\tests\migration;
 
 use watoki\scrut\TestName;
 use watoki\scrut\tests\statics\StaticTestSuite;
+use watoki\scrut\tests\TestFilter;
 
 class PhpUnitTestSuite extends StaticTestSuite {
 
     /**
+     * @param TestFilter $filter
      * @param TestName $parent
      * @throws \Exception
      */
-    function __construct(TestName $parent = null) {
-        parent::__construct($parent);
-
-        $this->setMethodFilter(function (\ReflectionMethod $method) {
-            return substr(strtolower($method->getName()), 0, 4) == 'test'
-                || strpos(strtolower($method->getDocComment()), '@test');
-        });
+    function __construct(TestFilter $filter, TestName $parent = null) {
+        parent::__construct($filter
+            ->filterMethod(function (\ReflectionMethod $method) {
+                return $this->isTestMethod($method);
+            }), $parent);
 
         if (!class_exists(\PHPUnit_Framework_Assert::class)) {
             throw new \Exception("You must install phpunit/phpunit in order to use this class");
@@ -44,5 +44,10 @@ class PhpUnitTestSuite extends StaticTestSuite {
 
     public function fail($message = "") {
         parent::fail($message);
+    }
+
+    protected function isTestMethod(\ReflectionMethod $method) {
+        return strtolower(substr($method->getName(), 0, 4)) == 'test'
+        || strpos(strtolower($method->getDocComment()), '@test');
     }
 }
