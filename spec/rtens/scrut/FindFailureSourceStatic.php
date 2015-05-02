@@ -17,7 +17,7 @@ use rtens\scrut\tests\TestFilter;
 
 class FindFailureSource extends StaticTestSuite {
 
-    protected function getTests() {
+    public function getTests() {
         return [
             new FindFailureSource_InGenericTestSuite(new TestFilter()),
             new FindFailureSource_InStaticTestSuite(new TestFilter()),

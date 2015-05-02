@@ -11,7 +11,7 @@ abstract class TestSuite extends Test {
     /**
      * @return Test[]
      */
-    abstract protected function getTests();
+    abstract public function getTests();
 
     /**
      * @param TestRunListener $listener

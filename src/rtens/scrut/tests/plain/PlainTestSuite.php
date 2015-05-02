@@ -36,7 +36,7 @@ class PlainTestSuite extends TestSuite {
     /**
      * @return Test[]
      */
-    protected function getTests() {
+    public function getTests() {
         $methods = (new \ReflectionClass($this->suite))->getMethods();
 
         $filtered = array_filter($methods, function (\ReflectionMethod $method) {

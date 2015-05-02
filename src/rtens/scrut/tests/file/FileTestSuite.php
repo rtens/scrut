@@ -16,14 +16,19 @@ class FileTestSuite extends TestSuite {
     /** @var TestFilter */
     private $filter;
 
+    /** @var string */
+    private $name;
+
     /**
      * @param TestFilter $filter
-     * @param string $path Directory of file
+     * @param string $cwd Working directory
+     * @param string $path Directory of file relative to $cwd
      * @param null|TestName $parent
      */
-    function __construct(TestFilter $filter, $path, TestName $parent = null) {
+    function __construct(TestFilter $filter, $cwd, $path, TestName $parent = null) {
         parent::__construct($parent);
-        $this->path = $path;
+        $this->path = rtrim($cwd, '/\\') . DIRECTORY_SEPARATOR . trim($path, '/\\');
+        $this->name = $path;
         $this->filter = $filter;
     }
 
@@ -31,13 +36,13 @@ class FileTestSuite extends TestSuite {
      * @return TestName
      */
     public function getName() {
-        return new TestName($this->path);
+        return new TestName($this->name);
     }
 
     /**
      * @return Test[]
      */
-    protected function getTests() {
+    public function getTests() {
         if (!file_exists($this->path)) {
             return [];
         }

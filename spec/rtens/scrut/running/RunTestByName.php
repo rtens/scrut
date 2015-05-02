@@ -17,6 +17,8 @@ use rtens\scrut\tests\TestFilter;
  *  scrut spec/some/File.php    -- executes all tests found in the file "File.php"
  *  scrut some\Foo              -- executes all tests of the class "Foo"
  *  scrut some\Foo::foo         -- executes only the "foo" method of the "Foo" class
+ *
+ * @property \rtens\scrut\fixtures\FilesFixture files <-
  */
 class RunTestByName {
 
@@ -24,7 +26,7 @@ class RunTestByName {
     private $runner;
 
     function before() {
-        $this->runner = new RunTestByName_TestRunner();
+        $this->runner = new RunTestByName_TestRunner($this->files->fullPath(''));
         $this->runner->test = new GenericTestSuite('Foo');
     }
 
@@ -89,8 +91,9 @@ class RunTestByName {
     }
 
     function plainClassName(Assert $assert) {
-        $this->runner->run(new TestName(RunTestByName_Plain::class));
+        $passed = $this->runner->run(new TestName(RunTestByName_Plain::class));
 
+        $assert($passed);
         $assert($this->runner->listener->started[0]->toString(), RunTestByName_Plain::class);
         $assert($this->runner->listener->started[1]->toString(), RunTestByName_Plain::class . '::foo');
         $assert($this->runner->listener->started[2]->toString(), RunTestByName_Plain::class . '::bar');
@@ -105,8 +108,52 @@ class RunTestByName {
         $assert($this->runner->listener->started[2]->toString(), RunTestByName_Static::class . '::bar');
     }
 
-    function incomplete(Assert $assert) {
-        $assert->incomplete('TBS');
+    function methodOfPlainSuite(Assert $assert) {
+        $this->runner->run(new TestName(RunTestByName_Plain::class, 'bar'));
+
+        $assert->size($this->runner->listener->started, 1);
+        $assert($this->runner->listener->started[0]->toString(), RunTestByName_Plain::class . '::bar');
+    }
+
+    function methodOfStaticSuite(Assert $assert) {
+        $this->runner->run(new TestName(RunTestByName_Static::class, 'bar'));
+
+        $assert->size($this->runner->listener->started, 1);
+        $assert($this->runner->listener->started[0]->toString(), RunTestByName_Static::class . '::bar');
+    }
+
+    function folderName(Assert $assert) {
+        $this->files->givenTheFile_Containing('folder/SomeFile.php', '<?php
+            class SomeClassInFolder {}
+        ');
+        $this->files->givenTheFile_Containing('folder/SomeOtherFile.php', '<?php
+            class SomeOtherClassInFolder {}
+        ');
+        $passed = $this->runner->run(new TestName('folder'));
+
+        $assert($passed);
+        $assert->size($this->runner->listener->results, 2);
+    }
+
+    function fileName(Assert $assert) {
+        $this->files->givenTheFile_Containing('root/SomeFile.php', '<?php
+            class SomeClassInFile {}
+            class SomeOtherClassInFile {}
+        ');
+        $passed = $this->runner->run(new TestName('root/SomeFile.php'));
+
+        $assert($passed);
+        $assert($this->runner->listener->started[1]->last(), 'SomeClassInFile');
+        $assert($this->runner->listener->started[2]->last(), 'SomeOtherClassInFile');
+    }
+
+    function genericNameTrumpsFolderName(Assert $assert) {
+        $this->files->givenTheFile_Containing('Foo/SomethingInHere.php', '<?php class NotThisFooThough {}');
+
+        $this->runner->run(new TestName('Foo'));
+
+        $assert->size($this->runner->listener->started, 1);
+        $assert($this->runner->listener->started[0]->toString(), 'Foo');
     }
 }
 
@@ -118,8 +165,8 @@ class RunTestByName_TestRunner extends TestRunner {
     /** @var ArrayListener */
     public $listener;
 
-    function __construct() {
-        parent::__construct();
+    function __construct($cwd) {
+        parent::__construct($cwd);
         $this->listener = new ArrayListener();
     }
 

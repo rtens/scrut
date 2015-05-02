@@ -5,17 +5,22 @@ use rtens\scrut\listeners\MultiListener;
 use rtens\scrut\listeners\ResultListener;
 use rtens\scrut\Test;
 use rtens\scrut\TestName;
-use rtens\scrut\tests\generic\GenericTestSuite;
+use rtens\scrut\tests\file\FileTestSuite;
 use rtens\scrut\tests\plain\PlainTestSuite;
 use rtens\scrut\tests\statics\StaticTestSuite;
+use rtens\scrut\tests\TestSuite;
 
 abstract class TestRunner {
 
     /** @var \rtens\scrut\listeners\ResultListener */
     private $result;
 
-    function __construct() {
+    /** @var string */
+    private $workingDirectory;
+
+    function __construct($workingDirectory) {
         $this->result = new ResultListener();
+        $this->workingDirectory = rtrim($workingDirectory, '/\\');
     }
 
     /**
@@ -30,7 +35,26 @@ abstract class TestRunner {
         $test = $this->getTest();
 
         if ($name) {
-            $test = $this->resolveTest($test, $name);
+            try {
+                $test = $this->resolveTest($test, $name);
+            } catch (\InvalidArgumentException $ignored) {
+
+                $first = $name->part(0);
+                if (class_exists($first)) {
+                    if (is_subclass_of($first, StaticTestSuite::class)) {
+                        $test = new $first($this->createFilter());
+                    } else {
+                        $test = new PlainTestSuite($this->createFilter(), $first);
+                    }
+                }
+
+                $file = $this->cwd($first);
+                if (file_exists($file)) {
+                    $test = new FileTestSuite($this->createFilter(), $this->cwd(''), $first);
+                }
+
+                $test = $this->resolveTest($test, $name);
+            }
         }
 
         $test->run($listener);
@@ -38,20 +62,16 @@ abstract class TestRunner {
         return !$this->result->hasFailed();
     }
 
+    protected function cwd($path) {
+        return $this->workingDirectory . DIRECTORY_SEPARATOR . $path;
+    }
+
     private function resolveTest(Test $root, TestName $name) {
         if ($name == $root->getName()) {
             return $root;
         }
 
-        $class = $name->part(0);
-        if (class_exists($class)) {
-            if (is_subclass_of($class, StaticTestSuite::class)) {
-                return new $class($this->createFilter());
-            }
-            return new PlainTestSuite($this->createFilter(), $class);
-        }
-
-        if ($root instanceof GenericTestSuite) {
+        if ($root instanceof TestSuite) {
             foreach ($root->getTests() as $test) {
                 try {
                     return $this->resolveTest($test, $name);
