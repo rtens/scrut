@@ -10,6 +10,15 @@ use rtens\scrut\TestResult;
 
 class CompactConsoleListener extends ConsoleListener {
 
+    /**
+     * @param string|object $result e.g. 'PassedTestResult'
+     * @return string e.g. 'Passed'
+     */
+    protected static function shortResultClassName($result) {
+        $result = is_object($result) ? get_class($result) : $result;
+        return substr($result, strrpos($result, '\\') + 1, -10);
+    }
+
     public function onResult(TestName $test, TestResult $result) {
         parent::onResult($test, $result);
 
@@ -27,39 +36,24 @@ class CompactConsoleListener extends ConsoleListener {
     protected function onEnd() {
         $this->printLine();
 
-        $maxLevel = 0;
+        $maxLevel = -1;
         $counts = [];
 
         foreach (self::$RESULT_CLASSES as $level => $resultClass) {
-            $name = substr($resultClass, 20, -10);
             $results = $this->getResults($resultClass);
 
-            if (!$results) {
-                continue;
-            }
+            if ($results) {
+                $type = self::shortResultClassName($resultClass);
 
-            $maxLevel = max($maxLevel, $level);
-            $counts[] = count($results) . ' ' . $name;
+                $maxLevel = max($maxLevel, $level);
+                $counts[] = count($results) . ' ' . $type;
 
-            if ($resultClass == PassedTestResult::class) {
-                continue;
-            }
-
-            $this->printLine();
-            $this->printLine('---- ' . $name . ' ----');
-
-            foreach ($results as $name => $result) {
-                if ($result instanceof NotPassedTestResult) {
-                    $this->printLine($name . ' [' . $result->getFailure()->getFailureSource() . ']');
-                    $this->printNotEmptyLine('    ' . $result->getFailure()->getFailureMessage());
-                    $this->printNotEmptyLine('    ' . $result->getFailure()->getMessage());
-                } else {
-                    $this->printLine($name);
-                }
+                $this->printResultClass($type, $results);
             }
         }
 
         $results = [
+            -1 => 'Unknown result',
             '=D',
             '=|',
             '=('
@@ -67,6 +61,33 @@ class CompactConsoleListener extends ConsoleListener {
 
         $this->printLine();
         $this->printLine($results[$maxLevel] . ' ' . implode(', ', $counts));
+    }
+
+    protected function printResultClass($type, $results) {
+        if ($type == 'Passed') {
+            return;
+        }
+
+        $this->printLine();
+        $this->printLine('---- ' . $type . ' ----');
+
+        foreach ($results as $name => $result) {
+            $this->printResult($name, $result);
+        }
+    }
+
+    protected function printResult($testName, $result) {
+        if ($result instanceof NotPassedTestResult) {
+            $this->printNotPassedResult($testName, $result);
+        } else {
+            $this->printLine($testName);
+        }
+    }
+
+    protected function printNotPassedResult($testName, NotPassedTestResult $result) {
+        $this->printLine($testName . ' [' . $result->getFailure()->getFailureSource() . ']');
+        $this->printNotEmptyLine('    ' . $result->getFailure()->getFailureMessage());
+        $this->printNotEmptyLine('    ' . $result->getFailure()->getMessage());
     }
 
 }
