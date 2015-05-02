@@ -7,6 +7,7 @@ use rtens\scrut\tests\generic\GenericTestSuite;
 abstract class ListeningSpecification {
 
     protected $output = '';
+    protected $outputLines;
 
     /** @var \rtens\scrut\listeners\ConsoleListener */
     protected $listener;
@@ -22,9 +23,13 @@ abstract class ListeningSpecification {
     }
 
     protected function runAndAssertOutput(Asserter $assert, $expected) {
-        $this->suite->run($this->listener);
-
+        $this->runTestSuite();
         $this->assertOutput($assert, $expected, new \Exception());
+    }
+
+    protected function runTestSuite() {
+        $this->suite->run($this->listener);
+        $this->outputLines = explode(PHP_EOL, trim($this->output));
     }
 
     protected function assertOutput(Asserter $assert, $expected, \Exception $exception = null) {
@@ -35,7 +40,8 @@ abstract class ListeningSpecification {
             return $trace[0]['file'] . ':' . ($trace[0]['line'] + intval($matches[1]));
         }, $expected);
 
-        $assert(explode(PHP_EOL, trim($this->output)), $expected);
+        $this->outputLines = explode(PHP_EOL, trim($this->output));
+        $assert($this->outputLines, $expected);
     }
 
     /**

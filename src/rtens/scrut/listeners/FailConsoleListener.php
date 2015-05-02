@@ -41,6 +41,6 @@ class FailConsoleListener extends ConsoleListener {
 
     protected function onEnd() {
         $this->printLine();
-        $this->printLine($this->failed ? 'FAILED =(' : 'PASSED =D');
+        $this->printLine($this->failed ? 'FAILED =(' : 'Passed =D');
     }
 }
