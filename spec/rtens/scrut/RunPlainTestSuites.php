@@ -2,7 +2,7 @@
 namespace spec\rtens\scrut;
 
 use watoki\factory\Factory;
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\Failure;
 use rtens\scrut\listeners\ArrayListener;
 use rtens\scrut\results\IncompleteTestResult;
@@ -108,14 +108,14 @@ class RunPlainTestSuites_Foo {
         throw new Failure();
     }
 
-    function bar(Asserter $assert) {
+    function bar(Assert $assert) {
         $assert(false);
     }
 }
 
 class RunPlainTestSuites_Incomplete {
 
-    function foo(Asserter $that) {
+    function foo(Assert $that) {
     }
 
     function bar() {

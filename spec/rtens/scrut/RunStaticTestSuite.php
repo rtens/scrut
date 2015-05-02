@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\scrut;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\failures\EmptyTestSuiteFailure;
 use rtens\scrut\listeners\ArrayListener;
 use rtens\scrut\results\IncompleteTestResult;
@@ -104,7 +104,7 @@ class RunStaticTestSuite_Foo extends StaticTestSuite {
         return "";
     }
 
-    public function foo(Asserter $asserter) {
+    public function foo(Assert $asserter) {
         $asserter->pass();
     }
 

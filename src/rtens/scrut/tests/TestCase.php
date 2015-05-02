@@ -1,13 +1,13 @@
 <?php
 namespace rtens\scrut\tests;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\Failure;
 use rtens\scrut\failures\CaughtErrorFailure;
 use rtens\scrut\failures\CaughtExceptionFailure;
 use rtens\scrut\failures\IncompleteTestFailure;
 use rtens\scrut\failures\NoAssertionsFailure;
-use rtens\scrut\RecordingAsserter;
+use rtens\scrut\RecordingAssert;
 use rtens\scrut\results\FailedTestResult;
 use rtens\scrut\results\IncompleteTestResult;
 use rtens\scrut\results\NotPassedTestResult;
@@ -17,7 +17,7 @@ use rtens\scrut\TestRunListener;
 
 abstract class TestCase extends Test {
 
-    abstract protected function execute(Asserter $assert);
+    abstract protected function execute(Assert $assert);
 
     /**
      * @param TestRunListener $listener
@@ -28,7 +28,7 @@ abstract class TestCase extends Test {
         $listener->onStarted($name);
 
         $result = new PassedTestResult();
-        $assert = new RecordingAsserter();
+        $assert = new RecordingAssert();
 
         try {
             $errorHandler = function ($code, $message, $file, $line) {

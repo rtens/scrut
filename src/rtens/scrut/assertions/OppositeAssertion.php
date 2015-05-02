@@ -3,7 +3,7 @@ namespace rtens\scrut\assertions;
 
 use rtens\scrut\Assertion;
 
-class NotAssertion implements Assertion {
+class OppositeAssertion implements Assertion {
 
     /** @var Assertion */
     private $assertion;

@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\scrut\listening;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\tests\generic\GenericTestSuite;
 
 abstract class ListeningSpecification {
@@ -22,7 +22,7 @@ abstract class ListeningSpecification {
         });
     }
 
-    protected function runAndAssertOutput(Asserter $assert, $expected) {
+    protected function runAndAssertOutput(Assert $assert, $expected) {
         $this->runTestSuite();
         $this->assertOutput($assert, $expected, new \Exception());
     }
@@ -32,7 +32,7 @@ abstract class ListeningSpecification {
         $this->outputLines = explode(PHP_EOL, trim($this->output));
     }
 
-    protected function assertOutput(Asserter $assert, $expected, \Exception $exception = null) {
+    protected function assertOutput(Assert $assert, $expected, \Exception $exception = null) {
         $exception = $exception ?: new \Exception();
         $trace = $exception->getTrace();
 

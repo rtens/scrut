@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\scrut;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\Failure;
 use rtens\scrut\failures\IncompleteTestFailure;
 use rtens\scrut\listeners\ArrayListener;
@@ -74,7 +74,7 @@ class FindFailureSource_InGenericTestSuite extends FindFailureSource_TestSuite {
     }
 
     function failedAssertion() {
-        $this->runGenericTestCase(function (Asserter $assert) {
+        $this->runGenericTestCase(function (Assert $assert) {
             $assert->isTrue(false);
         });
         $this->assertLocationIsAtLine(__LINE__ - 2);
@@ -379,7 +379,7 @@ class FindFailureSource_PlainFoo {
         throw new Failure();
     }
 
-    function failAssertion(Asserter $assert) {
+    function failAssertion(Assert $assert) {
         $assert->isTrue(false);
     }
 
@@ -395,11 +395,11 @@ class FindFailureSource_PlainFoo {
         FindFailureSource_InStaticTestSuite::throwException();
     }
 
-    function indirectAssertion(Asserter $assert) {
+    function indirectAssertion(Assert $assert) {
         $this->failAssertion($assert);
     }
 
-    function noAssertions(Asserter $asserter) {
+    function noAssertions(Assert $asserter) {
     }
 
     function raiseAWarning() {

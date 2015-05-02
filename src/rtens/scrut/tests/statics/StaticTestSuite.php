@@ -4,14 +4,14 @@ namespace rtens\scrut\tests\statics;
 use watoki\factory\Factory;
 use watoki\factory\Injector;
 use watoki\factory\providers\DefaultProvider;
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\TestName;
 use rtens\scrut\tests\plain\PlainTestSuite;
 use rtens\scrut\tests\TestFilter;
 
 abstract class StaticTestSuite extends PlainTestSuite {
 
-    /** @var Asserter */
+    /** @var Assert */
     protected $assert;
 
     /**
@@ -32,7 +32,7 @@ abstract class StaticTestSuite extends PlainTestSuite {
         return new StaticTestCase($method, $this->getName());
     }
 
-    public function execute($method, Asserter $assert) {
+    public function execute($method, Assert $assert) {
         $this->assert = $assert;
 
         $this->injectProperties();

@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\scrut\listening;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\Failure;
 use rtens\scrut\listeners\CompactConsoleListener;
 use rtens\scrut\results\NotPassedTestResult;
@@ -9,8 +9,8 @@ use rtens\scrut\TestName;
 
 class PrintCompactReport extends ListeningSpecification {
 
-    function passingTest(Asserter $assert) {
-        $this->suite->test('one', function (Asserter $assert) {
+    function passingTest(Assert $assert) {
+        $this->suite->test('one', function (Assert $assert) {
             $assert->pass();
         });
 
@@ -21,8 +21,8 @@ class PrintCompactReport extends ListeningSpecification {
         ]);
     }
 
-    function failingTest(Asserter $assert) {
-        $this->suite->test('one', function (Asserter $assert) {
+    function failingTest(Assert $assert) {
+        $this->suite->test('one', function (Assert $assert) {
             $assert->fail('Oh no!');
         });
         $this->runAndAssertOutput($assert, [
@@ -37,8 +37,8 @@ class PrintCompactReport extends ListeningSpecification {
         ]);
     }
 
-    function incompleteTest(Asserter $assert) {
-        $this->suite->test('one', function (Asserter $assert) {
+    function incompleteTest(Assert $assert) {
+        $this->suite->test('one', function (Assert $assert) {
             $assert->incomplete('Not done');
         });
         $this->runAndAssertOutput($assert, [
@@ -52,16 +52,16 @@ class PrintCompactReport extends ListeningSpecification {
         ]);
     }
 
-    function mixedResults(Asserter $assert) {
+    function mixedResults(Assert $assert) {
         $this->suite->test('one', function () {
         });
-        $this->suite->test('two', function (Asserter $assert) {
+        $this->suite->test('two', function (Assert $assert) {
             $assert->pass();
         });
-        $this->suite->test('three', function (Asserter $assert) {
+        $this->suite->test('three', function (Assert $assert) {
             $assert->fail('Miserably');
         });
-        $this->suite->test('four', function (Asserter $assert) {
+        $this->suite->test('four', function (Assert $assert) {
             $assert->pass();
         });
         $this->suite->test('five', function () {
@@ -85,7 +85,7 @@ class PrintCompactReport extends ListeningSpecification {
         ]);
     }
 
-    function unknownResult(Asserter $assert) {
+    function unknownResult(Assert $assert) {
         $test = new TestName('Foo', 'one');
         $listener = new CompactConsoleListener(function ($text) {
             $this->output .= $text;

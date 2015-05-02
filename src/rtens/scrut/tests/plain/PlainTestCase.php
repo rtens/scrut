@@ -4,7 +4,7 @@ namespace rtens\scrut\tests\plain;
 use watoki\factory\Factory;
 use watoki\factory\Injector;
 use watoki\factory\providers\CallbackProvider;
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\TestName;
 use rtens\scrut\tests\TestCase;
 
@@ -36,7 +36,7 @@ class PlainTestCase extends TestCase {
         return parent::getName()->with($this->method->getName());
     }
 
-    protected function execute(Asserter $assert) {
+    protected function execute(Assert $assert) {
         $factory = $this->createFactory($assert);
 
         $suite = $factory->getInstance($this->method->getDeclaringClass()->getName());
@@ -76,9 +76,9 @@ class PlainTestCase extends TestCase {
         }
     }
 
-    private function createFactory(Asserter $assert) {
+    private function createFactory(Assert $assert) {
         $factory = new Factory();
-        $factory->setProvider(Asserter::class, new CallbackProvider(function () use ($assert) {
+        $factory->setProvider(Assert::class, new CallbackProvider(function () use ($assert) {
             $this->asserterProvided = true;
             return $assert;
         }));
@@ -92,7 +92,7 @@ class PlainTestCase extends TestCase {
         });
     }
 
-    private function injectAsserter(\ReflectionMethod $method, Asserter $assert) {
+    private function injectAsserter(\ReflectionMethod $method, Assert $assert) {
         $args = [];
         foreach ($method->getParameters() as $parameter) {
             if (in_array($parameter->getName(), self::$ASSERTER_ARGUMENTS)) {

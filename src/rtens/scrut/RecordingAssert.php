@@ -1,16 +1,16 @@
 <?php
 namespace rtens\scrut;
 
-class RecordingAsserter extends Asserter {
+class RecordingAssert extends Assert {
 
     /**
      * @var array|Assertion[]
      */
     private $assertions = [];
 
-    public function assert(Assertion $assertion, $message = "") {
+    public function that(Assertion $assertion, $message = "") {
         $this->add($assertion);
-        parent::assert($assertion, $message);
+        parent::that($assertion, $message);
     }
 
     private function add(Assertion $assertion) {

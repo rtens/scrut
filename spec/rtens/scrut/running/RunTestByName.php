@@ -1,7 +1,7 @@
 <?php
 namespace rtens\scrut\running;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\cli\TestRunner;
 use rtens\scrut\listeners\ArrayListener;
 use rtens\scrut\TestName;
@@ -28,7 +28,7 @@ class RunTestByName {
         $this->runner->test = new GenericTestSuite('Foo');
     }
 
-    function invalidName(Asserter $assert) {
+    function invalidName(Assert $assert) {
         try {
             $this->runner->run(new TestName('Not'));
             $assert->fail("Should have thrown an Exception");
@@ -37,21 +37,21 @@ class RunTestByName {
         }
     }
 
-    function runDefault(Asserter $assert) {
+    function runDefault(Assert $assert) {
         $this->runner->run();
 
         $assert->size($this->runner->listener->started, 1);
         $assert($this->runner->listener->started[0]->toString(), 'Foo');
     }
 
-    function returnSuccess(Asserter $assert) {
+    function returnSuccess(Assert $assert) {
         $passed = $this->runner->run();
 
         $assert($passed);
     }
 
-    function returnFailure(Asserter $assert) {
-        $this->runner->test->test('bar', function (Asserter $assert) {
+    function returnFailure(Assert $assert) {
+        $this->runner->test->test('bar', function (Assert $assert) {
             $assert->fail();
         });
 
@@ -60,14 +60,14 @@ class RunTestByName {
         $assert->not($passed);
     }
 
-    function runRoot(Asserter $assert) {
+    function runRoot(Assert $assert) {
         $this->runner->run(new TestName('Foo'));
 
         $assert->size($this->runner->listener->started, 1);
         $assert($this->runner->listener->started[0]->toString(), 'Foo');
     }
 
-    function genericName(Asserter $assert) {
+    function genericName(Assert $assert) {
         $this->runner->test->test('foo');
         $this->runner->test->test('bar');
 
@@ -77,7 +77,7 @@ class RunTestByName {
         $assert($this->runner->listener->started[0]->toString(), 'Foo::bar');
     }
 
-    function genericCompositeName(Asserter $assert) {
+    function genericCompositeName(Assert $assert) {
         $this->runner->test->suite('foo', function (GenericTestSuite $suite) {
             $suite->test('bar');
             $suite->test('baz');
@@ -88,7 +88,7 @@ class RunTestByName {
         $assert($this->runner->listener->started[0]->toString(), 'Foo::foo::baz');
     }
 
-    function plainClassName(Asserter $assert) {
+    function plainClassName(Assert $assert) {
         $this->runner->run(new TestName(RunTestByName_Plain::class));
 
         $assert($this->runner->listener->started[0]->toString(), RunTestByName_Plain::class);
@@ -96,7 +96,7 @@ class RunTestByName {
         $assert($this->runner->listener->started[2]->toString(), RunTestByName_Plain::class . '::bar');
     }
 
-    function staticClassName(Asserter $assert) {
+    function staticClassName(Assert $assert) {
         $passed = $this->runner->run(new TestName(RunTestByName_Static::class));
 
         $assert($passed);
@@ -105,7 +105,7 @@ class RunTestByName {
         $assert($this->runner->listener->started[2]->toString(), RunTestByName_Static::class . '::bar');
     }
 
-    function incomplete(Asserter $assert) {
+    function incomplete(Assert $assert) {
         $assert->incomplete('TBS');
     }
 }

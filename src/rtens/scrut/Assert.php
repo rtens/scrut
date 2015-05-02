@@ -6,18 +6,18 @@ use rtens\scrut\assertions\IsEqualAssertion;
 use rtens\scrut\assertions\IsInstanceOfAssertion;
 use rtens\scrut\assertions\IsNullAssertion;
 use rtens\scrut\assertions\IsTrueAssertion;
-use rtens\scrut\assertions\NotAsserter;
+use rtens\scrut\assertions\AssertOpposite;
 use rtens\scrut\assertions\SizeAssertion;
 use rtens\scrut\failures\AssertionFailedFailure;
 use rtens\scrut\failures\IncompleteTestFailure;
 
-class Asserter {
+class Assert {
 
     /**
      * @param Assertion $assertion
      * @param string $message
      */
-    public function assert(Assertion $assertion, $message = "") {
+    public function that(Assertion $assertion, $message = "") {
         if (!$assertion->checksOut()) {
             throw new AssertionFailedFailure($assertion, $message);
         }
@@ -28,7 +28,7 @@ class Asserter {
     }
 
     public function pass() {
-        $this->assert(new IsTrueAssertion(true));
+        $this->that(new IsTrueAssertion(true));
     }
 
     public function incomplete($message = "") {
@@ -39,7 +39,7 @@ class Asserter {
         if (!is_null($value)) {
             $this->not()->equals($value, $equals);
         }
-        return new NotAsserter($this);
+        return new AssertOpposite($this);
     }
 
     /**
@@ -55,7 +55,7 @@ class Asserter {
      * @param string $message
      */
     public function isTrue($value, $message = "") {
-        $this->assert(new IsTrueAssertion($value), $message);
+        $this->that(new IsTrueAssertion($value), $message);
     }
 
     /**
@@ -64,7 +64,7 @@ class Asserter {
      * @param string $message
      */
     public function equals($value, $expected, $message = "") {
-        $this->assert(new IsEqualAssertion($value, $expected), $message);
+        $this->that(new IsEqualAssertion($value, $expected), $message);
     }
 
     /**
@@ -73,7 +73,7 @@ class Asserter {
      * @param string $message
      */
     public function isInstanceOf($object, $class, $message = "") {
-        $this->assert(new IsInstanceOfAssertion($object, $class), $message);
+        $this->that(new IsInstanceOfAssertion($object, $class), $message);
     }
 
     /**
@@ -82,7 +82,7 @@ class Asserter {
      * @param string $message
      */
     public function size($countable, $size, $message = "") {
-        $this->assert(new SizeAssertion($countable, $size), $message);
+        $this->that(new SizeAssertion($countable, $size), $message);
     }
 
     /**
@@ -91,10 +91,10 @@ class Asserter {
      * @param string $message
      */
     public function contains($haystack, $needle, $message = "") {
-        $this->assert(new ContainsAssertion($haystack, $needle), $message);
+        $this->that(new ContainsAssertion($haystack, $needle), $message);
     }
 
     public function isNull($value, $message = "") {
-        $this->assert(new IsNullAssertion($value), $message);
+        $this->that(new IsNullAssertion($value), $message);
     }
 }

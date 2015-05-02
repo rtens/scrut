@@ -1,13 +1,13 @@
 <?php
 namespace rtens\scrut\tests\statics;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\tests\plain\PlainTestCase;
 use rtens\scrut\tests\TestFilter;
 
 class StaticTestCase extends PlainTestCase {
 
-    protected function execute(Asserter $assert) {
+    protected function execute(Assert $assert) {
         $class = $this->method->getDeclaringClass();
         if (!$class->isSubclassOf(StaticTestSuite::class)) {
             throw new \InvalidArgumentException("Not a StaticTestSuite: [{$class->getName()}]");

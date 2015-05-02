@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\scrut;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\listeners\ArrayListener;
 use rtens\scrut\results\IncompleteTestResult;
 use rtens\scrut\results\PassedTestResult;
@@ -18,7 +18,7 @@ class InjectDependencies {
         $this->listener = new ArrayListener();
     }
 
-    function injectConstructor(Asserter $assert) {
+    function injectConstructor(Assert $assert) {
         $this->files->givenTheFile_Containing('inject/InjectConstructor.php', '<?php
             class InjectConstructor {
                 /**
@@ -41,7 +41,7 @@ class InjectDependencies {
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
-    function injectProperties(Asserter $assert) {
+    function injectProperties(Assert $assert) {
         $this->files->givenTheFile_Containing('inject/InjectProperties.php', '<?php
             class InjectProperties {
 
@@ -63,7 +63,7 @@ class InjectDependencies {
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
-    function injectAnnotations(Asserter $assert) {
+    function injectAnnotations(Assert $assert) {
         $this->files->givenTheFile_Containing('inject/InjectAnnotations.php', '<?php
             /**
              * @property \StdClass $foo <-
@@ -82,7 +82,7 @@ class InjectDependencies {
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
-    function injectPropertiesAndAnnotationsIntoStaticTestSuite(Asserter $assert) {
+    function injectPropertiesAndAnnotationsIntoStaticTestSuite(Assert $assert) {
         $this->files->givenTheFile_Containing('inject/InjectPropertiesIntoStatic.php', '<?php
             /**
              * @property \StdClass $baz <-
@@ -110,7 +110,7 @@ class InjectDependencies {
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
-    function asserterIsPassedToInjectedObject(Asserter $assert) {
+    function asserterIsPassedToInjectedObject(Assert $assert) {
         $this->files->givenTheFile_Containing('inject/InjectAsserter.php', '<?php
             /** @property InjectedThing $that <- */
             class InjectAsserter {
@@ -122,7 +122,7 @@ class InjectDependencies {
                 }
             }
 
-            /** @property ' . Asserter::class . ' $assert <- */
+            /** @property ' . Assert::class . ' $assert <- */
             class InjectedThing {}
         ');
         $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath('inject/InjectAsserter.php'));

@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\scrut;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\failures\AssertionFailedFailure;
 use rtens\scrut\failures\CaughtExceptionFailure;
 use rtens\scrut\failures\IncompleteTestFailure;
@@ -50,7 +50,7 @@ class RunGenericTestSuite extends StaticTestSuite {
     }
 
     function passingTest() {
-        $this->suite->test("bar", function (Asserter $assert) {
+        $this->suite->test("bar", function (Assert $assert) {
             $assert(true);
         });
         $this->suite->run($this->listener);
@@ -60,7 +60,7 @@ class RunGenericTestSuite extends StaticTestSuite {
     }
 
     function failingTest() {
-        $this->suite->test("bar", function (Asserter $assert) {
+        $this->suite->test("bar", function (Assert $assert) {
             $assert(false);
         });
         $this->suite->run($this->listener);

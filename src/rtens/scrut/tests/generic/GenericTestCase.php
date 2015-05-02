@@ -1,7 +1,7 @@
 <?php
 namespace rtens\scrut\tests\generic;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\TestName;
 use rtens\scrut\tests\TestCase;
 
@@ -36,7 +36,7 @@ class GenericTestCase extends TestCase {
         return parent::getName()->with($this->name);
     }
 
-    protected function execute(Asserter $assert) {
+    protected function execute(Assert $assert) {
         call_user_func($this->callback, $assert);
     }
 

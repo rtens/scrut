@@ -1,13 +1,13 @@
 <?php
 namespace spec\rtens\scrut\listening;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\listeners\VerboseConsoleListener;
 
 class PrintVerboseReport extends ListeningSpecification {
 
-    function passingTest(Asserter $assert) {
-        $this->suite->test('one', function (Asserter $assert) {
+    function passingTest(Assert $assert) {
+        $this->suite->test('one', function (Assert $assert) {
             $assert->pass();
         });
 
@@ -19,8 +19,8 @@ class PrintVerboseReport extends ListeningSpecification {
         ]);
     }
 
-    function failingTest(Asserter $assert) {
-        $this->suite->test('one', function (Asserter $assert) {
+    function failingTest(Assert $assert) {
+        $this->suite->test('one', function (Assert $assert) {
             $assert->fail('Oh no!');
         });
         $this->runAndAssertOutput($assert, [
@@ -36,8 +36,8 @@ class PrintVerboseReport extends ListeningSpecification {
         ]);
     }
 
-    function incompleteTest(Asserter $assert) {
-        $this->suite->test('one', function (Asserter $assert) {
+    function incompleteTest(Assert $assert) {
+        $this->suite->test('one', function (Assert $assert) {
             $assert->incomplete('Not done');
         });
         $this->runAndAssertOutput($assert, [
@@ -52,7 +52,7 @@ class PrintVerboseReport extends ListeningSpecification {
         ]);
     }
 
-    function emptySuite(Asserter $assert) {
+    function emptySuite(Assert $assert) {
         $this->suite->suite('empty');
 
         $this->runAndAssertOutput($assert, [

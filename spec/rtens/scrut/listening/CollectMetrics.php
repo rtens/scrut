@@ -1,7 +1,7 @@
 <?php
 namespace spec\rtens\scrut\listening;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\listeners\MetricConsoleListener;
 
 class CollectMetrics extends ListeningSpecification {
@@ -13,28 +13,28 @@ class CollectMetrics extends ListeningSpecification {
         return new CollectMetrics_Listener($printer, 1000);
     }
 
-    function showTotal(Asserter $assert) {
+    function showTotal(Assert $assert) {
         $this->test('one', 1);
         $this->runAndAssertOutput($assert, [
             'Total foo: 1.0'
         ]);
     }
 
-    function transformLargeValues(Asserter $assert) {
+    function transformLargeValues(Assert $assert) {
         $this->test('A', 159);
         $this->runAndAssertOutput($assert, [
             'Total foo: 1.6 +2'
         ]);
     }
 
-    function transformSmallValues(Asserter $assert) {
+    function transformSmallValues(Assert $assert) {
         $this->test('A', 0.02345);
         $this->runAndAssertOutput($assert, [
             'Total foo: 2.3 -2'
         ]);
     }
 
-    function showTopList(Asserter $assert) {
+    function showTopList(Assert $assert) {
         $this->test('A', 100);
         $this->test('B', 600);
         $this->test('C', 500);

@@ -1,44 +1,44 @@
 <?php
 namespace spec\rtens\scrut;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\TestName;
 
 class ComposeTestNames {
 
-    function emptyName(Asserter $assert) {
+    function emptyName(Assert $assert) {
         $name = new TestName([]);
         $assert($name->toString(), '');
     }
 
-    function createFromString(Asserter $assert) {
+    function createFromString(Assert $assert) {
         $name = new TestName("foo");
         $assert($name->toString(), "foo");
     }
 
-    function createFromArray(Asserter $assert) {
+    function createFromArray(Assert $assert) {
         $name = new TestName(['foo', 'bar']);
         $assert($name->toString(), "foo::bar");
     }
 
-    function createFromStrings(Asserter $assert) {
+    function createFromStrings(Assert $assert) {
         $name = new TestName('foo', 'bar');
         $assert($name->toString(), "foo::bar");
     }
 
-    function addStrings(Asserter $assert) {
+    function addStrings(Assert $assert) {
         $name = new TestName('foo', 'bar');
         $composed = $name->with('baz');
         $assert($name->toString(), "foo::bar");
         $assert($composed->toString(), "foo::bar::baz");
     }
 
-    function escapeSeparators(Asserter $assert) {
+    function escapeSeparators(Assert $assert) {
         $name = new TestName('foo::bar::', ':b$az');
         $assert($name->toString(), 'foo$:$:bar$:$:::$:b$$az');
     }
 
-    function accessParts(Asserter $assert) {
+    function accessParts(Assert $assert) {
         $name = new TestName('one', 'two', 'three');
 
         $assert($name->part(0), 'one');
@@ -47,12 +47,12 @@ class ComposeTestNames {
         $assert($name->last(), 'three');
     }
 
-    function parseStrings(Asserter $assert) {
+    function parseStrings(Assert $assert) {
         $name = TestName::parse('foo::bar::baz');
         $assert($name->toString(), 'foo::bar::baz');
     }
 
-    function parseEscapedStrings(Asserter $assert) {
+    function parseEscapedStrings(Assert $assert) {
         $name = TestName::parse('foo$:$:bar$:$:::$:b$$az');
         $assert($name->part(0), 'foo::bar::');
         $assert($name->part(1), ':b$az');

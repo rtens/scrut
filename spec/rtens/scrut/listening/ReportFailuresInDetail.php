@@ -1,13 +1,13 @@
 <?php
 namespace spec\rtens\scrut\listening;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 use rtens\scrut\listeners\FailConsoleListener;
 
 class ReportFailuresInDetail extends ListeningSpecification {
 
-    function passing(Asserter $assert) {
-        $this->suite->test('one', function (Asserter $assert) {
+    function passing(Assert $assert) {
+        $this->suite->test('one', function (Assert $assert) {
             $assert->pass();
         });
         $this->runAndAssertOutput($assert, [
@@ -15,8 +15,8 @@ class ReportFailuresInDetail extends ListeningSpecification {
         ]);
     }
 
-    function failing(Asserter $assert) {
-        $this->suite->test('one', function (Asserter $assert) {
+    function failing(Assert $assert) {
+        $this->suite->test('one', function (Assert $assert) {
             $assert->fail();
         });
         $this->runTestSuite();
@@ -24,14 +24,14 @@ class ReportFailuresInDetail extends ListeningSpecification {
         $assert(end($this->outputLines), 'FAILED =(');
     }
 
-    function mixedResults(Asserter $assert) {
-        $this->suite->test('one', function (Asserter $assert) {
+    function mixedResults(Assert $assert) {
+        $this->suite->test('one', function (Assert $assert) {
             $assert->pass();
         });
-        $this->suite->test('two', function (Asserter $assert) {
+        $this->suite->test('two', function (Assert $assert) {
             $assert->fail();
         });
-        $this->suite->test('three', function (Asserter $assert) {
+        $this->suite->test('three', function (Assert $assert) {
             $assert->incomplete();
         });
         $this->runTestSuite();
@@ -39,11 +39,11 @@ class ReportFailuresInDetail extends ListeningSpecification {
         $assert(end($this->outputLines), 'FAILED =(');
     }
 
-    function detailedFailureDescription(Asserter $assert) {
-        $this->suite->test('one', function (Asserter $assert) {
+    function detailedFailureDescription(Assert $assert) {
+        $this->suite->test('one', function (Assert $assert) {
             $assert->fail('Oh no!');
         });
-        $this->suite->test('two', function (Asserter $assert) {
+        $this->suite->test('two', function (Assert $assert) {
             $assert->fail('Not this one');
         });
         $this->runAndAssertOutput($assert, [

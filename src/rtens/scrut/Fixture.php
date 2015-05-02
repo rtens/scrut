@@ -3,13 +3,13 @@ namespace rtens\scrut;
 
 abstract class Fixture {
 
-    /** @var Asserter */
+    /** @var Assert */
     protected $assert;
 
     /**
-     * @param Asserter $assert <-
+     * @param Assert $assert <-
      */
-    function __construct(Asserter $assert) {
+    function __construct(Assert $assert) {
         $this->assert = $assert;
         $this->init();
     }

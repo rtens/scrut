@@ -1,7 +1,7 @@
 <?php
 namespace rtens\scrut\running;
 
-use rtens\scrut\Asserter;
+use rtens\scrut\Assert;
 
 /**
  * @property \rtens\scrut\fixtures\FilesFixture files <-
@@ -16,7 +16,7 @@ class RunCliScript {
         $this->cwd = $this->files->givenTheFolder('foo');
     }
 
-    function noAutoloadFound(Asserter $assert) {
+    function noAutoloadFound(Assert $assert) {
         $this->runTheScript();
 
         $assert($this->return, 2);
@@ -25,28 +25,28 @@ class RunCliScript {
         ]);
     }
 
-    function findBootstrap(Asserter $assert) {
+    function findBootstrap(Assert $assert) {
         $this->files->givenTheFile_Containing('foo/bootstrap.php', $this->autoloadCode('echo "found it";'));
 
         $this->runTheScript();
         $assert($this->output, ['found it']);
     }
 
-    function findLocalAutoload(Asserter $assert) {
+    function findLocalAutoload(Assert $assert) {
         $this->files->givenTheFile_Containing('foo/autoload.php', $this->autoloadCode('echo "auto-loaded";'));
 
         $this->runTheScript();
         $assert($this->output, ['auto-loaded']);
     }
 
-    function findVendorAutoload(Asserter $assert) {
+    function findVendorAutoload(Assert $assert) {
         $this->files->givenTheFile_Containing('foo/autoload.php', $this->autoloadCode('echo "vendor";'));
 
         $this->runTheScript();
         $assert($this->output, ['vendor']);
     }
 
-    function exitWithReturnValue(Asserter $assert) {
+    function exitWithReturnValue(Assert $assert) {
         $this->files->givenTheFile_Containing('foo/autoload.php', $this->autoloadCode('return 42;'));
 
         $this->runTheScript();
