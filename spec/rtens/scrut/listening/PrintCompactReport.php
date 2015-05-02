@@ -108,10 +108,6 @@ class PrintCompactReport {
         $this->assertOutput($assert, ['?', '', 'Unknown result']);
     }
 
-    function incomplete(Asserter $assert) {
-        $assert->incomplete('Scenarios missing');
-    }
-
     private function runAndAssertOutput(Asserter $assert, $expected) {
         $listener = new CompactConsoleListener(function ($text) {
             $this->output .= $text;
