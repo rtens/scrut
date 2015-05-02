@@ -87,11 +87,19 @@ class FileTestSuite extends TestSuite {
                 continue;
             }
 
-            if (is_subclass_of($class, StaticTestSuite::class)) {
-                yield new $class($this->filter, $this->getName());
-            } else {
-                yield new PlainTestSuite($this->filter, $class, $this->getName());
-            }
+            yield $this->createInstance($class);
+        }
+    }
+
+    /**
+     * @param $class
+     * @return TestSuite
+     */
+    protected function createInstance($class) {
+        if (is_subclass_of($class, StaticTestSuite::class)) {
+            return new $class($this->filter, $this->getName());
+        } else {
+            return new PlainTestSuite($this->filter, $class, $this->getName());
         }
     }
 
