@@ -82,7 +82,9 @@ class FileTestSuite extends TestSuite {
         }
 
         $newClasses = array_diff(get_declared_classes(), $before);
-        foreach ($newClasses as $class) {
+        foreach ($newClasses as $className) {
+            $class = new \ReflectionClass($className);
+
             if (!$this->isAcceptable($class, $path)) {
                 continue;
             }
@@ -92,22 +94,22 @@ class FileTestSuite extends TestSuite {
     }
 
     /**
-     * @param $class
+     * @param \ReflectionClass $class
      * @return TestSuite
      */
-    protected function createInstance($class) {
-        if (is_subclass_of($class, StaticTestSuite::class)) {
-            return new $class($this->filter, $this->getName());
+    protected function createInstance(\ReflectionClass $class) {
+        if ($class->isSubclassOf(StaticTestSuite::class)) {
+            return $class->newInstance($this->filter, $this->getName());
         } else {
-            return new PlainTestSuite($this->filter, $class, $this->getName());
+            return new PlainTestSuite($this->filter, $class->getName(), $this->getName());
         }
     }
 
-    private function isAcceptable($class, $path) {
-        $reflection = new \ReflectionClass($class);
-        return $reflection->getFileName() == $path
+    private function isAcceptable(\ReflectionClass $class, $path) {
+        return $class->getFileName() == $path
+        && !$class->isAbstract()
         && $this->filter->acceptsFile($path)
-        && $this->filter->acceptsClass($reflection);
+        && $this->filter->acceptsClass($class);
     }
 
     /**

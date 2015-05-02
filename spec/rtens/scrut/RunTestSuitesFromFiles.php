@@ -180,6 +180,19 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->assert($this->listener->started[0]->toString(), 'some/foo');
     }
 
+    function ignoreAbstractClasses() {
+        $this->fileContent('foo/SomethingAbstract.php', '<?php
+            abstract class SomeReallyAbstractClass {
+                function foo() {}
+            }
+        ');
+
+        $suite = new FileTestSuite(new TestFilter(), $this->tmp('foo/SomethingAbstract.php'));
+        $suite->run($this->listener);
+
+        $this->assert->size($this->listener->started, 1);
+    }
+
     private function fileContent($fileName, $content) {
         $this->createFolder(dirname($fileName));
         file_put_contents($this->tmp($fileName), $content);
