@@ -16,19 +16,19 @@ class CatchWarningsAndErrors extends StaticTestSuite {
     }
 
     function catchWarning() {
-        $test = new GenericTestCase(function () {
+        $test = new GenericTestCase('foo', function () {
             /** @noinspection PhpParamsInspection */
             $this->foo();
-        }, 'foo');
+        });
         $test->run($this->listener);
 
         $this->assertErrorIsCaught('E_WARNING', "Missing argument 1");
     }
 
     function catchError() {
-        $test = new GenericTestCase(function () {
+        $test = new GenericTestCase('foo', function () {
             $this->bar("foo");
-        }, 'foo');
+        });
         $test->run($this->listener);
 
         $this->assertErrorIsCaught('E_RECOVERABLE_ERROR', "must be callable, string given");

@@ -19,11 +19,12 @@ class GenericTestSuite extends TestSuite {
     /**
      * @param string $name
      * @param null|TestName $parent
+     * @param \Exception $creation Used for determining source location
      */
-    function __construct($name, TestName $parent = null) {
+    function __construct($name, TestName $parent = null, \Exception $creation = null) {
         parent::__construct($parent);
         $this->name = $name;
-        $this->creation = new \Exception();
+        $this->creation = $creation ?: new \Exception();
     }
 
     /**
@@ -49,7 +50,7 @@ class GenericTestSuite extends TestSuite {
      * @return $this
      */
     public function test($name, callable $callback) {
-        return $this->add(new GenericTestCase($callback, $name, $this->getName()));
+        return $this->add(new GenericTestCase($name, $callback, $this->getName(), new \Exception()));
     }
 
     /**
@@ -59,7 +60,8 @@ class GenericTestSuite extends TestSuite {
      * @return GenericTestSuite
      */
     public function suite($name, callable $configureSuite = null) {
-        $suite = new GenericTestSuite($name, $this->getName());
+        $suite = new GenericTestSuite($name, $this->getName(), new \Exception());
+
         if ($configureSuite) {
             $configureSuite($suite);
         }

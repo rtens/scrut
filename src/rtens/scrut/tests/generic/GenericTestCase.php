@@ -17,15 +17,16 @@ class GenericTestCase extends TestCase {
     private $callback;
 
     /**
-     * @param callable $callback
      * @param string $name
+     * @param callable $callback
      * @param null|TestName $parent
+     * @param \Exception $creation Used for determining source location
      */
-    function __construct(callable $callback, $name, TestName $parent = null) {
+    function __construct($name, callable $callback, TestName $parent = null, \Exception $creation = null) {
         parent::__construct($parent);
         $this->callback = $callback;
         $this->name = $name;
-        $this->creation = new \Exception();
+        $this->creation = $creation ?: new \Exception();
     }
 
     /**

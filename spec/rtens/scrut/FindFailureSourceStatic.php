@@ -102,8 +102,16 @@ class FindFailureSource_InGenericTestSuite extends FindFailureSource_TestSuite {
     }
 
     function emptyTestCase() {
-        $this->suite->add(new GenericTestCase(function () {
-        }, 'bar'));
+        $this->suite->add(new GenericTestCase('bar', function () {
+        }));
+        $this->suite->run($this->listener);
+
+        $this->assertLocationIsAtLine(__LINE__ - 3);
+    }
+
+    function emptyIndirectlyAddedTestCase() {
+        $this->suite->test('foo', function () {
+        });
         $this->suite->run($this->listener);
 
         $this->assertLocationIsAtLine(__LINE__ - 3);
@@ -112,6 +120,13 @@ class FindFailureSource_InGenericTestSuite extends FindFailureSource_TestSuite {
     function emptyTestSuite() {
         $suite = new GenericTestSuite("Foo");
         $suite->run($this->listener);
+
+        $this->assertLocationIsAtLine(__LINE__ - 3);
+    }
+
+    function emptyIndirectlyAddedSuite() {
+        $this->suite->suite('Foo');
+        $this->suite->run($this->listener);
 
         $this->assertLocationIsAtLine(__LINE__ - 3);
     }
@@ -135,7 +150,7 @@ class FindFailureSource_InGenericTestSuite extends FindFailureSource_TestSuite {
     }
 
     private function runGenericTestCase($callback) {
-        $this->suite->add(new GenericTestCase($callback, 'bar'));
+        $this->suite->add(new GenericTestCase('bar', $callback));
         $this->suite->run($this->listener);
     }
 
