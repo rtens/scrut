@@ -3,30 +3,32 @@ namespace rtens\scrut\cli;
 
 use rtens\scrut\listeners\CompactConsoleListener;
 use rtens\scrut\listeners\MultiListener;
-use rtens\scrut\results\FailedTestResult;
+use rtens\scrut\listeners\ResultListener;
 use rtens\scrut\Test;
-use rtens\scrut\TestName;
-use rtens\scrut\TestResult;
-use rtens\scrut\TestRunListener;
 use rtens\scrut\tests\file\FileTestSuite;
 use rtens\scrut\tests\generic\GenericTestSuite;
 use rtens\scrut\tests\TestFilter;
 
-class DefaultTestRunner implements TestRunner, TestRunListener {
+class DefaultTestRunner implements TestRunner {
 
     private $workingDirectory;
-    private $failed = false;
-    protected $factory;
+
+    /** @var ResultListener */
+    private $result;
 
     function __construct($workingDirectory) {
         $this->workingDirectory = $workingDirectory;
+        $this->result = new ResultListener();
     }
 
     public function run() {
-        $this->getTest()->run((new MultiListener())
-            ->add($this)
-            ->add($this->getListener()));
-        return !$this->failed;
+        $listener = (new MultiListener())
+            ->add($this->result)
+            ->add($this->getListener());
+
+        $this->getTest()->run($listener);
+
+        return !$this->result->hasFailed();
     }
 
     protected function getName() {
@@ -61,16 +63,6 @@ class DefaultTestRunner implements TestRunner, TestRunListener {
         }
 
         return $tests;
-    }
-
-    public function onResult(TestName $test, TestResult $result) {
-        $this->failed = $this->failed || $result instanceof FailedTestResult;
-    }
-
-    public function onStarted(TestName $test) {
-    }
-
-    public function onFinished(TestName $test) {
     }
 
     /**
