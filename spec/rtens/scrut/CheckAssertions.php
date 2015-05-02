@@ -19,6 +19,10 @@ class CheckAssertions extends StaticTestSuite {
         $this->assert->not()->equals("foo", "bar");
 
         $this->shouldFail(function () {
+            $this->assert->not(true);
+        }, 'TRUE should not equal TRUE');
+
+        $this->shouldFail(function () {
             $this->assert->not()->equals('a', 'a');
         }, "'a' should not equal 'a'");
     }

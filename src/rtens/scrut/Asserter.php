@@ -35,7 +35,10 @@ class Asserter {
         throw new IncompleteTestFailure($message);
     }
 
-    public function not() {
+    public function not($value = null, $equals = true) {
+        if (!is_null($value)) {
+            $this->not()->equals($value, $equals);
+        }
         return new NotAsserter($this);
     }
 
