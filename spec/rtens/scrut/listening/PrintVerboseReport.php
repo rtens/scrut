@@ -3,18 +3,8 @@ namespace spec\rtens\scrut\listening;
 
 use rtens\scrut\Asserter;
 use rtens\scrut\listeners\VerboseConsoleListener;
-use rtens\scrut\tests\generic\GenericTestSuite;
 
-class PrintVerboseReport {
-
-    private $output = '';
-
-    /** @var GenericTestSuite */
-    private $suite;
-
-    function before() {
-        $this->suite = new GenericTestSuite('Foo');
-    }
+class PrintVerboseReport extends ListeningSpecification {
 
     function passingTest(Asserter $assert) {
         $this->suite->test('one', function (Asserter $assert) {
@@ -77,23 +67,7 @@ class PrintVerboseReport {
         ]);
     }
 
-    private function runAndAssertOutput(Asserter $assert, $expected) {
-        $listener = new VerboseConsoleListener(function ($text) {
-            $this->output .= $text;
-        });
-        $this->suite->run($listener);
-
-        $this->assertOutput($assert, $expected, new \Exception());
-    }
-
-    private function assertOutput(Asserter $assert, $expected, \Exception $exception = null) {
-        $exception = $exception ?: new \Exception();
-        $trace = $exception->getTrace();
-
-        $expected = preg_replace_callback('/FILE:(-?\d+)/', function ($matches) use ($trace) {
-            return $trace[0]['file'] . ':' . ($trace[0]['line'] + intval($matches[1]));
-        }, $expected);
-
-        $assert(explode("\n", trim($this->output)), $expected);
+    protected function createListener(callable $printer) {
+        return new VerboseConsoleListener($printer);
     }
 }

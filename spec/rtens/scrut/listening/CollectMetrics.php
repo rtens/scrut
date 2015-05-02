@@ -3,34 +3,35 @@ namespace spec\rtens\scrut\listening;
 
 use rtens\scrut\Asserter;
 use rtens\scrut\listeners\MetricConsoleListener;
-use rtens\scrut\tests\generic\GenericTestSuite;
 
-class CollectMetrics {
-
-    /** @var GenericTestSuite */
-    private $suite;
+class CollectMetrics extends ListeningSpecification {
 
     /** @var CollectMetrics_Listener */
-    private $listener;
+    protected $listener;
 
-    function before() {
-        $this->listener = new CollectMetrics_Listener(1000);
-        $this->suite = new GenericTestSuite('Foo');
+    protected function createListener(callable $printer) {
+        return new CollectMetrics_Listener($printer, 1000);
     }
 
     function showTotal(Asserter $assert) {
         $this->test('one', 1);
-        $this->outputShouldBe($assert, ['Total foo: 1.0']);
+        $this->runAndAssertOutput($assert, [
+            'Total foo: 1.0'
+        ]);
     }
 
     function transformLargeValues(Asserter $assert) {
         $this->test('A', 159);
-        $this->outputShouldBe($assert, ['Total foo: 1.6 +2']);
+        $this->runAndAssertOutput($assert, [
+            'Total foo: 1.6 +2'
+        ]);
     }
 
     function transformSmallValues(Asserter $assert) {
         $this->test('A', 0.02345);
-        $this->outputShouldBe($assert, ['Total foo: 2.3 -2']);
+        $this->runAndAssertOutput($assert, [
+            'Total foo: 2.3 -2'
+        ]);
     }
 
     function showTopList(Asserter $assert) {
@@ -41,7 +42,7 @@ class CollectMetrics {
         $this->test('E', 30);
         $this->test('F', 20);
 
-        $this->outputShouldBe($assert, [
+        $this->runAndAssertOutput($assert, [
             'Total foo: 1.2 +3',
             '',
             'Top tests:',
@@ -58,28 +59,16 @@ class CollectMetrics {
             $this->listener->currentValue += $value;
         });
     }
-
-    private function outputShouldBe(Asserter $assert, $lines) {
-        $this->suite->run($this->listener);
-        $assert($this->listener->lines, $lines);
-    }
 }
 
 class CollectMetrics_Listener extends MetricConsoleListener {
 
     public $lines;
     public $currentValue = 0;
-    private $printed;
     private $threshold;
 
-    /**
-     * @param float $threshold
-     */
-    function __construct($threshold) {
-        parent::__construct(function ($text) {
-            $this->printed .= $text;
-            $this->lines = explode(PHP_EOL, trim($this->printed));
-        });
+    function __construct(callable $printer, $threshold) {
+        parent::__construct($printer);
         $this->threshold = $threshold;
     }
 

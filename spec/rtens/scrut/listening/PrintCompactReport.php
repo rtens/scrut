@@ -6,18 +6,8 @@ use rtens\scrut\Failure;
 use rtens\scrut\listeners\CompactConsoleListener;
 use rtens\scrut\results\NotPassedTestResult;
 use rtens\scrut\TestName;
-use rtens\scrut\tests\generic\GenericTestSuite;
 
-class PrintCompactReport {
-
-    private $output = '';
-
-    /** @var GenericTestSuite */
-    private $suite;
-
-    function before() {
-        $this->suite = new GenericTestSuite('Foo');
-    }
+class PrintCompactReport extends ListeningSpecification {
 
     function passingTest(Asserter $assert) {
         $this->suite->test('one', function (Asserter $assert) {
@@ -108,23 +98,7 @@ class PrintCompactReport {
         $this->assertOutput($assert, ['?', '', 'Unknown result']);
     }
 
-    private function runAndAssertOutput(Asserter $assert, $expected) {
-        $listener = new CompactConsoleListener(function ($text) {
-            $this->output .= $text;
-        });
-        $this->suite->run($listener);
-
-        $this->assertOutput($assert, $expected, new \Exception());
-    }
-
-    private function assertOutput(Asserter $assert, $expected, \Exception $exception = null) {
-        $exception = $exception ?: new \Exception();
-        $trace = $exception->getTrace();
-
-        $expected = preg_replace_callback('/FILE:(-?\d+)/', function ($matches) use ($trace) {
-            return $trace[0]['file'] . ':' . ($trace[0]['line'] + intval($matches[1]));
-        }, $expected);
-
-        $assert(explode("\n", trim($this->output)), $expected);
+    protected function createListener(callable $printer) {
+        return new CompactConsoleListener($printer);
     }
 }
