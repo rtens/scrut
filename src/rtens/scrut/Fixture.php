@@ -1,7 +1,7 @@
 <?php
 namespace rtens\scrut;
 
-class Fixture {
+abstract class Fixture {
 
     /** @var Asserter */
     protected $assert;
@@ -11,6 +11,10 @@ class Fixture {
      */
     function __construct(Asserter $assert) {
         $this->assert = $assert;
+        $this->init();
+    }
+
+    protected function init() {
     }
 
 } 

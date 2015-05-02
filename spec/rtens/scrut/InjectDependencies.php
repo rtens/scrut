@@ -9,6 +9,9 @@ use rtens\scrut\tests\file\FileTestSuite;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use rtens\scrut\tests\TestFilter;
 
+/**
+ * @property \rtens\scrut\fixtures\FilesFixture files <-
+ */
 class InjectDependencies {
 
     function __construct() {
@@ -16,7 +19,7 @@ class InjectDependencies {
     }
 
     function injectConstructor(Asserter $assert) {
-        $this->fileContent('inject/InjectConstructor.php', '<?php
+        $this->files->givenTheFile_Containing('inject/InjectConstructor.php', '<?php
             class InjectConstructor {
                 /**
                  * @param $foo <-
@@ -32,14 +35,14 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite(new TestFilter(), $this->tmp('inject/InjectConstructor.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath('inject/InjectConstructor.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
     function injectProperties(Asserter $assert) {
-        $this->fileContent('inject/InjectProperties.php', '<?php
+        $this->files->givenTheFile_Containing('inject/InjectProperties.php', '<?php
             class InjectProperties {
 
                 /** @var \StdClass <- */
@@ -54,14 +57,14 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite(new TestFilter(), $this->tmp('inject/InjectProperties.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath('inject/InjectProperties.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
     function injectAnnotations(Asserter $assert) {
-        $this->fileContent('inject/InjectAnnotations.php', '<?php
+        $this->files->givenTheFile_Containing('inject/InjectAnnotations.php', '<?php
             /**
              * @property \StdClass $foo <-
              * @property \StdClass $bar
@@ -73,14 +76,14 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite(new TestFilter(), $this->tmp('inject/InjectAnnotations.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath('inject/InjectAnnotations.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
     function injectPropertiesAndAnnotationsIntoStaticTestSuite(Asserter $assert) {
-        $this->fileContent('inject/InjectPropertiesIntoStatic.php', '<?php
+        $this->files->givenTheFile_Containing('inject/InjectPropertiesIntoStatic.php', '<?php
             /**
              * @property \StdClass $baz <-
              * @property \StdClass $mez
@@ -101,14 +104,14 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite(new TestFilter(), $this->tmp('inject/InjectPropertiesIntoStatic.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath('inject/InjectPropertiesIntoStatic.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
     function asserterIsPassedToInjectedObject(Asserter $assert) {
-        $this->fileContent('inject/InjectAsserter.php', '<?php
+        $this->files->givenTheFile_Containing('inject/InjectAsserter.php', '<?php
             /** @property InjectedThing $that <- */
             class InjectAsserter {
                 function foo() {
@@ -122,43 +125,10 @@ class InjectDependencies {
             /** @property ' . Asserter::class . ' $assert <- */
             class InjectedThing {}
         ');
-        $suite = new FileTestSuite(new TestFilter(), $this->tmp('inject/InjectAsserter.php'));
+        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath('inject/InjectAsserter.php'));
         $suite->run($this->listener);
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
         $assert->isInstanceOf($this->listener->results[1], IncompleteTestResult::class);
-    }
-
-    private function fileContent($fileName, $content) {
-        $this->createFolder(dirname($fileName));
-        file_put_contents($this->tmp($fileName), $content);
-    }
-
-    private function createFolder($path) {
-        @mkdir($this->tmp($path), 0777, true);
-    }
-
-    private function tmp($path) {
-        return sys_get_temp_dir() . DIRECTORY_SEPARATOR . time() . DIRECTORY_SEPARATOR
-        . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
-    }
-
-    public function after() {
-        $this->clear($this->tmp(""));
-    }
-
-    private function clear($dir) {
-        if (!file_exists($dir)) {
-            return;
-        }
-
-        foreach (new \DirectoryIterator($dir) as $file) {
-            if ($file->isFile()) {
-                unlink($file->getRealPath());
-            } else if (!$file->isDot()) {
-                $this->clear($file->getRealPath());
-            }
-        }
-        rmDir($dir);
     }
 }
