@@ -20,10 +20,6 @@ class ConfiguredTestRunner extends DefaultTestRunner {
         }
     }
 
-    public function getName() {
-        return $this->get('name', parent::getName());
-    }
-
     private function get($key, $default = null) {
         return ($this->exists($key)) ? $this->config[$key] : $default;
     }

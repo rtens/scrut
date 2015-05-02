@@ -46,10 +46,13 @@ class GenericTestSuite extends TestSuite {
     /**
      * Adds a new GenericTestCase with $name and $callback
      * @param string $name
-     * @param callable $callback
+     * @param null|callable $callback
      * @return $this
      */
-    public function test($name, callable $callback) {
+    public function test($name, callable $callback = null) {
+        $callback = $callback ?: function () {
+        };
+
         return $this->add(new GenericTestCase($name, $callback, $this->getName(), new \Exception()));
     }
 
@@ -71,7 +74,7 @@ class GenericTestSuite extends TestSuite {
     /**
      * @return Test[]
      */
-    protected function getTests() {
+    public function getTests() {
         return $this->tests;
     }
 
