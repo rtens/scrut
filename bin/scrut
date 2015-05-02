@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-use rtens\scrut\cli\ConfiguredTestRunner;
+use rtens\scrut\cli\ScrutCommand;
 
 $requireAutoload = function ($autoloaders) {
     foreach ($autoloaders as $file) {
@@ -16,28 +16,13 @@ $requireAutoload = function ($autoloaders) {
 $autoloaders = [
     'bootstrap.php',
     'autoload.php',
-    'vendor/autoload.php',
+    'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
 ];
 
 if (!$requireAutoload($autoloaders)) {
-    die("No auto-loader found.");
+    echo "Error: None of these auto-loaders found: [" . implode(', ', $autoloaders) . ']';
+    exit(2);
 }
 
-$config = [];
-
-foreach (['scrut.json', 'scrut.json.dist'] as $file) {
-    if (file_exists($file)) {
-        $config = json_decode(file_get_contents($file), true);
-        if ($config === null) {
-            die("[$file] contains invalid JSON");
-        }
-        break;
-    }
-}
-
-if (count($argv) > 1) {
-    $config['suite']['file'] = $argv[1];
-}
-
-$runner = new ConfiguredTestRunner(getcwd(), $config);
-exit($runner->run() ? 0 : 1);
+$command = new ScrutCommand(getcwd(), $argv);
+exit($command->execute());
