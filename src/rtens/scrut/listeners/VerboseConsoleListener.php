@@ -11,9 +11,7 @@ class VerboseConsoleListener extends CompactConsoleListener {
     public function onStarted(TestName $test) {
         parent::onStarted($test);
 
-        if ($this->depth) {
-            $this->printLine();
-        }
+        $this->printLine();
         $this->depth++;
         $this->print_($test->toString());
     }
@@ -21,7 +19,7 @@ class VerboseConsoleListener extends CompactConsoleListener {
     public function onResult(TestName $test, TestResult $result) {
         ConsoleListener::onResult($test, $result);
 
-        $this->print_(' -> ' . substr(get_class($result), 20, -10));
+        $this->print_(' -> ' . self::shortResultClassName($result));
     }
 
     public function onFinished(TestName $test) {
