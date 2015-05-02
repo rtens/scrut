@@ -12,12 +12,16 @@ class FilesFixture extends Fixture {
     }
 
     public function givenTheFolder($path) {
-        @mkdir($this->fullPath($path), 0777, true);
+        $fullPath = $this->fullPath($path);
+        @mkdir($fullPath, 0777, true);
+        return $fullPath;
     }
 
     public function givenTheFile_Containing($fileName, $content) {
         $this->givenTheFolder(dirname($fileName));
-        file_put_contents($this->fullPath($fileName), $content);
+        $fullPath = $this->fullPath($fileName);
+        file_put_contents($fullPath, $content);
+        return $fullPath;
     }
 
     public function fullPath($path) {
