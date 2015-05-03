@@ -1,6 +1,7 @@
 #!/usr/bin/env php
 <?php
 
+use rtens\scrut\running\ConfigurationReader;
 use rtens\scrut\running\ScrutCommand;
 use watoki\factory\Factory;
 
@@ -27,8 +28,8 @@ if (!$requireAutoload($autoloaders)) {
 
 try {
 
-    $command = new ScrutCommand(new Factory());
-    exit($command->execute(getcwd(), array_slice($argv, 1)));
+    $command = new ScrutCommand(new ConfigurationReader(getcwd(), new Factory()));
+    exit($command->execute(array_slice($argv, 1)));
 
 } catch (\Exception $e) {
 

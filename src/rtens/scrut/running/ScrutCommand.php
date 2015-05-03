@@ -1,86 +1,48 @@
 <?php
 namespace rtens\scrut\running;
 
-use rtens\scrut\listeners\CompactConsoleListener;
-use rtens\scrut\listeners\FailConsoleListener;
-use rtens\scrut\listeners\MemoryConsoleListener;
-use rtens\scrut\listeners\TimeConsoleListener;
-use rtens\scrut\listeners\VerboseConsoleListener;
 use rtens\scrut\TestName;
-use watoki\factory\Factory;
 
 class ScrutCommand {
 
-    private static $configFileNames = [
-        'scrut.json',
-        'scrut.json.dist'
-    ];
+    /** @var ConfigurationReader */
+    private $reader;
 
-    private static $defaultConfiguration = [
-        'runner' => TestRunner::class,
-        'listeners' => [
-            'Compact' => CompactConsoleListener::class,
-            'Fail' => FailConsoleListener::class,
-            'Memory' => MemoryConsoleListener::class,
-            'Time' => TimeConsoleListener::class,
-            'Verbose' => VerboseConsoleListener::class
-        ]
-    ];
-
-    /** @var Factory */
-    private $factory;
-
-    function __construct(Factory $factory) {
-        $this->factory = $factory;
+    function __construct(ConfigurationReader $reader) {
+        $this->reader = $reader;
     }
 
     /**
-     * @param string $cwd
      * @param string[] $arguments The command arguments (without the name of the script itself)
-     * @return int The exit value
      * @throws \Exception
+     * @return int The exit value
      */
-    public function execute($cwd, $arguments) {
+    public function execute(array $arguments) {
+        $configFile = null;
         $runConfig = [];
         $name = null;
 
         foreach ($arguments as $a) {
-            if (substr($a, 0, 2) == '-l') {
-                $runConfig['listen'][] = substr($a, 2);
+            $key = substr($a, 0, 2);
+            $value = substr($a, 2);
+
+            if ($key == '-l') {
+                $runConfig['listen'][] = $value;
+            } else if ($key == '-c') {
+                $argConfig = json_decode($value, true);
+                if ($argConfig) {
+                    $runConfig = array_merge_recursive($runConfig, $argConfig);
+                } else {
+                    $configFile = $value;
+                }
             } else {
                 $name = TestName::parse($a);
             }
         }
 
-        $configuration = $this->factory->getInstance(TestRunConfiguration::class, [
-            $this->factory,
-            $cwd,
-            array_replace_recursive(
-                self::$defaultConfiguration,
-                $this->readConfiguration(),
-                $runConfig
-            )
-        ]);
+        $configuration = $this->reader->read($configFile, $runConfig);
+        $runner = $configuration->getRunner();
 
-        return $configuration->getRunner()->run($name) ? 0 : 1;
-    }
-
-
-    /**
-     * @return array
-     * @throws \Exception
-     */
-    private function readConfiguration() {
-        foreach (self::$configFileNames as $file) {
-            if (file_exists($file)) {
-                $config = json_decode(file_get_contents($file), true);
-                if ($config !== null) {
-                    return $config;
-                }
-                throw new \Exception("[$file] contains invalid JSON");
-            }
-        }
-
-        return [];
+        return $runner->run($name) ? 0 : 1;
     }
 }

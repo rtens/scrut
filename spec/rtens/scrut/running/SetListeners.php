@@ -5,6 +5,7 @@ use rtens\scrut\Assert;
 use rtens\scrut\fixtures\ExceptionFixture;
 use rtens\scrut\listeners\ArrayListener;
 use rtens\scrut\listeners\TimeConsoleListener;
+use rtens\scrut\running\ConfigurationReader;
 use rtens\scrut\running\ScrutCommand;
 use watoki\factory\Factory;
 
@@ -13,6 +14,7 @@ use watoki\factory\Factory;
  * @property ExceptionFixture try <-
  */
 class SetListeners {
+    
     /** @var ArrayListener */
     private $listener;
 
@@ -44,8 +46,8 @@ class SetListeners {
     }
 
     private function whenIExecuteTheCommandWithTheArguments($arguments) {
-        $command = new ScrutCommand($this->factory);
-        $command->execute('foo', $arguments);
+        $command = new ScrutCommand(new ConfigurationReader('cwd', $this->factory));
+        $command->execute($arguments);
     }
 
     private function thenTheListenerShouldHaveReceivedSomething() {

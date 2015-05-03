@@ -3,6 +3,7 @@ namespace spec\rtens\scrut\running;
 
 use rtens\scrut\Assert;
 use rtens\scrut\listeners\ArrayListener;
+use rtens\scrut\running\ConfigurationReader;
 use rtens\scrut\running\ScrutCommand;
 use rtens\scrut\running\TestRunConfiguration;
 use rtens\scrut\running\TestRunner;
@@ -164,8 +165,8 @@ class RunTestByName {
         $factory->setSingleton(TestRunConfiguration::class,
             new RunTestByName_Configuration($this->files->fullPath(), $this->test, $this->listener));
 
-        $command = new ScrutCommand($factory);
-        $returned = $command->execute($this->files->fullPath(), $arguments);
+        $command = new ScrutCommand(new ConfigurationReader($this->files->fullPath(), $factory));
+        $returned = $command->execute($arguments);
 
         $assert($returned, $shouldReturn);
     }

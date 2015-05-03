@@ -25,10 +25,7 @@ class FilesFixture extends Fixture {
     }
 
     public function fullPath($path = '') {
-        if (!$path) {
-            return $this->tmp;
-        }
-        return $this->tmp . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
+        return rtrim($this->tmp . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path), '\\/');
     }
 
     public function clear($path = "") {
@@ -40,6 +37,7 @@ class FilesFixture extends Fixture {
             return;
         }
 
+        /** @var \DirectoryIterator $file */
         foreach (new \DirectoryIterator($dir) as $file) {
             if ($file->isFile()) {
                 unlink($file->getRealPath());
