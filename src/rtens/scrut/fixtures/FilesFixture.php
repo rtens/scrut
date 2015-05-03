@@ -25,6 +25,9 @@ class FilesFixture extends Fixture {
     }
 
     public function fullPath($path = '') {
+        if (!$path) {
+            return $this->tmp;
+        }
         return $this->tmp . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
     }
 
