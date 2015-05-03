@@ -1,13 +1,17 @@
 <?php
-namespace rtens\scrut\running;
+namespace spec\rtens\scrut\running;
 
 use rtens\scrut\Assert;
-use rtens\scrut\cli\ScrutCommand;
-use rtens\scrut\cli\TestRunner;
 use rtens\scrut\listeners\ArrayListener;
+use rtens\scrut\running\ScrutCommand;
+use rtens\scrut\running\TestRunConfiguration;
+use rtens\scrut\running\TestRunner;
+use rtens\scrut\Test;
+use rtens\scrut\TestRunListener;
 use rtens\scrut\tests\generic\GenericTestSuite;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use rtens\scrut\tests\TestFilter;
+use watoki\factory\Factory;
 
 /**
  * Tests can be run using their names which can be a composition of files, classes, methods or generic names.
@@ -22,19 +26,22 @@ use rtens\scrut\tests\TestFilter;
  */
 class RunTestByName {
 
-    /** @var RunTestByName_TestRunner */
-    private $runner;
+    /** @var GenericTestSuite */
+    private $test;
+
+    /** @var ArrayListener */
+    private $listener;
 
     function before() {
-        $this->runner = new RunTestByName_TestRunner($this->files->fullPath(''));
-        $this->runner->test = new GenericTestSuite('Foo');
+        $this->test = new GenericTestSuite('Foo');
+        $this->listener = new ArrayListener();
     }
 
     function runDefault(Assert $assert) {
         $this->executeCommand($assert);
 
-        $assert->size($this->runner->listener->started, 1);
-        $assert($this->runner->listener->started[0]->toString(), 'Foo');
+        $assert->size($this->listener->started, 1);
+        $assert($this->listener->started[0]->toString(), 'Foo');
     }
 
     function returnSuccess(Assert $assert) {
@@ -51,7 +58,7 @@ class RunTestByName {
     }
 
     function returnFailure(Assert $assert) {
-        $this->runner->test->test('bar', function (Assert $assert) {
+        $this->test->test('bar', function (Assert $assert) {
             $assert->fail();
         });
 
@@ -61,59 +68,59 @@ class RunTestByName {
     function runRoot(Assert $assert) {
         $this->executeCommand($assert, ['Foo']);
 
-        $assert->size($this->runner->listener->started, 1);
-        $assert($this->runner->listener->started[0]->toString(), 'Foo');
+        $assert->size($this->listener->started, 1);
+        $assert($this->listener->started[0]->toString(), 'Foo');
     }
 
     function genericName(Assert $assert) {
-        $this->runner->test->test('foo');
-        $this->runner->test->test('bar');
+        $this->test->test('foo');
+        $this->test->test('bar');
 
         $this->executeCommand($assert, ['Foo::bar']);
 
-        $assert->size($this->runner->listener->started, 1);
-        $assert($this->runner->listener->started[0]->toString(), 'Foo::bar');
+        $assert->size($this->listener->started, 1);
+        $assert($this->listener->started[0]->toString(), 'Foo::bar');
     }
 
     function genericCompositeName(Assert $assert) {
-        $this->runner->test->suite('foo', function (GenericTestSuite $suite) {
+        $this->test->suite('foo', function (GenericTestSuite $suite) {
             $suite->test('bar');
             $suite->test('baz');
         });
 
         $this->executeCommand($assert, ['Foo::foo::baz']);
 
-        $assert($this->runner->listener->started[0]->toString(), 'Foo::foo::baz');
+        $assert($this->listener->started[0]->toString(), 'Foo::foo::baz');
     }
 
     function plainClassName(Assert $assert) {
         $this->executeCommand($assert, [RunTestByName_Plain::class]);
 
-        $assert($this->runner->listener->started[0]->toString(), RunTestByName_Plain::class);
-        $assert($this->runner->listener->started[1]->toString(), RunTestByName_Plain::class . '::foo');
-        $assert($this->runner->listener->started[2]->toString(), RunTestByName_Plain::class . '::bar');
+        $assert($this->listener->started[0]->toString(), RunTestByName_Plain::class);
+        $assert($this->listener->started[1]->toString(), RunTestByName_Plain::class . '::foo');
+        $assert($this->listener->started[2]->toString(), RunTestByName_Plain::class . '::bar');
     }
 
     function staticClassName(Assert $assert) {
         $this->executeCommand($assert, [RunTestByName_Static::class]);
 
-        $assert($this->runner->listener->started[0]->toString(), RunTestByName_Static::class);
-        $assert($this->runner->listener->started[1]->toString(), RunTestByName_Static::class . '::foo');
-        $assert($this->runner->listener->started[2]->toString(), RunTestByName_Static::class . '::bar');
+        $assert($this->listener->started[0]->toString(), RunTestByName_Static::class);
+        $assert($this->listener->started[1]->toString(), RunTestByName_Static::class . '::foo');
+        $assert($this->listener->started[2]->toString(), RunTestByName_Static::class . '::bar');
     }
 
     function methodOfPlainSuite(Assert $assert) {
         $this->executeCommand($assert, [RunTestByName_Plain::class . '::bar']);
 
-        $assert->size($this->runner->listener->started, 1);
-        $assert($this->runner->listener->started[0]->toString(), RunTestByName_Plain::class . '::bar');
+        $assert->size($this->listener->started, 1);
+        $assert($this->listener->started[0]->toString(), RunTestByName_Plain::class . '::bar');
     }
 
     function methodOfStaticSuite(Assert $assert) {
         $this->executeCommand($assert, [RunTestByName_Static::class . '::bar']);
 
-        $assert->size($this->runner->listener->started, 1);
-        $assert($this->runner->listener->started[0]->toString(), RunTestByName_Static::class . '::bar');
+        $assert->size($this->listener->started, 1);
+        $assert($this->listener->started[0]->toString(), RunTestByName_Static::class . '::bar');
     }
 
     function folderName(Assert $assert) {
@@ -126,7 +133,7 @@ class RunTestByName {
 
         $this->executeCommand($assert, ['folder']);
 
-        $assert->size($this->runner->listener->results, 2);
+        $assert->size($this->listener->results, 2);
     }
 
     function fileName(Assert $assert) {
@@ -137,8 +144,8 @@ class RunTestByName {
 
         $this->executeCommand($assert, ['root/SomeFile.php']);
 
-        $assert($this->runner->listener->started[1]->last(), 'SomeClassInFile');
-        $assert($this->runner->listener->started[2]->last(), 'SomeOtherClassInFile');
+        $assert($this->listener->started[1]->last(), 'SomeClassInFile');
+        $assert($this->listener->started[2]->last(), 'SomeOtherClassInFile');
     }
 
     function genericNameTrumpsFolderName(Assert $assert) {
@@ -146,68 +153,52 @@ class RunTestByName {
 
         $this->executeCommand($assert, ['Foo']);
 
-        $assert->size($this->runner->listener->started, 1);
-        $assert($this->runner->listener->started[0]->toString(), 'Foo');
+        $assert->size($this->listener->started, 1);
+        $assert($this->listener->started[0]->toString(), 'Foo');
     }
 
     private function executeCommand(Assert $assert, $arguments = [], $shouldReturn = 0) {
-        $arguments = array_merge(['',], $arguments);
-        $command = new RunTestByName_Command($this->files->fullPath(''), $arguments, $this->runner);
+        $factory = new Factory();
 
-        $assert($command->execute(), $shouldReturn);
+        $factory->setSingleton(TestRunConfiguration::class,
+            new RunTestByName_Configuration($this->files->fullPath(), $this->test, $this->listener));
+
+        $command = new ScrutCommand($factory);
+        $returned = $command->execute($this->files->fullPath(), $arguments);
+
+        $assert($returned, $shouldReturn);
     }
 }
 
-class RunTestByName_Command extends ScrutCommand {
-
-    /** @var RunTestByName_TestRunner */
-    public $runner;
-
-    public function __construct($cwd, array $argv, TestRunner $runner) {
-        parent::__construct($cwd, $argv);
-        $this->runner = $runner;
-    }
-
-    protected function createTestRunner($config) {
-        return $this->runner;
-    }
-
-}
-
-class RunTestByName_TestRunner extends TestRunner {
-
-    /** @var GenericTestSuite */
-    public $test;
-
-    /** @var ArrayListener */
-    public $listener;
-
-    function __construct($cwd) {
-        parent::__construct($cwd);
-        $this->listener = new ArrayListener();
-    }
+class RunTestByName_Configuration extends TestRunConfiguration {
 
     /**
-     * @return \rtens\scrut\TestRunListener
+     * @param string $cwd
+     * @param Test $test
+     * @param TestRunListener $listener
      */
-    protected function getListener() {
-        $this->listener = new ArrayListener();
-        return $this->listener;
+    function __construct($cwd, Test $test, TestRunListener $listener) {
+        parent::__construct(new Factory(), $cwd, []);
+        $this->test = $test;
+        $this->listener = $listener;
     }
 
-    /**
-     * @return \rtens\scrut\Test
-     */
-    protected function getTest() {
+    public function getRunner() {
+        return new TestRunner($this);
+    }
+
+    public function getListeners() {
+        return [$this->listener];
+    }
+
+    public function getFilter() {
+        return new TestFilter();
+    }
+
+    public function getTest() {
         return $this->test;
     }
 
-    /**
-     * @return TestFilter
-     */
-    protected function createFilter() {
-        return new TestFilter();
-    }
 }
 
 class RunTestByName_Plain {

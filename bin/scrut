@@ -1,7 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-use rtens\scrut\cli\ScrutCommand;
+use rtens\scrut\running\ScrutCommand;
+use watoki\factory\Factory;
 
 $requireAutoload = function ($autoloaders) {
     foreach ($autoloaders as $file) {
@@ -24,5 +25,14 @@ if (!$requireAutoload($autoloaders)) {
     exit(2);
 }
 
-$command = new ScrutCommand(getcwd(), $argv);
-exit($command->execute());
+try {
+
+    $command = new ScrutCommand(new Factory());
+    exit($command->execute(getcwd(), array_slice($argv, 1)));
+
+} catch (\Exception $e) {
+
+    echo "Exception: " . $e->getMessage();
+    exit(2);
+
+}

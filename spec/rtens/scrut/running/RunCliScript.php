@@ -1,7 +1,8 @@
 <?php
-namespace rtens\scrut\running;
+namespace spec\rtens\scrut\running;
 
 use rtens\scrut\Assert;
+use rtens\scrut\running\ScrutCommand;
 
 /**
  * @property \rtens\scrut\fixtures\FilesFixture files <-
@@ -53,18 +54,30 @@ class RunCliScript {
         $assert($this->return, 42);
     }
 
+    function catchExceptions(Assert $assert) {
+        $this->files->givenTheFile_Containing('foo/autoload.php', $this->autoloadCode('throw new \Exception("Doh!");'));
+
+        $this->runTheScript();
+        $assert($this->output, ['Exception: Doh!']);
+        $assert($this->return, 2);
+    }
+
     private function runTheScript() {
         $script = realpath(__DIR__ . '/../../../../bin/scrut');
         exec('cd ' . $this->cwd . ' && ' . PHP_BINARY . ' ' . $script, $this->output, $this->return);
     }
 
     private function autoloadCode($code) {
-        return '<?php namespace rtens\scrut\cli;
-            class ScrutCommand {
+        $class = new \ReflectionClass(ScrutCommand::class);
+        $namespace = $class->getNamespaceName();
+        $className = $class->getShortName();
+
+        return "<?php namespace $namespace;
+            class $className {
                 function execute() {
-                    ' . $code . '
+                    $code
                 }
             }
-        ';
+        ";
     }
 }
