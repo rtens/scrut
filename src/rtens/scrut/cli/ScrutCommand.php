@@ -1,6 +1,8 @@
 <?php
 namespace rtens\scrut\cli;
 
+use rtens\scrut\TestName;
+
 class ScrutCommand {
 
     private static $configFileNames = [
@@ -9,10 +11,10 @@ class ScrutCommand {
     ];
 
     /** @var string */
-    private $cwd;
+    protected $cwd;
 
     /** @var array|string[] */
-    private $argv;
+    protected $argv;
 
     /**
      * @param string $cwd
@@ -24,25 +26,42 @@ class ScrutCommand {
     }
 
     public function execute() {
-        $config = [];
+        $config = $this->getConfiguration();
 
+        $name = null;
+        if (count($this->argv) > 1) {
+            $name = TestName::parse($this->argv[1]);
+        }
+
+        $runner = $this->createTestRunner($config);
+        return $runner->run($name) ? 0 : 1;
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function getConfiguration() {
         foreach (self::$configFileNames as $file) {
             $file = $this->cwd . DIRECTORY_SEPARATOR . $file;
 
             if (file_exists($file)) {
                 $config = json_decode(file_get_contents($file), true);
-                if ($config === null) {
-                    die("[$file] contains invalid JSON");
+                if ($config !== null) {
+                    return $config;
                 }
-                break;
+                throw new \Exception("[$file] contains invalid JSON");
             }
         }
 
-        if (count($this->argv) > 1) {
-            $config['suite']['file'] = $this->argv[1];
-        }
+        return [];
+    }
 
-        $runner = new ConfiguredTestRunner($this->cwd, $config);
-        return $runner->run() ? 0 : 1;
+    /**
+     * @param $config
+     * @return ConfiguredTestRunner
+     */
+    protected function createTestRunner($config) {
+        return new ConfiguredTestRunner($this->cwd, $config);
     }
 }
