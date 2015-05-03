@@ -15,6 +15,10 @@ class TestRunConfiguration {
 
     private $factory;
 
+    private static $defaultListeners = [
+        CompactConsoleListener::class
+    ];
+
     function __construct(Factory $factory, $workingDirectory, array $config) {
         $factory->setSingleton(get_class($this), $this);
 
@@ -31,12 +35,23 @@ class TestRunConfiguration {
     }
 
     /**
+     * @throws \InvalidArgumentException
      * @return \rtens\scrut\TestRunListener[]
      */
     public function getListeners() {
-        return [
-            $this->factory->getInstance(CompactConsoleListener::class)
-        ];
+        $listeners = [];
+        foreach ($this->get('listen', self::$defaultListeners) as $class) {
+            if ($this->get('listeners/' . $class)) {
+                $class = $this->get('listeners/' . $class);
+            }
+
+            try {
+                $listeners[] = $this->factory->getInstance($class);
+            } catch (\ReflectionException $e) {
+                throw new \InvalidArgumentException("Could not find listener [$class]", 0, $e);
+            }
+        }
+        return $listeners;
     }
 
     /**
