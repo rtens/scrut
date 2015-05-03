@@ -200,4 +200,27 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
 
         $this->assert->size($this->listener->started, 1);
     }
+
+    function findClassesTwice() {
+        $this->files->givenTheFile_Containing('twice/One.php', '<?php
+            class TwiceOne {}
+            class TwiceAnotherOne {}
+        ');
+
+        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'twice');
+
+        $fullRun = [
+            new TestName('twice'),
+            new TestName('TwiceOne'),
+            new TestName('TwiceAnotherOne'),
+        ];
+
+        $listener = new ArrayListener();
+        $suite->run($listener);
+        $this->assert($listener->started, $fullRun);
+
+        $listener = new ArrayListener();
+        $suite->run($listener);
+        $this->assert($listener->started, $fullRun);
+    }
 }

@@ -10,6 +10,9 @@ use rtens\scrut\tests\TestSuite;
 
 class FileTestSuite extends TestSuite {
 
+    /** @var array|string[] Class names indexed by file name */
+    private static $fileClassesCache = [];
+
     /** @var string */
     private $path;
 
@@ -76,25 +79,37 @@ class FileTestSuite extends TestSuite {
     }
 
     private function loadTestsFromFile($path) {
+        if (array_key_exists($path, self::$fileClassesCache)) {
+            return $this->createTestSuites($path, self::$fileClassesCache[$path]);
+        }
+
         $before = get_declared_classes();
 
         /** @noinspection PhpIncludeInspection */
         $returned = include_once($path);
 
         if (is_a($returned, Test::class)) {
-            yield $returned;
-            return;
-        }
+            return [$returned];
+        } else {
+            $newClasses = array_diff(get_declared_classes(), $before);
+            self::$fileClassesCache[$path] = $newClasses;
 
-        $newClasses = array_diff(get_declared_classes(), $before);
-        foreach ($newClasses as $className) {
+            return $this->createTestSuites($path, $newClasses);
+        }
+    }
+
+    /**
+     * @param $path
+     * @param $classes
+     * @return \Generator|TestSuite[]
+     */
+    private function createTestSuites($path, $classes) {
+        foreach ($classes as $className) {
             $class = new \ReflectionClass($className);
 
-            if (!$this->isAcceptable($class, $path)) {
-                continue;
+            if ($this->isAcceptable($class, $path)) {
+                yield $this->createTestSuite($class);
             }
-
-            yield $this->createInstance($class);
         }
     }
 
@@ -102,7 +117,7 @@ class FileTestSuite extends TestSuite {
      * @param \ReflectionClass $class
      * @return TestSuite
      */
-    protected function createInstance(\ReflectionClass $class) {
+    protected function createTestSuite(\ReflectionClass $class) {
         if ($class->isSubclassOf(StaticTestSuite::class)) {
             return $class->newInstance($this->filter, $this->getName());
         } else {
