@@ -106,7 +106,7 @@ class FindFailureSource_InGenericTestSuite extends FindFailureSource_TestSuite {
         }));
         $this->suite->run($this->listener);
 
-        $this->assertLocationIsAtLine(__LINE__ - 3);
+        $this->assertLocationIsAtLine(__LINE__ - 2);
     }
 
     function emptyIndirectlyAddedTestCase() {

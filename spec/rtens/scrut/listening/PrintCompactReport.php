@@ -6,6 +6,8 @@ use rtens\scrut\Failure;
 use rtens\scrut\listeners\CompactConsoleListener;
 use rtens\scrut\results\NotPassedTestResult;
 use rtens\scrut\TestName;
+use rtens\scrut\tests\statics\StaticTestSuite;
+use rtens\scrut\tests\TestFilter;
 
 class PrintCompactReport extends ListeningSpecification {
 
@@ -98,7 +100,24 @@ class PrintCompactReport extends ListeningSpecification {
         $this->assertOutput($assert, ['?', '', 'Unknown result']);
     }
 
+    function escapeBackslashes(Assert $assert) {
+        $this->suite->add(new PrintCompactReport_Foo(new TestFilter()));
+
+        $this->runAndAssertOutput($assert, [
+            'I',
+            '',
+            '---- Incomplete ----',
+            str_replace('\\', '\\\\', PrintCompactReport_Foo::class) . ' [FILE:8]',
+            '    Empty test suite',
+            '',
+            '=| 1 Incomplete'
+        ]);
+    }
+
     protected function createListener(callable $printer) {
         return new CompactConsoleListener($printer);
     }
+}
+
+class PrintCompactReport_Foo extends StaticTestSuite {
 }

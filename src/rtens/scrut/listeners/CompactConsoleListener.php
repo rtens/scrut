@@ -85,7 +85,7 @@ class CompactConsoleListener extends ConsoleListener {
     }
 
     protected function printNotPassedResult($testName, NotPassedTestResult $result) {
-        $this->printLine($testName . ' [' . $result->getFailure()->getFailureSource() . ']');
+        $this->printLine(str_replace('\\', '\\\\', $testName) . ' [' . $result->getFailure()->getFailureSource() . ']');
         $this->printNotEmptyLine('    ' . $result->getFailure()->getFailureMessage());
         $this->printNotEmptyLine('    ' . $result->getFailure()->getMessage());
     }
