@@ -1,9 +1,11 @@
 <?php
 namespace rtens\scrut\cli;
 
+use rtens\scrut\listeners\CompactConsoleListener;
 use rtens\scrut\tests\file\FileTestSuite;
+use rtens\scrut\tests\TestFilter;
 
-class ConfiguredTestRunner extends DefaultTestRunner {
+class ConfiguredTestRunner extends TestRunner {
 
     private $config;
 
@@ -41,7 +43,7 @@ class ConfiguredTestRunner extends DefaultTestRunner {
     }
 
     protected function createFilter() {
-        $filter = parent::createFilter();
+        $filter = new TestFilter();
 
         if (array_key_exists('filter', $this->config)) {
             $filter->filterClass(function (\ReflectionClass $class) {
@@ -52,4 +54,10 @@ class ConfiguredTestRunner extends DefaultTestRunner {
         return $filter;
     }
 
-} 
+    /**
+     * @return \rtens\scrut\TestRunListener
+     */
+    protected function getListener() {
+        return new CompactConsoleListener();
+    }
+}
