@@ -21,7 +21,11 @@ abstract class ValueAssertion implements Assertion {
                 . '[' . implode(', ', $onlyNumericKeys ? $values : $withKeys) . ']';
 
         } else if (is_object($value)) {
-            return '<' . get_class($value) . '>';
+            $string = '';
+            if (method_exists($value, '__toString')) {
+                $string = '(' . $value->__toString() . ')';
+            }
+            return '<' . get_class($value) . '>' . $string;
         } else if (is_bool($value)) {
             return $value ? 'TRUE' : 'FALSE';
         } else {

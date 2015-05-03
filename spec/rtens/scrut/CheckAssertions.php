@@ -2,6 +2,7 @@
 namespace spec\rtens\scrut;
 
 use rtens\scrut\failures\AssertionFailedFailure;
+use rtens\scrut\TestName;
 use rtens\scrut\tests\statics\StaticTestSuite;
 
 class CheckAssertions extends StaticTestSuite {
@@ -112,22 +113,23 @@ class CheckAssertions extends StaticTestSuite {
 
     function printComplexValues() {
         $this->shouldFail(function () {
-            /** @noinspection PhpParamsInspection */
-            $this->assert->isTrue(["foo", "bar" => "baz"]);
-        }, "[0 => 'foo', 'bar' => 'baz'] should be TRUE");
+            $this->assert->isNull(["foo", "bar" => "baz"]);
+        }, "[0 => 'foo', 'bar' => 'baz'] should be NULL");
 
         $this->shouldFail(function () {
-            /** @noinspection PhpParamsInspection */
-            $this->assert->isTrue(new \DateTime());
-        }, "<DateTime> should be TRUE");
+            $this->assert->isNull(new \DateTime());
+        }, "<DateTime> should be NULL");
 
         $this->shouldFail(function () {
             $stack = new \SplStack();
             $stack->push(["foo", "bar"]);
             $stack->push(new \DateTime());
-            /** @noinspection PhpParamsInspection */
-            $this->assert->isTrue($stack);
-        }, "<SplStack>[<DateTime>, ['foo', 'bar']] should be TRUE");
+            $this->assert->isNull($stack);
+        }, "<SplStack>[<DateTime>, ['foo', 'bar']] should be NULL");
+
+        $this->shouldFail(function () {
+            $this->assert->isNull(new TestName('some', 'name'));
+        }, "<" . TestName::class . ">(some::name) should be NULL");
     }
 
     private function shouldFail(callable $do, $message) {
