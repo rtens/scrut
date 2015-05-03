@@ -35,8 +35,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'inject/InjectConstructor.php');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('inject/InjectConstructor.php');
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
@@ -57,8 +56,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'inject/InjectProperties.php');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('inject/InjectProperties.php');
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
@@ -76,8 +74,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'inject/InjectAnnotations.php');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('inject/InjectAnnotations.php');
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
@@ -104,8 +101,7 @@ class InjectDependencies {
                 }
             }
         ');
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'inject/InjectPropertiesIntoStatic.php');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('inject/InjectPropertiesIntoStatic.php');
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
@@ -125,10 +121,18 @@ class InjectDependencies {
             /** @property ' . Assert::class . ' $assert <- */
             class InjectedThing {}
         ');
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'inject/InjectAsserter.php');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('inject/InjectAsserter.php');
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
         $assert->isInstanceOf($this->listener->results[1], IncompleteTestResult::class);
+    }
+
+    private function file($string) {
+        return str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $string);
+    }
+
+    private function runFileTestSuite($path) {
+        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), $this->file($path));
+        $suite->run($this->listener);
     }
 }

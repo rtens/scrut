@@ -21,8 +21,10 @@ class FailConsoleListener extends ConsoleListener {
             $this->printLine('   Source:');
             $this->printLine('      ' . $failureSource);
 
-            if (strpos($failureSource, ':')) {
-                list($file, $line) = explode(':', $failureSource);
+            if ($pos = strrpos($failureSource, ':')) {
+                $file = substr($failureSource, 0, $pos);
+                $line = substr($failureSource, $pos + 1);
+
                 if (file_exists($file)) {
                     $content = explode("\n", file_get_contents($file));
 

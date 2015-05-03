@@ -28,8 +28,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     }
 
     function noExistingFolder() {
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'some/foo');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('some/foo');
 
         $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
@@ -38,11 +37,10 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     function emptyFolder() {
         $this->files->givenTheFolder('some/foo');
 
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'some/foo');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('some/foo');
 
         $this->assert->size($this->listener->started, 1);
-        $this->assert($this->listener->started[0]->last(), 'some/foo');
+        $this->assert($this->listener->started[0]->last(), 'some' . DIRECTORY_SEPARATOR . 'foo');
 
         $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
@@ -52,11 +50,10 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->files->givenTheFile_Containing('foo/SingleFile.php', '<?php
             class SingleFoo {}');
 
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'foo/SingleFile.php');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('foo/SingleFile.php');
 
         $this->assert->size($this->listener->started, 2);
-        $this->assert($this->listener->started[0]->last(), 'foo/SingleFile.php');
+        $this->assert($this->listener->started[0]->last(), 'foo' . DIRECTORY_SEPARATOR . 'SingleFile.php');
         $this->assert($this->listener->started[1]->last(), 'SingleFoo');
     }
 
@@ -64,8 +61,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $this->files->givenTheFile_Containing('foo/AnEmptyFoo.php', '<?php
             class EmptyFoo {}');
 
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'foo');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('foo');
 
         $this->assert->size($this->listener->started, 2);
         $this->assert($this->listener->started[1]->last(), 'EmptyFoo');
@@ -81,8 +77,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
                 function baz() {}
             }');
 
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'foo');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('foo');
 
         $this->assert->size($this->listener->started, 4);
         $this->assert($this->listener->started[2]->last(), "bar");
@@ -94,8 +89,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class IgnoreThisOne {}
             return new ' . GenericTestSuite::class . '("Generic foo");');
 
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'foo/GenericFoo.php');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('foo/GenericFoo.php');
 
         $this->assert->size($this->listener->started, 2);
         $this->assert($this->listener->started[1], 'Generic foo');
@@ -110,8 +104,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class Two {}
         ');
 
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'foo');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('foo');
 
         $names = array_map(function (TestName $test) {
             return $test->last();
@@ -132,8 +125,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class TwoOne {}
         ');
 
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'foo');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('foo');
 
         $this->assert->size($this->listener->started, 4);
 
@@ -153,11 +145,10 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class NotThisOne {}
         ');
 
-        $suite = new FileTestSuite((new TestFilter())
+        $this->runFileTestSuite('foo', (new TestFilter())
             ->filterClass(function (\ReflectionClass $class) {
                 return $class->getName() == 'ThisOne';
-            }), $this->files->fullPath(''), 'foo');
-        $suite->run($this->listener);
+            }));
 
         $this->assert->size($this->listener->started, 2);
         $this->assert($this->listener->started[1]->last(), 'ThisOne');
@@ -171,11 +162,10 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class ThisOneNot {}
         ');
 
-        $suite = new FileTestSuite((new TestFilter())
+        $this->runFileTestSuite('foo', (new TestFilter())
             ->filterFile(function ($file) {
                 return strpos($file, 'Yes.php');
-            }), $this->files->fullPath(''), 'foo');
-        $suite->run($this->listener);
+            }));
 
         $this->assert->size($this->listener->started, 2);
         $this->assert($this->listener->started[1]->last(), 'ThisOneYes');
@@ -195,8 +185,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             }
         ');
 
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'foo/SomethingAbstract.php');
-        $suite->run($this->listener);
+        $this->runFileTestSuite('foo/SomethingAbstract.php');
 
         $this->assert->size($this->listener->started, 1);
     }
@@ -222,5 +211,12 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
         $listener = new ArrayListener();
         $suite->run($listener);
         $this->assert($listener->started, $fullRun);
+    }
+
+    private function runFileTestSuite($path, TestFilter $filter = null) {
+        $filter = $filter ? : new TestFilter();
+        $path = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
+        $suite = new FileTestSuite($filter, $this->files->fullPath(), $path);
+        $suite->run($this->listener);
     }
 }

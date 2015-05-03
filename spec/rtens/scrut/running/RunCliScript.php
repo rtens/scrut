@@ -22,7 +22,7 @@ class RunCliScript {
 
         $assert($this->return, 2);
         $assert($this->output, [
-            'Error: None of these auto-loaders found: [bootstrap.php, autoload.php, vendor/autoload.php]'
+            'Error: None of these auto-loaders found: [bootstrap.php, autoload.php, vendor' . DIRECTORY_SEPARATOR . 'autoload.php]'
         ]);
     }
 
@@ -64,7 +64,7 @@ class RunCliScript {
 
     private function runTheScript() {
         $script = realpath(__DIR__ . '/../../../../bin/scrut');
-        exec('cd ' . $this->cwd . ' && ' . PHP_BINARY . ' ' . $script, $this->output, $this->return);
+        exec('cd ' . $this->cwd . ' && "' . PHP_BINARY . '" "' . $script . '"', $this->output, $this->return);
     }
 
     private function autoloadCode($code) {

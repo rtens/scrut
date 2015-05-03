@@ -107,7 +107,7 @@ class PrintCompactReport extends ListeningSpecification {
             'I',
             '',
             '---- Incomplete ----',
-            str_replace('\\', '\\\\', PrintCompactReport_Foo::class) . ' [FILE:8]',
+            PrintCompactReport_Foo::class . ' [FILE:8]',
             '    Empty test suite',
             '',
             '=| 1 Incomplete'

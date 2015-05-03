@@ -142,8 +142,9 @@ class RunTestByName {
             class SomeOtherClassInFile {}
         ');
 
-        $this->executeCommand($assert, ['root/SomeFile.php']);
+        $this->executeCommand($assert, ['root' . DIRECTORY_SEPARATOR . 'SomeFile.php']);
 
+        $assert->size($this->listener->started, 3);
         $assert($this->listener->started[1]->last(), 'SomeClassInFile');
         $assert($this->listener->started[2]->last(), 'SomeOtherClassInFile');
     }
