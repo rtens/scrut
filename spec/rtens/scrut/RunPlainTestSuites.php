@@ -69,7 +69,7 @@ class RunPlainTestSuites extends StaticTestSuite {
         $this->assert->size($this->listener->results, 1);
         /** @var \rtens\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($result->getFailure()->getMessage(), 'Method [spec\\rtens\\scrut\\RunPlainTestSuites_ProtectedBefore::before] must be public');
+        $this->assert($result->getFailure()->getMessage(), 'Method [' . RunPlainTestSuites_ProtectedBefore::class . '::before] must be public');
     }
 
     function afterMethodMustBePublic() {
@@ -79,7 +79,7 @@ class RunPlainTestSuites extends StaticTestSuite {
         $this->assert->size($this->listener->results, 1);
         /** @var \rtens\scrut\results\FailedTestResult $result */
         $result = $this->listener->results[0];
-        $this->assert($result->getFailure()->getMessage(), 'Method [spec\\rtens\\scrut\\RunPlainTestSuites_ProtectedAfter::after] must be public');
+        $this->assert($result->getFailure()->getMessage(), 'Method [' . RunPlainTestSuites_ProtectedAfter::class . '::after] must be public');
     }
 
     function discardParentName() {
