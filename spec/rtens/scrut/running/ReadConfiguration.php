@@ -11,6 +11,7 @@ use rtens\scrut\running\ScrutCommand;
 use rtens\scrut\running\TestRunConfiguration;
 use rtens\scrut\running\TestRunner;
 use rtens\scrut\TestName;
+use rtens\scrut\tests\TestSuiteFactory;
 use watoki\factory\Factory;
 
 /**
@@ -20,9 +21,8 @@ use watoki\factory\Factory;
  */
 class ReadConfiguration {
 
-    function before() {
-        ReadConfiguration_TestRunner::$config = null;
-    }
+    /** @var TestRunConfiguration */
+    private $config;
 
     function fromFile() {
         $this->files->givenTheFile_Containing('scrut.json', json_encode([
@@ -30,7 +30,7 @@ class ReadConfiguration {
         ]));
         $this->whenIExecuteTheCommand();
 
-        $this->assert->isInstanceOf(ReadConfiguration_TestRunner::$config->getRunner(), ReadConfiguration_TestRunner::class);
+        $this->assert->isInstanceOf($this->config->getRunner(), ReadConfiguration_TestRunner::class);
     }
 
     function fromDistFile() {
@@ -39,7 +39,7 @@ class ReadConfiguration {
         ]));
         $this->whenIExecuteTheCommand();
 
-        $this->assert->isInstanceOf(ReadConfiguration_TestRunner::$config->getRunner(), ReadConfiguration_TestRunner::class);
+        $this->assert->isInstanceOf($this->config->getRunner(), ReadConfiguration_TestRunner::class);
     }
 
     function fromOtherFile() {
@@ -50,7 +50,7 @@ class ReadConfiguration {
             '-cother.json'
         ]);
 
-        $this->assert->isInstanceOf(ReadConfiguration_TestRunner::$config->getRunner(), ReadConfiguration_TestRunner::class);
+        $this->assert->isInstanceOf($this->config->getRunner(), ReadConfiguration_TestRunner::class);
     }
 
     function fromArgument() {
@@ -58,7 +58,7 @@ class ReadConfiguration {
             '-c' . json_encode(['runner' => ReadConfiguration_TestRunner::class])
         ]);
 
-        $this->assert->isInstanceOf(ReadConfiguration_TestRunner::$config->getRunner(), ReadConfiguration_TestRunner::class);
+        $this->assert->isInstanceOf($this->config->getRunner(), ReadConfiguration_TestRunner::class);
     }
 
     function invalidArgumentFormat() {
@@ -81,15 +81,27 @@ class ReadConfiguration {
             '-c' . json_encode(['listen' => ['array']])
         ]);
 
-        $listeners = ReadConfiguration_TestRunner::$config->getListeners();
+        $listeners = $this->config->getListeners();
         $this->assert->size($listeners, 2);
         $this->assert->isInstanceOf($listeners[0], ResultListener::class);
         $this->assert->isInstanceOf($listeners[1], ArrayListener::class);
     }
 
+    function configureTestSuiteFactory() {
+        $this->files->givenTheFile_Containing('scrut.json', json_encode([
+            'runner' => ReadConfiguration_TestRunner::class,
+            'factory' => ReadConfiguration_Factory::class
+        ]));
+        $this->whenIExecuteTheCommand();
+
+        $this->assert->isInstanceOf($this->config->getTestSuiteFactory(), ReadConfiguration_Factory::class);
+    }
+
     private function whenIExecuteTheCommand($arguments = []) {
+        ReadConfiguration_TestRunner::$config = null;
         $command = new ScrutCommand(new ConfigurationReader($this->files->fullPath(), new Factory()));
         $command->execute($arguments);
+        $this->config = ReadConfiguration_TestRunner::$config;
     }
 }
 
@@ -108,5 +120,9 @@ class ReadConfiguration_TestRunner extends TestRunner {
     public function run(TestName $name = null) {
         return true;
     }
+
+}
+
+class ReadConfiguration_Factory extends TestSuiteFactory {
 
 }

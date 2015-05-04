@@ -72,7 +72,7 @@ class TestRunConfiguration {
     }
 
     public function getTestSuiteFactory() {
-        return new TestSuiteFactory();
+        return $this->factory->getInstance($this->get('factory', TestSuiteFactory::class));
     }
 
     /**
