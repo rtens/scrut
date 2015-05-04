@@ -8,6 +8,7 @@ use rtens\scrut\tests\file\FileTestSuite;
 use rtens\scrut\tests\generic\GenericTestSuite;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use rtens\scrut\tests\TestFilter;
+use rtens\scrut\tests\TestSuiteFactory;
 
 
 /**
@@ -172,7 +173,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     }
 
     function discardParentName() {
-        $suite = new FileTestSuite(new TestFilter(), 'cwd', 'some/foo', new TestName("Foo"));
+        $suite = new FileTestSuite(new TestSuiteFactory(), new TestFilter(), 'cwd', 'some/foo', new TestName("Foo"));
         $suite->run($this->listener);
 
         $this->assert($this->listener->started[0]->toString(), 'some/foo');
@@ -196,7 +197,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
             class TwiceAnotherOne {}
         ');
 
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), 'twice');
+        $suite = new FileTestSuite(new TestSuiteFactory(), new TestFilter(), $this->files->fullPath(), 'twice');
 
         $fullRun = [
             new TestName('twice'),
@@ -216,7 +217,7 @@ class RunTestSuitesFromFiles extends StaticTestSuite {
     private function runFileTestSuite($path, TestFilter $filter = null) {
         $filter = $filter ? : new TestFilter();
         $path = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path);
-        $suite = new FileTestSuite($filter, $this->files->fullPath(), $path);
+        $suite = new FileTestSuite(new TestSuiteFactory(), $filter, $this->files->fullPath(), $path);
         $suite->run($this->listener);
     }
 }

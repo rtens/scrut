@@ -3,10 +3,9 @@ namespace rtens\scrut\tests\file;
 
 use rtens\scrut\Test;
 use rtens\scrut\TestName;
-use rtens\scrut\tests\plain\PlainTestSuite;
-use rtens\scrut\tests\statics\StaticTestSuite;
 use rtens\scrut\tests\TestFilter;
 use rtens\scrut\tests\TestSuite;
+use rtens\scrut\tests\TestSuiteFactory;
 
 class FileTestSuite extends TestSuite {
 
@@ -22,17 +21,22 @@ class FileTestSuite extends TestSuite {
     /** @var string */
     private $name;
 
+    /** @var \rtens\scrut\tests\TestSuiteFactory */
+    private $factory;
+
     /**
+     * @param TestSuiteFactory $factory
      * @param TestFilter $filter
      * @param string $cwd Working directory
      * @param string $path Directory of file relative to $cwd
      * @param null|TestName $parent
      */
-    function __construct(TestFilter $filter, $cwd, $path, TestName $parent = null) {
+    function __construct(TestSuiteFactory $factory, TestFilter $filter, $cwd, $path, TestName $parent = null) {
         parent::__construct($parent);
         $this->path = rtrim($cwd, '/\\') . DIRECTORY_SEPARATOR . trim($path, '/\\');
         $this->name = $path;
         $this->filter = $filter;
+        $this->factory = $factory;
     }
 
     /**
@@ -108,21 +112,17 @@ class FileTestSuite extends TestSuite {
             $class = new \ReflectionClass($className);
 
             if ($this->isAcceptable($class, $path)) {
-                yield $this->createTestSuite($class);
+                yield $this->createTestSuite($class->getName());
             }
         }
     }
 
     /**
-     * @param \ReflectionClass $class
+     * @param string $class
      * @return TestSuite
      */
-    protected function createTestSuite(\ReflectionClass $class) {
-        if ($class->isSubclassOf(StaticTestSuite::class)) {
-            return $class->newInstance($this->filter, $this->getName());
-        } else {
-            return new PlainTestSuite($this->filter, $class->getName(), $this->getName());
-        }
+    protected function createTestSuite($class) {
+        return $this->factory->getTestSuite($class, $this->filter, $this->getName());
     }
 
     private function isAcceptable(\ReflectionClass $class, $path) {

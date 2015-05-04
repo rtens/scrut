@@ -5,9 +5,8 @@ use rtens\scrut\listeners\CompactConsoleListener;
 use rtens\scrut\TestName;
 use rtens\scrut\tests\file\FileTestSuite;
 use rtens\scrut\tests\generic\GenericTestSuite;
-use rtens\scrut\tests\plain\PlainTestSuite;
-use rtens\scrut\tests\statics\StaticTestSuite;
 use rtens\scrut\tests\TestFilter;
+use rtens\scrut\tests\TestSuiteFactory;
 use watoki\factory\Factory;
 
 class TestRunConfiguration {
@@ -72,31 +71,42 @@ class TestRunConfiguration {
         return $filter;
     }
 
+    public function getTestSuiteFactory() {
+        return new TestSuiteFactory();
+    }
+
     /**
      * @return \rtens\scrut\Test
+     * @throws \Exception
+     * @internal param TestSuiteFactory $factory
      */
     public function getTest() {
         return $this->buildTestSuite($this->get('suite', ['name' => 'Test']));
     }
 
     private function buildTestSuite($suiteConfig, TestName $parent = null) {
-        if (array_key_exists('file', $suiteConfig)) {
-            return new FileTestSuite($this->getFilter(), $this->fullPath(), $this->get('suite/file'), $parent);
-        } else if (array_key_exists('class', $suiteConfig)) {
-            $class = $suiteConfig['class'];
-            if (is_subclass_of($class, StaticTestSuite::class)) {
-                return new $class($this->getFilter(), $parent);
-            }
-            return new PlainTestSuite($this->getFilter(), $class, $parent);
-        } else if (array_key_exists('name', $suiteConfig)) {
-            $suite = new GenericTestSuite($suiteConfig['name'], $parent);
-            if (array_key_exists('suites', $suiteConfig)) {
-                foreach ($suiteConfig['suites'] as $child) {
+        $suiteGenerators = [
+            'file' => function ($file) use ($parent) {
+                return new FileTestSuite($this->getTestSuiteFactory(), $this->getFilter(), $this->fullPath(), $file, $parent);
+            },
+            'class' => function ($class) use ($parent) {
+                return $this->getTestSuiteFactory()->getTestSuite($class, $this->getFilter(), $parent);
+            },
+            'name' => function ($name) use ($parent, $suiteConfig) {
+                $suite = new GenericTestSuite($name, $parent);
+
+                foreach ($this->getIn($suiteConfig, 'suites', []) as $child) {
                     $suite->add($this->buildTestSuite($child, $suite->getName()));
                 }
-            }
 
-            return $suite;
+                return $suite;
+            }
+        ];
+
+        foreach ($suiteGenerators as $key => $generate) {
+            if (array_key_exists($key, $suiteConfig)) {
+                return $generate($suiteConfig[$key]);
+            }
         }
 
         throw new \Exception('Invalid suite configuration');
@@ -107,9 +117,11 @@ class TestRunConfiguration {
     }
 
     private function get($path, $default = null) {
-        $config = $this->config;
+        return $this->getIn($this->config, $path, $default);
+    }
 
-        foreach (explode('/', $path) as $key){
+    private function getIn($config, $path, $default = null) {
+        foreach (explode('/', $path) as $key) {
             if (array_key_exists($key, $config)) {
                 $config = $config[$key];
             } else {

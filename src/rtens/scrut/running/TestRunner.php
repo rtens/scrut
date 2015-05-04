@@ -6,8 +6,6 @@ use rtens\scrut\listeners\ResultListener;
 use rtens\scrut\Test;
 use rtens\scrut\TestName;
 use rtens\scrut\tests\file\FileTestSuite;
-use rtens\scrut\tests\plain\PlainTestSuite;
-use rtens\scrut\tests\statics\StaticTestSuite;
 use rtens\scrut\tests\TestSuite;
 
 class TestRunner {
@@ -80,19 +78,16 @@ class TestRunner {
 
     private function determineTestSuite(Test $test, TestName $name) {
         $filter = $this->configuration->getFilter();
+        $factory = $this->configuration->getTestSuiteFactory();
 
         $first = $name->part(0);
         if (class_exists($first)) {
-            if (is_subclass_of($first, StaticTestSuite::class)) {
-                $test = new $first($filter);
-            } else {
-                $test = new PlainTestSuite($filter, $first);
-            }
+            $test = $factory->getTestSuite($first, $filter);
         }
 
         $file = $this->configuration->fullPath($first);
         if (file_exists($file)) {
-            $test = new FileTestSuite($filter, $this->configuration->fullPath(), $first);
+            $test = new FileTestSuite($factory, $filter, $this->configuration->fullPath(), $first);
         }
 
         return $this->resolveTest($test, $name);

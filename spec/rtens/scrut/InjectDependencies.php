@@ -8,6 +8,7 @@ use rtens\scrut\results\PassedTestResult;
 use rtens\scrut\tests\file\FileTestSuite;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use rtens\scrut\tests\TestFilter;
+use rtens\scrut\tests\TestSuiteFactory;
 
 /**
  * @property \rtens\scrut\fixtures\FilesFixture files <-
@@ -132,7 +133,7 @@ class InjectDependencies {
     }
 
     private function runFileTestSuite($path) {
-        $suite = new FileTestSuite(new TestFilter(), $this->files->fullPath(), $this->file($path));
+        $suite = new FileTestSuite(new TestSuiteFactory(), new TestFilter(), $this->files->fullPath(), $this->file($path));
         $suite->run($this->listener);
     }
 }
