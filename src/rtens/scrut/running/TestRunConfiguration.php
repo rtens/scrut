@@ -2,8 +2,11 @@
 namespace rtens\scrut\running;
 
 use rtens\scrut\listeners\CompactConsoleListener;
+use rtens\scrut\TestName;
 use rtens\scrut\tests\file\FileTestSuite;
 use rtens\scrut\tests\generic\GenericTestSuite;
+use rtens\scrut\tests\plain\PlainTestSuite;
+use rtens\scrut\tests\statics\StaticTestSuite;
 use rtens\scrut\tests\TestFilter;
 use watoki\factory\Factory;
 
@@ -73,10 +76,30 @@ class TestRunConfiguration {
      * @return \rtens\scrut\Test
      */
     public function getTest() {
-        if ($this->get('suite/file')) {
-            return new FileTestSuite($this->getFilter(), $this->fullPath(), $this->get('suite/file'));
+        return $this->buildTestSuite($this->get('suite', ['name' => 'Test']));
+    }
+
+    private function buildTestSuite($suiteConfig, TestName $parent = null) {
+        if (array_key_exists('file', $suiteConfig)) {
+            return new FileTestSuite($this->getFilter(), $this->fullPath(), $this->get('suite/file'), $parent);
+        } else if (array_key_exists('class', $suiteConfig)) {
+            $class = $suiteConfig['class'];
+            if (is_subclass_of($class, StaticTestSuite::class)) {
+                return new $class($this->getFilter(), $parent);
+            }
+            return new PlainTestSuite($this->getFilter(), $class, $parent);
+        } else if (array_key_exists('name', $suiteConfig)) {
+            $suite = new GenericTestSuite($suiteConfig['name'], $parent);
+            if (array_key_exists('suites', $suiteConfig)) {
+                foreach ($suiteConfig['suites'] as $child) {
+                    $suite->add($this->buildTestSuite($child, $suite->getName()));
+                }
+            }
+
+            return $suite;
         }
-        return new GenericTestSuite('Test');
+
+        throw new \Exception('Invalid suite configuration');
     }
 
     public function fullPath($path = '') {
