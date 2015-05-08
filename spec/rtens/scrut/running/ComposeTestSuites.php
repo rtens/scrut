@@ -10,7 +10,6 @@ use rtens\scrut\tests\TestSuite;
 use watoki\factory\Factory;
 
 /**
- * @property \rtens\scrut\fixtures\FilesFixture files <-
  * @property \rtens\scrut\Assert $then <-
  * @property \rtens\scrut\fixtures\ExceptionFixture try <-
  */
@@ -18,6 +17,9 @@ class ComposeTestSuites {
 
     /** @var TestSuite */
     private $test;
+
+    /** @var array */
+    private $config = [];
 
     function before() {
         ComposeTestSuites_TestRunner::$config = null;
@@ -115,12 +117,15 @@ class ComposeTestSuites {
     }
 
     private function givenTheConfiguration(array $config) {
-        $this->files->givenTheFile_Containing('scrut.json', json_encode($config));
+        $this->config = $config;
     }
 
     private function whenIExecuteTheCommand() {
-        $command = new ScrutCommand(new ConfigurationReader($this->files->fullPath(), new Factory()));
-        $command->execute(['-c' . json_encode(["runner" => ComposeTestSuites_TestRunner::class])]);
+        $command = new ScrutCommand(new ConfigurationReader(__DIR__, new Factory()));
+        $command->execute(['-c' . json_encode(array_merge(
+            $this->config,
+            ["runner" => ComposeTestSuites_TestRunner::class]
+        ))]);
         $this->test = ComposeTestSuites_TestRunner::$config->getTest();
     }
 
