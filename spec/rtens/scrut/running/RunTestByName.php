@@ -8,6 +8,7 @@ use rtens\scrut\running\ScrutCommand;
 use rtens\scrut\running\TestRunConfiguration;
 use rtens\scrut\running\TestRunner;
 use rtens\scrut\Test;
+use rtens\scrut\TestName;
 use rtens\scrut\TestRunListener;
 use rtens\scrut\tests\generic\GenericTestSuite;
 use rtens\scrut\tests\statics\StaticTestSuite;
@@ -197,7 +198,7 @@ class RunTestByName_Configuration extends TestRunConfiguration {
         return new TestFilter();
     }
 
-    public function getTest() {
+    public function getTest(TestName $parent = null) {
         return $this->test;
     }
 

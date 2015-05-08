@@ -121,15 +121,14 @@ class TestRunConfiguration {
     }
 
     /**
+     * @param \rtens\scrut\TestName $parent
      * @return \rtens\scrut\Test
-     * @throws \Exception
-     * @internal param TestSuiteFactory $factory
      */
-    public function getTest() {
-        return $this->buildTestSuite($this->get('suite', ['name' => 'Test']));
+    public function getTest(TestName $parent = null) {
+        return $this->buildTestSuite($this->get('suite', ['name' => 'Test']), $parent);
     }
 
-    protected function buildTestSuite($suiteConfig, TestName $parent = null) {
+    private function buildTestSuite($suiteConfig, TestName $parent = null) {
         if (is_string($suiteConfig)) {
             return $this->linkConfiguration($suiteConfig, $parent);
         }
@@ -165,11 +164,11 @@ class TestRunConfiguration {
         return $this->workingDirectory . ($path ? (DIRECTORY_SEPARATOR . $path) : '');
     }
 
-    protected function get($path, $default = null) {
+    private function get($path, $default = null) {
         return $this->getIn($this->config, $path, $default);
     }
 
-    protected function getIn($config, $path, $default = null) {
+    private function getIn($config, $path, $default = null) {
         foreach (explode('/', $path) as $key) {
             if (array_key_exists($key, $config)) {
                 $config = $config[$key];

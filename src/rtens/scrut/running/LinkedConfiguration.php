@@ -42,9 +42,9 @@ class LinkedConfiguration extends TestRunConfiguration {
         return $this->config->getTestSuiteFactory();
     }
 
-    public function getTest() {
+    public function getTest(TestName $parent = null) {
         if (!$this->test) {
-            $this->test = $this->config->buildTestSuite($this->config->get('suite', ['name' => 'Test']), $this->parent);;
+            $this->test = $this->config->getTest($this->parent);
         }
         return $this->test;
     }
