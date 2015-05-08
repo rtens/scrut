@@ -62,10 +62,53 @@ class TestRunConfiguration {
     public function getFilter() {
         $filter = new TestFilter();
 
-        if ($this->get('filter')) {
-            $filter->filterClass(function (\ReflectionClass $class) {
-                return preg_match($this->get('filter'), $class->getShortName());
-            });
+        if ($filterConfig = $this->get('filter')) {
+            if (is_string($filterConfig)) {
+                $filterConfig = [
+                    'class' => $filterConfig
+                ];
+            }
+
+            if ($classFilter = $this->getIn($filterConfig, 'class')) {
+                if (is_string($classFilter)) {
+                    $classFilter = [
+                        'name' => $classFilter
+                    ];
+                }
+                if ($name = $this->getIn($classFilter, 'name')) {
+                    $filter->filterClass(function (\ReflectionClass $class) use ($name) {
+                        return preg_match($name, $class->getShortName());
+                    });
+                }
+                if ($subclass = $this->getIn($classFilter, 'subclass')) {
+                    $filter->filterClass(function (\ReflectionClass $class) use ($subclass) {
+                        return $class->isSubclassOf($subclass);
+                    });
+                }
+            }
+            if ($fileFilter = $this->getIn($filterConfig, 'file')) {
+                $filter->filterFile(function ($path) use ($fileFilter) {
+                    return preg_match($fileFilter, $path);
+                });
+            }
+            if ($methodFilter = $this->getIn($filterConfig, 'method')) {
+                if (is_string($methodFilter)) {
+                    $methodFilter = [
+                        'name' => $methodFilter
+                    ];
+                }
+
+                if ($name = $this->getIn($methodFilter, 'name')) {
+                    $filter->filterMethod(function (\ReflectionMethod $method) use ($name) {
+                        return preg_match($name, $method->getName());
+                    });
+                }
+                if ($annotation = $this->getIn($methodFilter, 'annotation')) {
+                    $filter->filterMethod(function (\ReflectionMethod $method) use ($annotation) {
+                        return preg_match($annotation, $method->getDocComment());
+                    });
+                }
+            }
         }
 
         return $filter;
