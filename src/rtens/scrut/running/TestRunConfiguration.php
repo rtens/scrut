@@ -131,17 +131,7 @@ class TestRunConfiguration {
 
     protected function buildTestSuite($suiteConfig, TestName $parent = null) {
         if (is_string($suiteConfig)) {
-            $fullPath = $this->fullPath($suiteConfig);
-            if (!file_exists($fullPath)) {
-                throw new \Exception("Configuration file [$suiteConfig] does no exist.");
-            }
-            if (in_array($fullPath, self::$linkedFiles)) {
-                throw new \Exception("Configuration file loop detected while linking to [$suiteConfig]");
-            }
-            self::$linkedFiles[] = $fullPath;
-            $factory = new Factory();
-            $reader = new ConfigurationReader($this->workingDirectory, $factory);
-            return new LinkedTestSuite(new LinkedConfiguration($factory, $reader->read($suiteConfig), $parent));
+            return $this->linkConfiguration($suiteConfig, $parent);
         }
 
         $suiteGenerators = [
@@ -189,5 +179,29 @@ class TestRunConfiguration {
         }
 
         return $config;
+    }
+
+    private function linkConfiguration($file, TestName $parent) {
+        $fullPath = $this->fullPath($file);
+
+        $this->guardFileExists($file, $fullPath);
+        $this->guardNotAlreadyLinked($file, $fullPath);
+
+        $factory = new Factory();
+        $reader = new ConfigurationReader($this->workingDirectory, $factory);
+        return new LinkedTestSuite(new LinkedConfiguration($factory, $reader->read($file), $parent));
+    }
+
+    private function guardFileExists($file, $fullPath) {
+        if (!file_exists($fullPath)) {
+            throw new \Exception("Configuration file [$file] does no exist.");
+        }
+    }
+
+    private function guardNotAlreadyLinked($file, $fullPath) {
+        if (in_array($fullPath, self::$linkedFiles)) {
+            throw new \Exception("Configuration file loop detected while linking to [$file]");
+        }
+        self::$linkedFiles[] = $fullPath;
     }
 }

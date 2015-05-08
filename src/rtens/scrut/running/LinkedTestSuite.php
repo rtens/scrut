@@ -2,7 +2,6 @@
 namespace rtens\scrut\running;
 
 use rtens\scrut\Test;
-use rtens\scrut\TestName;
 use rtens\scrut\TestRunListener;
 
 class LinkedTestSuite extends Test {
@@ -10,8 +9,8 @@ class LinkedTestSuite extends Test {
     /** @var LinkedConfiguration */
     private $config;
 
-    public function __construct(LinkedConfiguration $config, TestName $parent = null) {
-        parent::__construct($parent);
+    public function __construct(LinkedConfiguration $config) {
+        parent::__construct();
         $this->config = $config;
     }
 
