@@ -35,7 +35,7 @@ abstract class StaticTestSuite extends PlainTestSuite {
     public function execute($method, Assert $assert) {
         $this->assert = $assert;
 
-        $this->injectProperties();
+        $this->injectProperties($assert);
 
         $this->before();
 
@@ -68,9 +68,13 @@ abstract class StaticTestSuite extends PlainTestSuite {
         $this->assert->incomplete($message);
     }
 
-    protected function injectProperties() {
-        $provider = new DefaultProvider(new Factory());
-        $injector = new Injector(new Factory());
+    protected function injectProperties(Assert $assert) {
+        $factory = new Factory();
+        $factory->setSingleton(Assert::class, $assert);
+
+        $provider = new DefaultProvider($factory);
+        $injector = new Injector($factory);
+
         $injector->injectPropertyAnnotations($this, $provider->getAnnotationFilter());
         $injector->injectProperties($this, $provider->getPropertyFilter());
     }

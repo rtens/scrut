@@ -107,10 +107,10 @@ class InjectDependencies {
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
     }
 
-    function asserterIsPassedToInjectedObject(Assert $assert) {
-        $this->files->givenTheFile_Containing('inject/InjectAsserter.php', '<?php
+    function assertIsPassedToInjectedObject(Assert $assert) {
+        $this->files->givenTheFile_Containing('inject/InjectAssert.php', '<?php
             /** @property InjectedThing $that <- */
-            class InjectAsserter {
+            class InjectAssert {
                 function foo() {
                     $this->that->assert->pass();
                 }
@@ -122,7 +122,28 @@ class InjectDependencies {
             /** @property ' . Assert::class . ' $assert <- */
             class InjectedThing {}
         ');
-        $this->runFileTestSuite('inject/InjectAsserter.php');
+        $this->runFileTestSuite('inject/InjectAssert.php');
+
+        $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
+        $assert->isInstanceOf($this->listener->results[1], IncompleteTestResult::class);
+    }
+
+    function assertOfStaticSuiteIsPassedToInjectedObject(Assert $assert) {
+        $this->files->givenTheFile_Containing('inject/InjectAssertStatic.php', '<?php
+            /** @property InjectedThing $that <- */
+            class InjectAssertStatic extends '. StaticTestSuite::class . ' {
+                function foo() {
+                    $this->that->assert->pass();
+                }
+
+                function bar() {
+                }
+            }
+
+            /** @property ' . Assert::class . ' $assert <- */
+            class InjectedThingStatic {}
+        ');
+        $this->runFileTestSuite('inject/InjectAssertStatic.php');
 
         $assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
         $assert->isInstanceOf($this->listener->results[1], IncompleteTestResult::class);
