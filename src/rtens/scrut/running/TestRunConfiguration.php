@@ -11,6 +11,8 @@ use watoki\factory\Factory;
 
 class TestRunConfiguration {
 
+    private static $linkedFiles = [];
+
     private $workingDirectory;
 
     private $config;
@@ -127,7 +129,21 @@ class TestRunConfiguration {
         return $this->buildTestSuite($this->get('suite', ['name' => 'Test']));
     }
 
-    private function buildTestSuite($suiteConfig, TestName $parent = null) {
+    protected function buildTestSuite($suiteConfig, TestName $parent = null) {
+        if (is_string($suiteConfig)) {
+            $fullPath = $this->fullPath($suiteConfig);
+            if (!file_exists($fullPath)) {
+                throw new \Exception("Configuration file [$suiteConfig] does no exist.");
+            }
+            if (in_array($fullPath, self::$linkedFiles)) {
+                throw new \Exception("Configuration file loop detected while linking to [$suiteConfig]");
+            }
+            self::$linkedFiles[] = $fullPath;
+            $factory = new Factory();
+            $reader = new ConfigurationReader($this->workingDirectory, $factory);
+            return new LinkedTestSuite(new LinkedConfiguration($factory, $reader->read($suiteConfig), $parent));
+        }
+
         $suiteGenerators = [
             'file' => function ($file) use ($parent) {
                 return new FileTestSuite($this->getTestSuiteFactory(), $this->getFilter(), $this->fullPath(), $file, $parent);
@@ -159,11 +175,11 @@ class TestRunConfiguration {
         return $this->workingDirectory . ($path ? (DIRECTORY_SEPARATOR . $path) : '');
     }
 
-    private function get($path, $default = null) {
+    protected function get($path, $default = null) {
         return $this->getIn($this->config, $path, $default);
     }
 
-    private function getIn($config, $path, $default = null) {
+    protected function getIn($config, $path, $default = null) {
         foreach (explode('/', $path) as $key) {
             if (array_key_exists($key, $config)) {
                 $config = $config[$key];
