@@ -10,7 +10,6 @@ use rtens\scrut\failures\NoAssertionsFailure;
 use rtens\scrut\RecordingAssert;
 use rtens\scrut\results\FailedTestResult;
 use rtens\scrut\results\IncompleteTestResult;
-use rtens\scrut\results\NotPassedTestResult;
 use rtens\scrut\results\PassedTestResult;
 use rtens\scrut\Test;
 use rtens\scrut\TestRunListener;
@@ -40,14 +39,14 @@ abstract class TestCase extends Test {
             $this->executeTestCase($assert);
 
             if (!$assert->hasMadeAssertions()) {
-                return $this->injectLocator(new IncompleteTestResult(new NoAssertionsFailure($this)));
+                return new IncompleteTestResult($this->injectLocator(new NoAssertionsFailure($this)));
             }
         } catch (IncompleteTestFailure $it) {
-            return $this->injectLocator(new IncompleteTestResult($it));
+            return new IncompleteTestResult($this->injectLocator($it));
         } catch (Failure $f) {
-            return $this->injectLocator(new FailedTestResult($f));
+            return new FailedTestResult($this->injectLocator($f));
         } catch (\Exception $e) {
-            return $this->injectLocator(new FailedTestResult(new CaughtExceptionFailure($e)));
+            return new FailedTestResult($this->injectLocator(new CaughtExceptionFailure($e)));
         }
 
         return new PassedTestResult();
@@ -64,9 +63,13 @@ abstract class TestCase extends Test {
         throw new CaughtErrorFailure($message, $code, $file, $line);
     }
 
-    private function injectLocator(NotPassedTestResult $result) {
-        $result->getFailure()->useSourceLocator($this->getFailureSourceLocator());
-        return $result;
+    /**
+     * @param Failure $failure
+     * @return Failure|IncompleteTestFailure
+     */
+    private function injectLocator(Failure $failure) {
+        $failure->useSourceLocator($this->getFailureSourceLocator());
+        return $failure;
     }
 
 }
