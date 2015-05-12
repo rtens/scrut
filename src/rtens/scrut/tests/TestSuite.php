@@ -20,19 +20,28 @@ abstract class TestSuite extends Test {
         $name = $this->getName();
         $listener->onStarted($name);
 
+        $hasTests = $this->runTests($listener);
+
+        if (!$hasTests) {
+            $listener->onResult($name, $this->createIncompleteTestResult());
+        }
+
+        $listener->onFinished($name);
+    }
+
+    private function runTests(TestRunListener $listener) {
         $hasTest = false;
         foreach ($this->getTests() as $test) {
             $test->run($listener);
             $hasTest = true;
         }
+        return $hasTest;
+    }
 
-        if (!$hasTest) {
-            $listener->onResult($name, new IncompleteTestResult(
-                (new EmptyTestSuiteFailure($this))
-                    ->useSourceLocator($this->getFailureSourceLocator())
-            ));
-        }
+    private function createIncompleteTestResult() {
+        $failure = new EmptyTestSuiteFailure($this);
+        $failure->useSourceLocator($this->getFailureSourceLocator());
 
-        $listener->onFinished($name);
+        return new IncompleteTestResult($failure);
     }
 }
