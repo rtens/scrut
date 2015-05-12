@@ -45,10 +45,9 @@ class PlainTestCase extends TestCase {
 
     protected function execute(Assert $assert) {
         $factory = $this->createFactory($assert);
-
         $suite = $factory->getInstance($this->method->getDeclaringClass()->getName());
 
-        $this->callHook($factory, $suite, self::BEFORE_METHOD);
+        $this->callHook(self::BEFORE_METHOD, $suite, $factory);
 
         $args = $this->injectArguments($this->method, $factory, $this->injectAsserter($this->method, $assert));
 
@@ -61,20 +60,22 @@ class PlainTestCase extends TestCase {
         } catch (\Exception $e) {
             throw $e;
         } finally {
-            $this->callHook($factory, $suite, self::AFTER_METHOD);
+            $this->callHook(self::AFTER_METHOD, $suite, $factory);
         }
     }
 
-    private function createFactory(Assert $assert) {
+    protected function createFactory(Assert $assert) {
         $factory = new Factory();
+
         $factory->setProvider(Assert::class, new CallbackProvider(function () use ($assert) {
             $this->asserterProvided = true;
             return $assert;
         }));
+
         return $factory;
     }
 
-    private function callHook(Factory $factory, $suite, $methodName) {
+    private function callHook($methodName, $suite, Factory $factory) {
         if (method_exists($suite, $methodName)) {
             if (!is_callable([$suite, $methodName])) {
                 $name = get_class($suite) . '::' . $methodName;

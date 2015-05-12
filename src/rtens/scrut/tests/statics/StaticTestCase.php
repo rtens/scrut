@@ -14,7 +14,11 @@ class StaticTestCase extends PlainTestCase {
         }
 
         /** @var StaticTestSuite $suite */
-        $suite = $class->newInstance(new TestFilter());
+        $factory = $this->createFactory($assert);
+        $suite = $factory->getInstance($class->getName(), [
+            'filter' => new TestFilter()
+        ]);
+
         $suite->execute($this->method->getName(), $assert);
     }
 

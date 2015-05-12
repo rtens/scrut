@@ -1,9 +1,6 @@
 <?php
 namespace rtens\scrut\tests\statics;
 
-use watoki\factory\Factory;
-use watoki\factory\Injector;
-use watoki\factory\providers\DefaultProvider;
 use rtens\scrut\Assert;
 use rtens\scrut\TestName;
 use rtens\scrut\tests\plain\PlainTestSuite;
@@ -11,7 +8,7 @@ use rtens\scrut\tests\TestFilter;
 
 abstract class StaticTestSuite extends PlainTestSuite {
 
-    /** @var Assert */
+    /** @var Assert <- */
     protected $assert;
 
     /**
@@ -28,15 +25,12 @@ abstract class StaticTestSuite extends PlainTestSuite {
     protected function after() {
     }
 
-    protected function createTestCase(\ReflectionMethod $method) {
-        return new StaticTestCase($method, $this->getName());
-    }
-
+    /**
+     * @param string $method
+     * @param Assert $assert
+     * @throws \Exception
+     */
     public function execute($method, Assert $assert) {
-        $this->assert = $assert;
-
-        $this->injectProperties($assert);
-
         $this->before();
 
         try {
@@ -46,6 +40,10 @@ abstract class StaticTestSuite extends PlainTestSuite {
         } finally {
             $this->after();
         }
+    }
+
+    protected function createTestCase(\ReflectionMethod $method) {
+        return new StaticTestCase($method, $this->getName());
     }
 
     /**
@@ -66,16 +64,5 @@ abstract class StaticTestSuite extends PlainTestSuite {
 
     protected function markIncomplete($message = "") {
         $this->assert->incomplete($message);
-    }
-
-    protected function injectProperties(Assert $assert) {
-        $factory = new Factory();
-        $factory->setSingleton(Assert::class, $assert);
-
-        $provider = new DefaultProvider($factory);
-        $injector = new Injector($factory);
-
-        $injector->injectPropertyAnnotations($this, $provider->getAnnotationFilter());
-        $injector->injectProperties($this, $provider->getPropertyFilter());
     }
 }
