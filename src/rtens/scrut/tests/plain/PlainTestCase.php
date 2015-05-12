@@ -36,6 +36,13 @@ class PlainTestCase extends TestCase {
         return parent::getName()->with($this->method->getName());
     }
 
+    /**
+     * @return \rtens\scrut\tests\FailureSourceLocator
+     */
+    protected function getFailureSourceLocator() {
+        return new PlainFailureSourceLocator($this->method);
+    }
+
     protected function execute(Assert $assert) {
         $factory = $this->createFactory($assert);
 
@@ -44,6 +51,7 @@ class PlainTestCase extends TestCase {
         $this->callHook($factory, $suite, self::BEFORE_METHOD);
 
         $args = $this->injectArguments($this->method, $factory, $this->injectAsserter($this->method, $assert));
+
         try {
             $this->method->invokeArgs($suite, $args);
 
@@ -57,11 +65,13 @@ class PlainTestCase extends TestCase {
         }
     }
 
-    /**
-     * @return \rtens\scrut\tests\FailureSourceLocator
-     */
-    protected function getFailureSourceLocator() {
-        return new PlainFailureSourceLocator($this->method);
+    private function createFactory(Assert $assert) {
+        $factory = new Factory();
+        $factory->setProvider(Assert::class, new CallbackProvider(function () use ($assert) {
+            $this->asserterProvided = true;
+            return $assert;
+        }));
+        return $factory;
     }
 
     private function callHook(Factory $factory, $suite, $methodName) {
@@ -74,15 +84,6 @@ class PlainTestCase extends TestCase {
             $method = new \ReflectionMethod($suite, $methodName);
             $method->invokeArgs($suite, $this->injectArguments($method, $factory));
         }
-    }
-
-    private function createFactory(Assert $assert) {
-        $factory = new Factory();
-        $factory->setProvider(Assert::class, new CallbackProvider(function () use ($assert) {
-            $this->asserterProvided = true;
-            return $assert;
-        }));
-        return $factory;
     }
 
     private function injectArguments(\ReflectionMethod $method, Factory $factory, array $args = []) {

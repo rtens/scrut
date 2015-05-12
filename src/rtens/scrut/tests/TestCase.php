@@ -27,36 +27,46 @@ abstract class TestCase extends Test {
         $name = $this->getName();
         $listener->onStarted($name);
 
-        $result = new PassedTestResult();
-        $assert = new RecordingAssert();
-
-        try {
-            $errorHandler = function ($code, $message, $file, $line) {
-                if (error_reporting() == 0) return;
-                throw new CaughtErrorFailure($message, $code, $file, $line);
-            };
-
-            set_error_handler($errorHandler, E_ALL);
-            $this->execute($assert);
-            restore_error_handler();
-
-            if (!$assert->hasMadeAssertions()) {
-                $result = new IncompleteTestResult(new NoAssertionsFailure($this));
-            }
-        } catch (IncompleteTestFailure $it) {
-            $result = new IncompleteTestResult($it);
-        } catch (Failure $f) {
-            $result = new FailedTestResult($f);
-        } catch (\Exception $e) {
-            $result = new FailedTestResult(new CaughtExceptionFailure($e));
-        }
-
-        if ($result instanceof NotPassedTestResult) {
-            $result->getFailure()->useSourceLocator($this->getFailureSourceLocator());
-        }
+        $result = $this->runTestCase();
 
         $listener->onResult($name, $result);
         $listener->onFinished($name);
+    }
+
+    private function runTestCase() {
+        $assert = new RecordingAssert();
+
+        try {
+            $this->executeTestCase($assert);
+
+            if (!$assert->hasMadeAssertions()) {
+                return $this->injectLocator(new IncompleteTestResult(new NoAssertionsFailure($this)));
+            }
+        } catch (IncompleteTestFailure $it) {
+            return $this->injectLocator(new IncompleteTestResult($it));
+        } catch (Failure $f) {
+            return $this->injectLocator(new FailedTestResult($f));
+        } catch (\Exception $e) {
+            return $this->injectLocator(new FailedTestResult(new CaughtExceptionFailure($e)));
+        }
+
+        return new PassedTestResult();
+    }
+
+    private function executeTestCase(Assert $assert) {
+        set_error_handler([$this, 'handleError'], E_ALL);
+        $this->execute($assert);
+        restore_error_handler();
+    }
+
+    public function handleError($code, $message, $file, $line) {
+        if (error_reporting() == 0) return;
+        throw new CaughtErrorFailure($message, $code, $file, $line);
+    }
+
+    private function injectLocator(NotPassedTestResult $result) {
+        $result->getFailure()->useSourceLocator($this->getFailureSourceLocator());
+        return $result;
     }
 
 }
