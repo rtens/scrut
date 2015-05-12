@@ -21,7 +21,7 @@ class LinkedConfiguration extends TestRunConfiguration {
     private $parent;
 
     function __construct(Factory $factory, TestRunConfiguration $config, TestName $parent) {
-        $factory->setSingleton(get_class($config), $this);
+        $factory->setSingleton($this, get_class($config));
         $this->config = $config;
         $this->parent = $parent;
     }

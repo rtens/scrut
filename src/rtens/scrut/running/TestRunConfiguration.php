@@ -24,7 +24,7 @@ class TestRunConfiguration {
     ];
 
     function __construct(Factory $factory, $workingDirectory, array $config) {
-        $factory->setSingleton(get_class($this), $this);
+        $factory->setSingleton($this);
 
         $this->workingDirectory = $workingDirectory;
         $this->config = $config;

@@ -131,7 +131,7 @@ class LinkToConfigurationFiles {
         $this->listener = new ArrayListener();
 
         $factory = new Factory();
-        $factory->setSingleton(ArrayListener::class, $this->listener);
+        $factory->setSingleton($this->listener);
 
         $command = new ScrutCommand(new ConfigurationReader($this->files->fullPath(), $factory));
         $command->execute(['-c' . json_encode(['listen' => [ArrayListener::class]])]);

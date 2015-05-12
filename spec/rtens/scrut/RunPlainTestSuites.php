@@ -125,7 +125,7 @@ class RunPlainTestSuites_Incomplete {
 class RunPlainTestSuites_Inject {
 
     function before(Factory $factory) {
-        $factory->setSingleton(\DateTime::class, new \DateTime('yesterday'));
+        $factory->setSingleton(new \DateTime('yesterday'));
     }
 
     function foo(RunPlainTestSuites_Empty $foo, \DateTime $time) {
@@ -134,7 +134,7 @@ class RunPlainTestSuites_Inject {
     }
 
     function after(Factory $factory) {
-        assert($factory->getSingleton(\DateTime::class) == new \DateTime('yesterday'));
+        assert($factory->getInstance(\DateTime::class) == new \DateTime('yesterday'));
     }
 }
 

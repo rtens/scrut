@@ -163,8 +163,9 @@ class RunTestByName {
     private function executeCommand(Assert $assert, $arguments = [], $shouldReturn = 0) {
         $factory = new Factory();
 
-        $factory->setSingleton(TestRunConfiguration::class,
-            new RunTestByName_Configuration($this->files->fullPath(), $this->test, $this->listener));
+        $factory->setSingleton(
+            new RunTestByName_Configuration($this->files->fullPath(), $this->test, $this->listener),
+            TestRunConfiguration::class);
 
         $command = new ScrutCommand(new ConfigurationReader($this->files->fullPath(), $factory));
         $returned = $command->execute($arguments);

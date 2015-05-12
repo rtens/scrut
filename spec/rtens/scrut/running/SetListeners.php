@@ -27,13 +27,13 @@ class SetListeners {
     }
 
     function withFullClassName() {
-        $this->factory->setSingleton(ArrayListener::class, $this->listener);
+        $this->factory->setSingleton($this->listener);
         $this->whenIExecuteTheCommandWithTheArguments(['-l' . ArrayListener::class]);
         $this->thenTheListenerShouldHaveReceivedSomething();
     }
 
     function withRegisteredListener() {
-        $this->factory->setSingleton(TimeConsoleListener::class, $this->listener);
+        $this->factory->setSingleton($this->listener, TimeConsoleListener::class);
         $this->whenIExecuteTheCommandWithTheArguments(['-lTime']);
         $this->thenTheListenerShouldHaveReceivedSomething();
     }
