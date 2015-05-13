@@ -1,12 +1,14 @@
 <?php
 namespace rtens\scrut\tests\plain;
 
+use rtens\scrut\Fixture;
 use watoki\factory\Factory;
 use watoki\factory\Injector;
 use watoki\factory\providers\CallbackProvider;
 use rtens\scrut\Assert;
 use rtens\scrut\TestName;
 use rtens\scrut\tests\TestCase;
+use watoki\factory\providers\DefaultProvider;
 
 class PlainTestCase extends TestCase {
 
@@ -19,6 +21,9 @@ class PlainTestCase extends TestCase {
 
     /** @var \ReflectionMethod */
     protected $method;
+
+    /** @var array|Fixture[] */
+    protected $providedFixtures = [];
 
     /**
      * @param \ReflectionMethod $method
@@ -47,6 +52,7 @@ class PlainTestCase extends TestCase {
         $factory = $this->createFactory($assert);
         $suite = $factory->getInstance($this->method->getDeclaringClass()->getName());
 
+        $this->callFixtureHook(self::BEFORE_METHOD);
         $this->callHook(self::BEFORE_METHOD, $suite, $factory);
 
         $args = $this->injectArguments($this->method, $factory, $this->injectAsserter($this->method, $assert));
@@ -61,15 +67,23 @@ class PlainTestCase extends TestCase {
             throw $e;
         } finally {
             $this->callHook(self::AFTER_METHOD, $suite, $factory);
+            $this->callFixtureHook(self::AFTER_METHOD);
         }
     }
 
     protected function createFactory(Assert $assert) {
         $factory = new Factory();
+        $provider = new DefaultProvider($factory);
 
         $factory->setProvider(Assert::class, new CallbackProvider(function () use ($assert) {
             $this->asserterProvided = true;
             return $assert;
+        }));
+
+        $factory->setProvider(Fixture::class, new CallbackProvider(function ($class, $args) use ($provider) {
+            $instance = $provider->provide($class, $args);
+            $this->providedFixtures[] = $instance;
+            return $instance;
         }));
 
         return $factory;
@@ -103,5 +117,11 @@ class PlainTestCase extends TestCase {
             }
         }
         return $args;
+    }
+
+    protected function callFixtureHook($methodName) {
+        foreach ($this->providedFixtures as $fixture) {
+            $fixture->$methodName();
+        }
     }
 }

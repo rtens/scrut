@@ -1,14 +1,33 @@
 <?php
 namespace rtens\scrut\fixtures;
 
+use rtens\scrut\Assert;
 use rtens\scrut\Fixture;
+use watoki\factory\Factory;
 
 class FilesFixture extends Fixture {
 
     private $tmp;
 
-    protected function init() {
-        $this->tmp = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('scrut_tmp_') . DIRECTORY_SEPARATOR;
+    /**
+     * @param Assert $assert <-
+     * @param Factory $factory <-
+     */
+    function __construct(Assert $assert, Factory $factory) {
+        parent::__construct($assert);
+        $factory->setSingleton($this);
+    }
+
+    public function fullPath($path = '') {
+        if (!$this->tmp) {
+            $this->tmp = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('scrut_tmp_') . DIRECTORY_SEPARATOR;
+            @mkdir($this->tmp);
+        }
+        return rtrim($this->tmp . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path), '\\/');
+    }
+
+    public function after() {
+        $this->clear();
     }
 
     public function givenTheFolder($path) {
@@ -22,10 +41,6 @@ class FilesFixture extends Fixture {
         $fullPath = $this->fullPath($fileName);
         file_put_contents($fullPath, $content);
         return $fullPath;
-    }
-
-    public function fullPath($path = '') {
-        return rtrim($this->tmp . str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path), '\\/');
     }
 
     public function clear($path = "") {

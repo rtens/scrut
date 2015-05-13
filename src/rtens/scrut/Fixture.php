@@ -11,10 +11,11 @@ abstract class Fixture {
      */
     function __construct(Assert $assert) {
         $this->assert = $assert;
-        $this->init();
     }
 
-    protected function init() {
+    public function before() {
     }
 
+    public function after() {
+    }
 } 

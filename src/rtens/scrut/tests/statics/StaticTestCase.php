@@ -19,7 +19,9 @@ class StaticTestCase extends PlainTestCase {
             'filter' => new TestFilter()
         ]);
 
+        $this->callFixtureHook(self::BEFORE_METHOD);
         $suite->execute($this->method->getName(), $assert);
+        $this->callFixtureHook(self::AFTER_METHOD);
     }
 
     protected function getFailureSourceLocator() {
