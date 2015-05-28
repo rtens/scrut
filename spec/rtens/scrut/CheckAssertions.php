@@ -114,22 +114,22 @@ class CheckAssertions extends StaticTestSuite {
     function printComplexValues() {
         $this->shouldFail(function () {
             $this->assert->isNull(["foo", "bar" => "baz"]);
-        }, "[0 => 'foo', 'bar' => 'baz'] should be NULL");
+        }, "[0: 'foo', 'bar': 'baz'] should be NULL");
 
         $this->shouldFail(function () {
-            $this->assert->isNull(new \DateTime());
-        }, "<DateTime> should be NULL");
+            $this->assert->isNull(new \DateTime('2011-12-13 14:15:16 UTC'));
+        }, "<DateTime>(2011-12-13T14:15:16+00:00) should be NULL");
 
         $this->shouldFail(function () {
             $stack = new \SplStack();
             $stack->push(["foo", "bar"]);
-            $stack->push(new \DateTime());
+            $stack->push(new \DateTime('2011-12-13 14:15:16 UTC'));
             $this->assert->isNull($stack);
-        }, "<SplStack>[<DateTime>, ['foo', 'bar']] should be NULL");
+        }, "<SplStack>[<DateTime>(2011-12-13T14:15:16+00:00), ['foo', 'bar']] should be NULL");
 
         $this->shouldFail(function () {
             $this->assert->isNull(new TestName('some', 'name'));
-        }, "<" . TestName::class . ">(some::name) should be NULL");
+        }, "<" . TestName::class . ">('some::name') should be NULL");
     }
 
     private function shouldFail(callable $do, $message) {
