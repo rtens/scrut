@@ -37,7 +37,7 @@ the specification with scrut itself (the bootstrapping is the major source of fu
 
 ## Usage ##
 
-There are three ways to write tests with *scrut*
+There are three ways to write tests with *scrut* which you can mix as you please.
 
 ### Minimalistic ###
 
