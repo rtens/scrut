@@ -70,7 +70,6 @@ Foo::thisOneFails [/home/derp/scrut/spec/Foo.php:9]
     assert(): Bang failed
     
 =( 1 Passed, 1 Failed
-
 ```
 
 The dot means that the first test passed, the `F` means that the second one failed and the reason is printed below
