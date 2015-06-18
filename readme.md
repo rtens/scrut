@@ -122,8 +122,16 @@ return (new GenericTestSuite("Foo"))
         $assert("1", 1);
     });
     ->test("bar", function (Assert $assert) {
-        $assert->equals(1, 2);
+        $assert->equals(1+1, 2);
     });
+```
+
+which get you
+
+```
+..
+
+=D 2 Passed
 ```
 
 
