@@ -126,7 +126,7 @@ return (new GenericTestSuite("Foo"))
     });
 ```
 
-which get you
+which gets you
 
 ```
 ..
