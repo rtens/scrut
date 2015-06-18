@@ -45,16 +45,15 @@ The easiest and most minimalistic way to write a test, avoiding all dependencies
 is to create a class in a folder (e.g. `spec`) like this:
 
 ```php
-
-    class Foo {
-        function thisOnePasses() {
-            assert(true);
-        }
-        
-        function thisOneFails() {
-            assert(false, "Bang");
-        }
+class Foo {
+    function thisOnePasses() {
+        assert(true);
     }
+    
+    function thisOneFails() {
+        assert(false, "Bang");
+    }
+}
 ```
 
 Note that you don't need to follow any naming convention. *scrut* will execute all public methods of all classes
@@ -63,15 +62,14 @@ it finds in the folder you point it to. You can use the `assert` function or thr
 If you now run `vendor/bin/scrut spec` you should get the following output.
 
 ```
+.F
 
-    .F
+---- Failed ----
+Foo::thisOneFails [/home/derp/scrut/spec/Foo.php:9]
+    Caught E_WARNING from /home/derp/scrut/spec/Foo.php:9
+    assert(): Bang failed
     
-    ---- Failed ----
-    Foo::thisOneFails [/home/derp/scrut/spec/Foo.php:9]
-        Caught E_WARNING from /home/derp/scrut/spec/Foo.php:9
-        assert(): Bang failed
-        
-    =( 1 Passed, 1 Failed
+=( 1 Passed, 1 Failed
 
 ```
 
@@ -83,36 +81,34 @@ followed by a summary of the test run.
 A more integrated way is let the test class extend `StaticTestSuite` and use the `Assert` class to make assertions.
 
 ```php
-
-    class Foo extends StaticTestSuite {
-        function thisOnePasses() {
-            $this->assert("1", 1);
-        }
-        
-        function thisOneFails() {
-            $this->assert->equals("1", 2);
-        }
-        
-        function thisOneIsEmpty() {
-        }
+class Foo extends StaticTestSuite {
+    function thisOnePasses() {
+        $this->assert("1", 1);
     }
+    
+    function thisOneFails() {
+        $this->assert->equals("1", 2);
+    }
+    
+    function thisOneIsEmpty() {
+    }
+}
 ```
 
 The output of `vendor/bin/scrut spec` should now be
 
 ```
+.FI
 
-    .FI
+---- Incomplete ----
+Foo::thisOneIsEmpty [/home/rtens/testScrut/spec/Bar.php:12]
+    No assertions made
 
-    ---- Incomplete ----
-    Foo::thisOneIsEmpty [/home/rtens/testScrut/spec/Bar.php:12]
-        No assertions made
-    
-    ---- Failed ----
-    Foo::thisOneFails [/home/rtens/testScrut/spec/Bar.php:9]
-        '1' should equal 2
-    
-    =( 1 Passed, 1 Incomplete, 1 Failed
+---- Failed ----
+Foo::thisOneFails [/home/rtens/testScrut/spec/Bar.php:9]
+    '1' should equal 2
+
+=( 1 Passed, 1 Incomplete, 1 Failed
 ```
 
 Note that the empty test method results in the test being marked as "incomplete" because no assertions are made.
@@ -122,14 +118,13 @@ Note that the empty test method results in the test being marked as "incomplete"
 If you're not a fan of creating classes, then you might like the third way using dynamically created objects.
 
 ```php
-
-    return (new GenericTestSuite("Foo"))
-        ->test("foo", function (Assert $assert) {
-            $assert("1", 1);
-        });
-        ->test("bar", function (Assert $assert) {
-            $assert->equals(1, 2);
-        });
+return (new GenericTestSuite("Foo"))
+    ->test("foo", function (Assert $assert) {
+        $assert("1", 1);
+    });
+    ->test("bar", function (Assert $assert) {
+        $assert->equals(1, 2);
+    });
 ```
 
 
