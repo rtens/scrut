@@ -137,9 +137,9 @@ which gets you
 
 ## Documentation ##
 
-The documentation of *scrut* is written in the form of an executable specification. You find it in the `[spec]` folder.
+The documentation of *scrut* is written in the form of an executable specification. You find it in the [`spec`] folder.
 
-[spec]: http://github.com/rtens/scrut/tree/master/spec/rtens/scrut
+[`spec`]: http://github.com/rtens/scrut/tree/master/spec/rtens/scrut
 
 
 ## Contribution ##
