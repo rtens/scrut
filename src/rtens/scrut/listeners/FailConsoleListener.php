@@ -7,13 +7,16 @@ use rtens\scrut\TestResult;
 
 class FailConsoleListener extends ConsoleListener {
 
-    private $failed = false;
+    private $failed = 0;
+
+    private $ran = 0;
 
     public function onResult(TestName $test, TestResult $result) {
         parent::onResult($test, $result);
+        $this->ran++;
 
         if ($result instanceof FailedTestResult) {
-            $this->failed = true;
+            $this->failed++;
             $failureSource = $result->getFailure()->getFailureSource();
 
             $this->printLine();
@@ -43,6 +46,7 @@ class FailConsoleListener extends ConsoleListener {
 
     protected function onEnd() {
         $this->printLine();
-        $this->printLine($this->failed ? 'FAILED =(' : 'Passed =D');
+        $this->printLine($this->ran . ' ran, '
+            . ($this->failed ? $this->failed . ' FAILED =(' : 'none failed =D'));
     }
 }

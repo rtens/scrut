@@ -11,7 +11,7 @@ class ReportFailuresInDetail extends ListeningSpecification {
             $assert->pass();
         });
         $this->runAndAssertOutput($assert, [
-            'Passed =D'
+            '1 ran, none failed =D'
         ]);
     }
 
@@ -21,7 +21,7 @@ class ReportFailuresInDetail extends ListeningSpecification {
         });
         $this->runTestSuite();
 
-        $assert(end($this->outputLines), 'FAILED =(');
+        $assert(end($this->outputLines), '1 ran, 1 FAILED =(');
     }
 
     function mixedResults(Assert $assert) {
@@ -36,7 +36,7 @@ class ReportFailuresInDetail extends ListeningSpecification {
         });
         $this->runTestSuite();
 
-        $assert(end($this->outputLines), 'FAILED =(');
+        $assert(end($this->outputLines), '3 ran, 1 FAILED =(');
     }
 
     function detailedFailureDescription(Assert $assert) {
@@ -65,7 +65,7 @@ class ReportFailuresInDetail extends ListeningSpecification {
             '      Failed',
             '      Not this one',
             '',
-            'FAILED =('
+            '2 ran, 2 FAILED =('
         ]);
     }
 
