@@ -1,7 +1,6 @@
 <?php
 namespace spec\rtens\scrut;
 
-use watoki\factory\Factory;
 use rtens\scrut\Assert;
 use rtens\scrut\Failure;
 use rtens\scrut\listeners\ArrayListener;
@@ -11,6 +10,7 @@ use rtens\scrut\TestName;
 use rtens\scrut\tests\plain\PlainTestSuite;
 use rtens\scrut\tests\statics\StaticTestSuite;
 use rtens\scrut\tests\TestFilter;
+use watoki\factory\Factory;
 
 class RunPlainTestSuites extends StaticTestSuite {
 
@@ -38,12 +38,21 @@ class RunPlainTestSuites extends StaticTestSuite {
     }
 
     function markMethodsWithoutAssertionsAsIncomplete() {
-        $suite = new PlainTestSuite(new TestFilter(), RunPlainTestSuites_Incomplete::class);
+        $suite = new PlainTestSuite(new TestFilter(), RunPlainTestSuites_NoAssertion::class);
         $suite->run($this->listener);
 
-        $this->assert->size($this->listener->results, 2);
+        $this->assert->size($this->listener->results, 1);
         $this->assert->isInstanceOf($this->listener->results[0], IncompleteTestResult::class);
-        $this->assert->isInstanceOf($this->listener->results[1], PassedTestResult::class);
+    }
+
+    function markEmptyMethodsAsIncomplete() {
+        $suite = new PlainTestSuite(new TestFilter(), RunPlainTestSuites_EmptyMethod::class);
+        $suite->run($this->listener);
+
+        $this->assert->size($this->listener->results, 3);
+        $this->assert->isInstanceOf($this->listener->results[0], PassedTestResult::class);
+        $this->assert->isInstanceOf($this->listener->results[1], IncompleteTestResult::class);
+        $this->assert->isInstanceOf($this->listener->results[2], IncompleteTestResult::class);
     }
 
     function injectMethodsArguments() {
@@ -113,13 +122,22 @@ class RunPlainTestSuites_Foo {
     }
 }
 
-class RunPlainTestSuites_Incomplete {
+class RunPlainTestSuites_NoAssertion {
 
     function foo(Assert $that) {
     }
+}
 
-    function bar() {
+class RunPlainTestSuites_EmptyMethod {
+
+    function foo() {
+        // Not empty
     }
+
+    function bar() { // Empty
+    }
+
+    function baz() {}
 }
 
 class RunPlainTestSuites_Inject {

@@ -60,7 +60,7 @@ class PlainTestCase extends TestCase {
         try {
             $this->method->invokeArgs($suite, $args);
 
-            if (!$this->asserterProvided) {
+            if (!$this->asserterProvided && !$this->isMethodEmpty()) {
                 $assert->pass();
             }
         } catch (\Exception $e) {
@@ -123,5 +123,9 @@ class PlainTestCase extends TestCase {
         foreach ($this->providedFixtures as $fixture) {
             $fixture->$methodName();
         }
+    }
+
+    private function isMethodEmpty() {
+        return $this->method->getEndLine() <= $this->method->getStartLine() + 1;
     }
 }
