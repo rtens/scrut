@@ -14,7 +14,7 @@
     ],
     "require": {
         "php": ">=5.5",
-        "watoki/factory": "dev-master"
+        "watoki/factory": "1.*"
     },
     "bin": ["bin/scrut"],
     "autoload": {
@@ -22,6 +22,5 @@
             "rtens\\scrut": "src/",
             "spec\\rtens\\scrut": ""
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
