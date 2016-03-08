@@ -18,9 +18,13 @@
     },
     "bin": ["bin/scrut"],
     "autoload": {
-        "psr-0": {
-            "rtens\\scrut": "src/",
-            "spec\\rtens\\scrut": ""
+        "psr-4": {
+            "rtens\\scrut\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "spec\\rtens\\scrut\\": "spec/"
         }
     }
 }

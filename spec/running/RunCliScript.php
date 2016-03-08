@@ -63,7 +63,7 @@ class RunCliScript {
     }
 
     private function runTheScript() {
-        $script = realpath(__DIR__ . '/../../../../bin/scrut');
+        $script = realpath(__DIR__ . '/../../bin/scrut');
         exec('cd ' . $this->cwd . ' && "' . PHP_BINARY . '" "' . $script . '"', $this->output, $this->return);
     }
 
