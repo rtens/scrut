@@ -9,6 +9,8 @@ class ExceptionFixture extends Fixture {
     private $caught;
 
     public function tryTo($callable) {
+        $this->caught = null;
+
         try {
             $callable();
         } catch (\Exception $e) {
