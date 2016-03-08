@@ -8,14 +8,13 @@ use rtens\scrut\tests\TestFilter;
 class StaticTestCase extends PlainTestCase {
 
     protected function execute(Assert $assert) {
-        $class = $this->method->getDeclaringClass();
-        if (!$class->isSubclassOf(StaticTestSuite::class)) {
-            throw new \InvalidArgumentException("Not a StaticTestSuite: [{$class->getName()}]");
+        if (!$this->class->isSubclassOf(StaticTestSuite::class)) {
+            throw new \InvalidArgumentException("Not a StaticTestSuite: [{$this->class->getName()}]");
         }
 
         /** @var StaticTestSuite $suite */
         $factory = $this->createFactory($assert);
-        $suite = $factory->getInstance($class->getName(), [
+        $suite = $factory->getInstance($this->class->getName(), [
             'filter' => new TestFilter()
         ]);
 

@@ -43,6 +43,23 @@ class FilesFixture extends Fixture {
         return $fullPath;
     }
 
+    public function thenThereShouldBeAFile_Containing($fileName, $content) {
+        $this->thenThereShouldBeAFile($fileName);
+        $this->assert->equals(file_get_contents($this->fullPath($fileName)), $content);
+    }
+
+    public function thenThereShouldBeNoFile($fileName) {
+        $this->assert->not()->isTrue(file_exists($this->fullPath($fileName)));
+    }
+
+    public function thenThereShouldBeAFile($fileName) {
+        $this->assert->isTrue(file_exists($this->fullPath($fileName)) && is_file($this->fullPath($fileName)));
+    }
+
+    public function thenThereShouldBeAFolder($folderName) {
+        $this->assert->isTrue(file_exists($this->fullPath($folderName)) && is_dir($this->fullPath($folderName)));
+    }
+
     public function clear($path = "") {
         $this->_clear($this->fullPath($path));
     }

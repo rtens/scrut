@@ -15,7 +15,7 @@ abstract class StaticTestSuite extends PlainTestSuite {
      * @param TestFilter $filter
      * @param TestName $parent
      */
-    function __construct(TestFilter $filter, TestName $parent = null) {
+    public function __construct(TestFilter $filter, TestName $parent = null) {
         parent::__construct($filter, get_class($this), $parent);
     }
 
@@ -42,8 +42,8 @@ abstract class StaticTestSuite extends PlainTestSuite {
         }
     }
 
-    protected function createTestCase(\ReflectionMethod $method) {
-        return new StaticTestCase($method, $this->getName());
+    protected function createTestCase(\ReflectionClass $class, \ReflectionMethod $method) {
+        return new StaticTestCase($class, $method, $this->getName());
     }
 
     /**

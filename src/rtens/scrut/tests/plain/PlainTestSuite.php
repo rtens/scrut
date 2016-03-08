@@ -37,7 +37,8 @@ class PlainTestSuite extends TestSuite {
      * @return Test[]
      */
     public function getTests() {
-        $methods = (new \ReflectionClass($this->suite))->getMethods();
+        $class = new \ReflectionClass($this->suite);
+        $methods = $class->getMethods();
 
         $filtered = array_filter($methods, function (\ReflectionMethod $method) {
             return $this->filter->acceptsMethod($method)
@@ -51,7 +52,7 @@ class PlainTestSuite extends TestSuite {
         });
 
         foreach ($filtered as $method) {
-            yield $this->createTestCase($method);
+            yield $this->createTestCase($class, $method);
         }
     }
 
@@ -59,8 +60,8 @@ class PlainTestSuite extends TestSuite {
      * @param \ReflectionMethod $method
      * @return TestCase
      */
-    protected function createTestCase(\ReflectionMethod $method) {
-        return new PlainTestCase($method, $this->getName());
+    protected function createTestCase(\ReflectionClass $class, \ReflectionMethod $method) {
+        return new PlainTestCase($class, $method, $this->getName());
     }
 
     /**

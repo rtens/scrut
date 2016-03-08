@@ -19,6 +19,9 @@ class PlainTestCase extends TestCase {
 
     private $asserterProvided = false;
 
+    /** @var \ReflectionClass */
+    protected $class;
+
     /** @var \ReflectionMethod */
     protected $method;
 
@@ -26,11 +29,13 @@ class PlainTestCase extends TestCase {
     protected $providedFixtures = [];
 
     /**
+     * @param \ReflectionClass $class
      * @param \ReflectionMethod $method
      * @param TestName $parent
      */
-    function __construct(\ReflectionMethod $method, TestName $parent = null) {
+    function __construct(\ReflectionClass $class, \ReflectionMethod $method, TestName $parent = null) {
         parent::__construct($parent);
+        $this->class = $class;
         $this->method = $method;
     }
 
@@ -50,7 +55,7 @@ class PlainTestCase extends TestCase {
 
     protected function execute(Assert $assert) {
         $factory = $this->createFactory($assert);
-        $suite = $factory->getInstance($this->method->getDeclaringClass()->getName());
+        $suite = $factory->getInstance($this->class->getName());
 
         $this->callFixtureHook(self::BEFORE_METHOD);
         $this->callHook(self::BEFORE_METHOD, $suite, $factory);

@@ -227,7 +227,7 @@ class FindFailureSource_InStaticTestSuite extends FindFailureSource_TestSuite {
     }
 
     private function executeTestCase($name) {
-        $test = new StaticTestCase(new \ReflectionMethod($this->suite, $name));
+        $test = new StaticTestCase(new \ReflectionClass($this->suite), new \ReflectionMethod($this->suite, $name));
         $test->run($this->listener);
     }
 
