@@ -26,9 +26,9 @@ To use *scrut* in your project, require it with [Composer]
 If you would like to develop on *scrut*, clone it with [git], download its dependencies with [Composer] and execute 
 the specification with scrut itself (the bootstrapping is the major source of fun when writing test frameworks)
 
-    git clone https://github.com/rtens/mockster.git
-    cd mockster
-    composer update
+    git clone https://github.com/rtens/scrut.git
+    cd scrut
+    composer install
     vendor/bin/scrut
 
 [Composer]: http://getcomposer.org/download/
