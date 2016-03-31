@@ -13,11 +13,11 @@ use watoki\factory\Factory;
  */
 class DefineFilters {
 
-    function noFilter() {
+    function defaultFilter() {
         $this->whenIExecuteTheCommand();
-        $this->thenTheFilterShouldAcceptTheClass(self::class);
+        $this->thenTheFilterShouldAcceptTheClass(DefineFilters_FooSpec::class);
         $this->thenTheFilterShouldAcceptTheFile('any/file');
-        $this->thenTheFilterShouldAcceptTheMethod(self::class, 'noFilter');
+        $this->thenTheFilterShouldAcceptTheMethod(self::class, 'defaultFilter');
     }
 
     function shortDefinition() {
@@ -78,7 +78,7 @@ class DefineFilters {
         $this->whenIExecuteTheCommand();
 
         $this->thenTheFilterShouldAcceptTheMethod(self::class, 'filterMethodsByNameShort');
-        $this->thenTheFilterShouldNotAcceptTheMethod(self::class, 'noFilter');
+        $this->thenTheFilterShouldNotAcceptTheMethod(self::class, 'defaultFilter');
     }
 
     function filterMethodsByNameExplicit() {
@@ -92,7 +92,7 @@ class DefineFilters {
         $this->whenIExecuteTheCommand();
 
         $this->thenTheFilterShouldAcceptTheMethod(self::class, 'filterMethodsByNameExplicit');
-        $this->thenTheFilterShouldNotAcceptTheMethod(self::class, 'noFilter');
+        $this->thenTheFilterShouldNotAcceptTheMethod(self::class, 'defaultFilter');
     }
 
     function filterClassBySubclass() {
@@ -124,7 +124,7 @@ class DefineFilters {
         $this->whenIExecuteTheCommand();
 
         $this->thenTheFilterShouldAcceptTheMethod(self::class, __FUNCTION__);
-        $this->thenTheFilterShouldNotAcceptTheMethod(self::class, 'noFilter');
+        $this->thenTheFilterShouldNotAcceptTheMethod(self::class, 'defaultFilter');
     }
 
     /** @var TestFilter */
@@ -179,11 +179,16 @@ class DefineFilters_TestRunner extends TestRunner {
      * @param TestRunConfiguration $configuration <-
      */
     function __construct(TestRunConfiguration $configuration) {
+        parent::__construct($configuration);
         self::$config = $configuration;
     }
 
     public function run(TestName $name = null) {
         return true;
     }
+
+}
+
+class DefineFilters_FooSpec {
 
 }

@@ -64,7 +64,7 @@ class TestRunConfiguration {
     public function getFilter() {
         $filter = new TestFilter();
 
-        if ($filterConfig = $this->get('filter')) {
+        if ($filterConfig = $this->get('filter', '/Spec$/')) {
             if (is_string($filterConfig)) {
                 $filterConfig = [
                     'class' => $filterConfig
@@ -125,7 +125,7 @@ class TestRunConfiguration {
      * @return \rtens\scrut\Test
      */
     public function getTest(TestName $parent = null) {
-        return $this->buildTestSuite($this->get('suite', ['name' => 'Test']), $parent);
+        return $this->buildTestSuite($this->get('suite', ['file' => 'spec']), $parent);
     }
 
     private function buildTestSuite($suiteConfig, TestName $parent = null) {

@@ -30,8 +30,8 @@ class ComposeTestSuites {
 
         $this->whenIExecuteTheCommand();
 
-        $this->then->isInstanceOf($this->test, GenericTestSuite::class);
-        $this->then->equals($this->test->getName()->toString(), 'Test');
+        $this->then->isInstanceOf($this->test, FileTestSuite::class);
+        $this->then->equals($this->test->getName()->toString(), 'spec');
     }
 
     function invalidConfiguration() {
@@ -147,6 +147,7 @@ class ComposeTestSuites_TestRunner extends TestRunner {
      * @param TestRunConfiguration $configuration <-
      */
     function __construct(TestRunConfiguration $configuration) {
+        parent::__construct($configuration);
         self::$config = $configuration;
     }
 
